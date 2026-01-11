@@ -16,13 +16,15 @@ interface TabIconProps {
 
 const TabIcon = ({ Icon, label, focused }: TabIconProps) => (
   <View className="items-center justify-center pt-2">
-    <Icon 
-      size={22} 
-      color={focused ? '#22c55e' : '#94a3b8'} 
-      strokeWidth={focused ? 2.5 : 2}
-    />
+    <View className={`p-2 rounded-xl ${focused ? 'bg-slate-900' : ''}`}>
+      <Icon 
+        size={20} 
+        color={focused ? '#c8ff00' : '#94a3b8'} 
+        strokeWidth={focused ? 2.5 : 2}
+      />
+    </View>
     <Text 
-      className={`text-xs mt-1 ${focused ? 'text-primary-500 font-medium' : 'text-gray-400'}`}
+      className={`text-[10px] mt-1 ${focused ? 'text-slate-900 font-semibold' : 'text-slate-400'}`}
     >
       {label}
     </Text>
@@ -36,11 +38,13 @@ export default function TabsLayout() {
         headerShown: false,
         tabBarStyle: {
           backgroundColor: '#ffffff',
-          borderTopColor: '#e2e8f0',
+          borderTopColor: '#f1f5f9',
           borderTopWidth: 1,
-          height: Platform.OS === 'ios' ? 85 : 65,
+          height: Platform.OS === 'ios' ? 88 : 68,
           paddingBottom: Platform.OS === 'ios' ? 25 : 10,
           paddingTop: 5,
+          elevation: 0,
+          shadowOpacity: 0,
         },
         tabBarShowLabel: false,
       }}

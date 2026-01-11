@@ -10,7 +10,7 @@ import {
   LucideIcon 
 } from 'lucide-react-native';
 import { AssetCategory, AssetCategoryInfo } from '../types';
-import { ASSET_CATEGORIES } from '../constants';
+import { ASSET_CATEGORIES } from '../constants/partners';
 
 const iconMap: Record<string, LucideIcon> = {
   'laptop': Laptop,
@@ -39,8 +39,8 @@ export const CategoryFilter: React.FC<CategoryFilterProps> = ({
     <ScrollView 
       horizontal 
       showsHorizontalScrollIndicator={false}
-      className="py-2"
-      contentContainerStyle={{ paddingHorizontal: 16 }}
+      className="max-h-10"
+      contentContainerStyle={{ paddingHorizontal: 16, paddingVertical: 2 }}
     >
       {allCategories.map((category) => {
         const isSelected = selectedCategory === category.id;
@@ -51,22 +51,22 @@ export const CategoryFilter: React.FC<CategoryFilterProps> = ({
             key={category.id}
             onPress={() => onSelectCategory(category.id as AssetCategory | 'all')}
             className={`
-              flex-row items-center px-4 py-2.5 rounded-full mr-2
-              ${isSelected ? 'bg-primary-500' : 'bg-white border border-gray-200'}
+              flex-row items-center px-3 py-1.5 rounded-full mr-2
+              ${isSelected ? 'bg-slate-900' : 'bg-white border border-slate-200'}
             `}
             activeOpacity={0.7}
           >
             {Icon && (
               <Icon 
-                size={16} 
-                color={isSelected ? '#ffffff' : category.color} 
-                style={{ marginRight: 6 }}
+                size={12} 
+                color={isSelected ? '#c8ff00' : category.color} 
+                style={{ marginRight: 4 }}
               />
             )}
             <Text 
               className={`
-                font-medium text-sm
-                ${isSelected ? 'text-white' : 'text-dark-600'}
+                font-medium text-xs
+                ${isSelected ? 'text-white' : 'text-slate-600'}
               `}
             >
               {category.name}

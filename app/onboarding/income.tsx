@@ -297,30 +297,33 @@ export default function IncomeScreen() {
 
           {/* Income Range Info */}
           {isValid && (
-            <View className="bg-gray-50 rounded-xl p-4 mt-4">
-              <Text className="text-sm font-medium text-dark-700 mb-2">
+            <View className="bg-slate-900 rounded-xl p-4 mt-4">
+              <Text className="text-sm font-medium text-white mb-2">
                 Based on {formatNaira(incomeValue)}/month:
               </Text>
               <View className="flex-row justify-between">
                 <View>
-                  <Text className="text-xs text-dark-500">Est. Expenses</Text>
-                  <Text className="text-sm font-medium text-dark-700">
-                    {formatNaira(incomeValue * 0.5)}
+                  <Text className="text-xs text-slate-400">Est. Expenses</Text>
+                  <Text className="text-sm font-medium text-white">
+                    {formatNaira(Math.floor(incomeValue * 0.65))}
                   </Text>
                 </View>
                 <View>
-                  <Text className="text-xs text-dark-500">Disposable</Text>
-                  <Text className="text-sm font-medium text-dark-700">
-                    {formatNaira(incomeValue * 0.5)}
+                  <Text className="text-xs text-slate-400">Disposable</Text>
+                  <Text className="text-sm font-medium text-white">
+                    {formatNaira(Math.floor(incomeValue * 0.35))}
                   </Text>
                 </View>
                 <View>
-                  <Text className="text-xs text-dark-500">Safe Limit</Text>
-                  <Text className="text-sm font-medium text-primary-600">
-                    ~{formatNaira(incomeValue * 0.35)}
+                  <Text className="text-xs text-slate-400">Safe Limit</Text>
+                  <Text className="text-sm font-bold text-lime-400">
+                    {formatNaira(Math.floor(incomeValue * 0.15))}-{formatNaira(Math.floor(incomeValue * 0.18))}
                   </Text>
                 </View>
               </View>
+              <Text className="text-xs text-slate-400 mt-2">
+                💡 15-18% of income is the Nigerian fintech standard for safe repayment
+              </Text>
             </View>
           )}
         </ScrollView>

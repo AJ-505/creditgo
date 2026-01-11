@@ -1,61 +1,28 @@
-const { withAppBuildGradle, withProjectBuildGradle } = require('@expo/config-plugins');
+const { withAppBuildGradle } = require('@expo/config-plugins');
 
 /**
  * CreditGo Android Size Optimization Plugin
- * Enables Proguard, R8 shrinking, and ABI splits for smaller APK size
+ * Enables R8 full mode for maximum code shrinking
  */
 
 const withAndroidSizeOptimization = (config) => {
-  // Modify app/build.gradle
-  config = withAppBuildGradle(config, (config) => {
-    if (config.modResults.language === 'groovy') {
-      // Add optimization settings to buildTypes.release
-      const buildGradle = config.modResults.contents;
+  config = withAppBuildGradle(config, (modConfig) => {
+    if (modConfig.modResults.language === 'groovy') {
+      let contents = modConfig.modResults.contents;
       
-      // Check if optimizations already added
-      if (!buildGradle.includes('// CreditGo Size Optimizations')) {
-        // Find the release buildType and add optimizations
-        const releasePattern = /buildTypes\s*\{[\s\S]*?release\s*\{/;
-        
-        if (releasePattern.test(buildGradle)) {
-          config.modResults.contents = buildGradle.replace(
-            releasePattern,
-            (match) => `${match}
-            // CreditGo Size Optimizations
+      // Only add if not already present
+      if (!contents.includes('shrinkResources true')) {
+        // Add shrinking to release build type
+        contents = contents.replace(
+          /release\s*\{/g,
+          `release {
             shrinkResources true
-            minifyEnabled true
-            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"`
-          );
-        }
-      }
-      
-      // Add ABI splits configuration if not present
-      if (!buildGradle.includes('splits {') && !config.modResults.contents.includes('splits {')) {
-        const androidBlock = /android\s*\{/;
-        if (androidBlock.test(config.modResults.contents)) {
-          config.modResults.contents = config.modResults.contents.replace(
-            /android\s*\{/,
-            `android {
-    // ABI Splits for smaller APK per architecture
-    splits {
-        abi {
-            enable gradle.startParameter.taskNames.any { it.contains("Release") }
-            reset()
-            include "armeabi-v7a", "arm64-v8a"
-            universalApk false
-        }
-    }
-    
-    packagingOptions {
-        resources {
-            excludes += ['META-INF/NOTICE', 'META-INF/LICENSE', 'META-INF/*.kotlin_module']
-        }
-    }`
-          );
-        }
+            minifyEnabled true`
+        );
+        modConfig.modResults.contents = contents;
       }
     }
-    return config;
+    return modConfig;
   });
 
   return config;

@@ -123,6 +123,12 @@ export const readSmsMessages = async (
       maxCount: maxCount,
     };
 
+    if (!SmsAndroid) {
+      console.log('SmsAndroid is not loaded');
+      resolve([]);
+      return;
+    }
+
     SmsAndroid.list(
       JSON.stringify(filter),
       (fail: string) => {

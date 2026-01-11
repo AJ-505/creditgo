@@ -160,6 +160,10 @@ export const analyzeSMSTransactions = (transactions: SMSTransaction[]): SMSAnaly
 /**
  * Calculate the "Safe Amount" - the maximum monthly repayment a user can afford
  * This is the core algorithm of CreditGo
+ * 
+ * Nigerian Fintech Standard:
+ * - Safe repayment = 15-20% of monthly income
+ * - Example: ₦300,000 income = ₦45,000-60,000 safe repayment
  */
 export const calculateSafeAmount = (
   monthlyIncome: number,
@@ -168,24 +172,31 @@ export const calculateSafeAmount = (
   // Use SMS analysis if available, otherwise use stated income
   const verifiedIncome = smsAnalysis?.averageMonthlyIncome || monthlyIncome;
   
-  // Estimate expenses at 50% of income (conservative)
-  const estimatedExpenses = verifiedIncome * 0.5;
+  // Take the more conservative of the two
+  const baseIncome = Math.min(monthlyIncome, verifiedIncome);
   
-  // Disposable income
-  const disposableIncome = verifiedIncome - estimatedExpenses;
+  // Nigerian standard: Safe repayment is 15-18% of income
+  // This matches how platforms like Carbon, FairMoney, and PalmCredit operate
+  let repaymentRatio = 0.15; // Base 15%
   
-  // Apply 30% safety buffer
-  const safetyBuffer = disposableIncome * 0.3;
+  // Boost ratio if income is consistent (from SMS)
+  const consistency = smsAnalysis?.incomeConsistency ?? 0;
+  if (consistency >= 0.8) {
+    repaymentRatio = 0.18; // 18% for consistent income
+  }
   
-  // Safe monthly repayment limit
-  const safeAmount = Math.floor(disposableIncome - safetyBuffer);
+  // Calculate safe monthly repayment
+  const safeAmount = Math.floor(baseIncome * repaymentRatio);
+  
+  // Estimate expenses at 65% of income (Nigerian urban standard)
+  const estimatedExpenses = baseIncome * 0.65;
   
   return {
     safeAmount: Math.max(0, safeAmount),
     breakdown: {
-      income: verifiedIncome,
+      income: baseIncome,
       expenses: estimatedExpenses,
-      buffer: safetyBuffer,
+      buffer: baseIncome * (1 - repaymentRatio - 0.65),
     },
   };
 };

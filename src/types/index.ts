@@ -107,6 +107,28 @@ export interface LoanApplication {
   safeAmount: number;
 }
 
+// Savings Types
+export interface SavingsGoal {
+  id: string;
+  name: string;
+  targetAmount: number;
+  currentAmount: number;
+  deadline?: Date;
+  partnerId?: string;
+  assetId?: string;
+  createdAt: Date;
+}
+
+export interface SavingsTransaction {
+  id: string;
+  goalId: string;
+  amount: number;
+  type: 'deposit' | 'withdrawal';
+  reference: string;
+  status: 'pending' | 'successful' | 'failed';
+  createdAt: Date;
+}
+
 // Onboarding Types
 export type OnboardingStep = 
   | 'welcome'
@@ -127,6 +149,9 @@ export interface Partner {
   category: AssetCategory[];
   description: string;
   website: string;
+  rating?: number;
+  minPayment?: number;
+  maxPayment?: number;
 }
 
 // Lead Types (For B2B Dashboard)

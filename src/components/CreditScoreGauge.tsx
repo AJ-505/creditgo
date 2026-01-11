@@ -7,6 +7,7 @@ interface CreditScoreGaugeProps {
   maxScore?: number;
   size?: number;
   strokeWidth?: number;
+  showLabel?: boolean;
 }
 
 export const CreditScoreGauge: React.FC<CreditScoreGaugeProps> = ({
@@ -14,6 +15,7 @@ export const CreditScoreGauge: React.FC<CreditScoreGaugeProps> = ({
   maxScore = 100,
   size = 180,
   strokeWidth = 15,
+  showLabel = false,
 }) => {
   const radius = (size - strokeWidth) / 2;
   const circumference = radius * 2 * Math.PI;
@@ -21,23 +23,25 @@ export const CreditScoreGauge: React.FC<CreditScoreGaugeProps> = ({
   const offset = circumference - progress;
 
   const getScoreColor = (score: number): string => {
-    if (score >= 80) return '#22c55e'; // Green - Excellent
-    if (score >= 60) return '#84cc16'; // Lime - Good
-    if (score >= 40) return '#eab308'; // Yellow - Fair
-    if (score >= 20) return '#f97316'; // Orange - Poor
-    return '#ef4444'; // Red - Very Poor
+    if (score >= 85) return '#c8ff00'; // Lime - Platinum
+    if (score >= 70) return '#eab308'; // Gold
+    if (score >= 55) return '#94a3b8'; // Silver
+    return '#d97706'; // Bronze
   };
 
   const getScoreLabel = (score: number): string => {
-    if (score >= 80) return 'Excellent';
-    if (score >= 60) return 'Good';
-    if (score >= 40) return 'Fair';
-    if (score >= 20) return 'Poor';
-    return 'Building';
+    if (score >= 85) return 'Platinum';
+    if (score >= 70) return 'Gold';
+    if (score >= 55) return 'Silver';
+    return 'Bronze';
   };
 
   const color = getScoreColor(score);
   const label = getScoreLabel(score);
+
+  // Calculate font size based on gauge size
+  const fontSize = size < 80 ? 'text-lg' : size < 120 ? 'text-2xl' : 'text-4xl';
+  const labelSize = size < 80 ? 'text-[8px]' : 'text-xs';
 
   return (
     <View className="items-center justify-center">
@@ -48,9 +52,10 @@ export const CreditScoreGauge: React.FC<CreditScoreGaugeProps> = ({
             cx={size / 2}
             cy={size / 2}
             r={radius}
-            stroke="#e2e8f0"
+            stroke="#334155"
             strokeWidth={strokeWidth}
             fill="transparent"
+            opacity={0.3}
           />
           {/* Progress Circle */}
           <Circle
@@ -71,11 +76,12 @@ export const CreditScoreGauge: React.FC<CreditScoreGaugeProps> = ({
           className="absolute inset-0 items-center justify-center"
           style={{ width: size, height: size }}
         >
-          <Text className="text-4xl font-bold text-dark-800">{score}</Text>
-          <Text className="text-sm text-dark-500 mt-1">{label}</Text>
+          <Text className={`${fontSize} font-bold text-white`}>{score}</Text>
         </View>
       </View>
-      <Text className="text-xs text-dark-400 mt-2">CreditGo Score</Text>
+      {showLabel && (
+        <Text className="text-xs text-slate-400 mt-2">CreditGo Score</Text>
+      )}
     </View>
   );
 };
