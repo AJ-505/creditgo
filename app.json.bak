@@ -19,7 +19,15 @@
       "bundleIdentifier": "com.creditgo.app",
       "infoPlist": {
         "NSCameraUsageDescription": "CreditGo needs camera access to verify your identity with a selfie.",
-        "NSPhotoLibraryUsageDescription": "CreditGo needs access to your photos for document verification."
+        "NSPhotoLibraryUsageDescription": "CreditGo needs access to your photos for document verification.",
+        "NSAppTransportSecurity": {
+          "NSAllowsArbitraryLoads": false,
+          "NSAllowsArbitraryLoadsForMedia": false,
+          "NSAllowsArbitraryLoadsInWebContent": false
+        }
+      },
+      "config": {
+        "usesNonExemptEncryption": false
       }
     },
     "android": {
@@ -33,7 +41,10 @@
         "android.permission.CAMERA",
         "android.permission.READ_SMS",
         "android.permission.RECEIVE_SMS"
-      ]
+      ],
+      "runtimeVersion": {
+        "policy": "appVersion"
+      }
     },
     "web": {
       "favicon": "./assets/favicon.png",
@@ -59,7 +70,12 @@
           "android": {
             "enableProguardInReleaseBuilds": true,
             "enableShrinkResourcesInReleaseBuilds": true,
-            "useLegacyPackaging": false
+            "useLegacyPackaging": false,
+            "extraMavenRepos": []
+          },
+          "ios": {
+            "deploymentTarget": "15.1",
+            "enableBitcode": false
           }
         }
       ]
@@ -75,6 +91,10 @@
     },
     "updates": {
       "url": "https://u.expo.dev/779517ca-a654-4a8e-9e95-c88ef8cb042b"
+    },
+    "optimizations": {
+      "bundle": true,
+      "fonts": true
     }
   }
 }

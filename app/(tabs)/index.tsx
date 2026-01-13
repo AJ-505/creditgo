@@ -26,6 +26,7 @@ import { formatNaira } from "../../src/constants";
 import { PARTNERS } from "../../src/constants/partners";
 import { CreditScoreGauge } from "../../src/components";
 import { getCreditTier } from "../../src/utils/creditCalculator";
+import { getTierColor } from "../../src/theme";
 
 export default function HomeScreen() {
   const router = useRouter();

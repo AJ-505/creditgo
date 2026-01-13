@@ -8,6 +8,7 @@ interface CreditScoreGaugeProps {
   size?: number;
   strokeWidth?: number;
   showLabel?: boolean;
+  variant?: "dark" | "light";
 }
 
 export const CreditScoreGauge: React.FC<CreditScoreGaugeProps> = ({
@@ -16,6 +17,7 @@ export const CreditScoreGauge: React.FC<CreditScoreGaugeProps> = ({
   size = 180,
   strokeWidth = 15,
   showLabel = false,
+  variant = "dark",
 }) => {
   const radius = (size - strokeWidth) / 2;
   const circumference = radius * 2 * Math.PI;
@@ -23,10 +25,10 @@ export const CreditScoreGauge: React.FC<CreditScoreGaugeProps> = ({
   const offset = circumference - progress;
 
   const getScoreColor = (score: number): string => {
-    if (score >= 85) return "#c8ff00"; // Lime - Platinum
-    if (score >= 70) return "#eab308"; // Gold
-    if (score >= 55) return "#94a3b8"; // Silver
-    return "#d97706"; // Bronze
+    if (score >= 85) return "#c8ff00";
+    if (score >= 70) return "#eab308";
+    if (score >= 55) return "#94a3b8";
+    return "#d97706";
   };
 
   const getScoreLabel = (score: number): string => {
@@ -39,7 +41,6 @@ export const CreditScoreGauge: React.FC<CreditScoreGaugeProps> = ({
   const color = getScoreColor(score);
   const label = getScoreLabel(score);
 
-  // Calculate font size based on gauge size
   const fontSize = size < 80 ? "text-lg" : size < 120 ? "text-2xl" : "text-4xl";
   const labelSize = size < 80 ? "text-[8px]" : "text-xs";
 
@@ -47,17 +48,15 @@ export const CreditScoreGauge: React.FC<CreditScoreGaugeProps> = ({
     <View className="items-center justify-center">
       <View style={{ width: size, height: size }}>
         <Svg width={size} height={size}>
-          {/* Background Circle */}
           <Circle
             cx={size / 2}
             cy={size / 2}
             r={radius}
-            stroke="#334155"
+            stroke={variant === "dark" ? "#334155" : "#e2e8f0"}
             strokeWidth={strokeWidth}
             fill="transparent"
             opacity={0.3}
           />
-          {/* Progress Circle */}
           <Circle
             cx={size / 2}
             cy={size / 2}
@@ -71,16 +70,27 @@ export const CreditScoreGauge: React.FC<CreditScoreGaugeProps> = ({
             transform={`rotate(-90 ${size / 2} ${size / 2})`}
           />
         </Svg>
-        {/* Center Content */}
         <View
           className="absolute inset-0 items-center justify-center"
           style={{ width: size, height: size }}
         >
-          <Text className={`${fontSize} font-bold text-white`}>{score}</Text>
+          <Text
+            className={`${fontSize} font-bold ${
+              variant === "dark" ? "text-white" : "text-slate-900"
+            }`}
+          >
+            {score}
+          </Text>
         </View>
       </View>
       {showLabel && (
-        <Text className="text-xs text-slate-400 mt-2">CreditGo Score</Text>
+        <Text
+          className={`${labelSize} mt-2 ${
+            variant === "dark" ? "text-slate-400" : "text-slate-500"
+          }`}
+        >
+          CreditGo Score
+        </Text>
       )}
     </View>
   );

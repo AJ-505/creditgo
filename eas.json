@@ -8,7 +8,9 @@
       "android": {
         "image": "latest",
         "env": {
-          "EXPO_NO_DEV_CLIENT": "true"
+          "EXPO_NO_DEV_CLIENT": "true",
+          "EXPO_OPTIMIZE": "true",
+          "EXPO_MINIFY": "true"
         }
       }
     },
@@ -53,7 +55,8 @@
       "autoIncrement": true,
       "channel": "production",
       "android": {
-        "buildType": "app-bundle"
+        "buildType": "app-bundle",
+        "gradleCommand": ":app:assembleRelease"
       }
     }
   },

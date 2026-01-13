@@ -1,0 +1,104 @@
+export default {
+  expo: {
+    name: "CreditGo",
+    slug: "creditgo",
+    version: "1.0.0",
+    orientation: "portrait",
+    icon: "./assets/icon.png",
+    userInterfaceStyle: "light",
+    newArchEnabled: true,
+    scheme: "creditgo",
+    jsEngine: "hermes",
+    splash: {
+      image: "./assets/splash-icon.png",
+      resizeMode: "contain",
+      backgroundColor: "#22c55e",
+    },
+    ios: {
+      supportsTablet: true,
+      bundleIdentifier: "com.creditgo.app",
+      infoPlist: {
+        NSCameraUsageDescription:
+          "CreditGo needs camera access to verify your identity with a selfie.",
+        NSPhotoLibraryUsageDescription:
+          "CreditGo needs access to your photos for document verification.",
+        NSAppTransportSecurity: {
+          NSAllowsArbitraryLoads: false,
+          NSAllowsArbitraryLoadsForMedia: false,
+          NSAllowsArbitraryLoadsInWebContent: false,
+        },
+      },
+      config: {
+        usesNonExemptEncryption: false,
+      },
+    },
+    android: {
+      adaptiveIcon: {
+        foregroundImage: "./assets/adaptive-icon.png",
+        backgroundColor: "#22c55e",
+      },
+      edgeToEdgeEnabled: true,
+      package: "com.creditgo.app",
+      permissions: [
+        "android.permission.CAMERA",
+        "android.permission.READ_SMS",
+        "android.permission.RECEIVE_SMS",
+      ],
+      runtimeVersion: {
+        policy: "appVersion",
+      },
+    },
+    web: {
+      favicon: "./assets/favicon.png",
+      bundler: "metro",
+    },
+    plugins: [
+      "expo-router",
+      [
+        "expo-camera",
+        {
+          cameraPermission:
+            "CreditGo needs camera access to verify your identity with a selfie.",
+        },
+      ],
+      [
+        "expo-image-picker",
+        {
+          photosPermission:
+            "CreditGo needs access to your photos for document verification.",
+        },
+      ],
+      [
+        "expo-build-properties",
+        {
+          android: {
+            enableProguardInReleaseBuilds: true,
+            enableShrinkResourcesInReleaseBuilds: true,
+            useLegacyPackaging: false,
+            extraMavenRepos: [],
+          },
+          ios: {
+            deploymentTarget: "15.1",
+            enableBitcode: false,
+          },
+        },
+      ],
+    ],
+    extra: {
+      router: {},
+      eas: {
+        projectId: "779517ca-a654-4a8e-9e95-c88ef8cb042b",
+      },
+    },
+    runtimeVersion: {
+      policy: "appVersion",
+    },
+    updates: {
+      url: "https://u.expo.dev/779517ca-a654-4a8e-9e95-c88ef8cb042b",
+    },
+    optimizations: {
+      bundle: true,
+      fonts: true,
+    },
+  },
+};

@@ -189,13 +189,24 @@ export const useFinancialProfile = () =>
   useAppStore((state) => state.financialProfile);
 export const useVerificationStatus = () =>
   useAppStore((state) => state.verificationStatus);
-export const useSavings = () =>
-  useAppStore(
-    useShallow((state) => ({
-      balance: state.savings.balance,
-      transactions: state.savings.transactions,
-      monthlyGoal: state.savings.monthlyGoal,
-      addDeposit: state.addSavingsDeposit,
-      setGoal: state.setSavingsGoal,
-    })),
-  );
+
+export const useSavings = () => {
+  const balance = useAppStore((state) => state.savings.balance);
+  const transactions = useAppStore((state) => state.savings.transactions);
+  const monthlyGoal = useAppStore((state) => state.savings.monthlyGoal);
+  const addDeposit = useAppStore((state) => state.addSavingsDeposit);
+  const setGoal = useAppStore((state) => state.setSavingsGoal);
+
+  const getTotalSessions = () => {
+    return transactions.filter((t) => t.type === "deposit").length;
+  };
+
+  return {
+    balance,
+    transactions,
+    monthlyGoal,
+    addDeposit,
+    setGoal,
+    getTotalSessions,
+  };
+};

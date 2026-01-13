@@ -6,6 +6,8 @@ import {
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
+  Modal,
+  TouchableOpacity,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -19,6 +21,9 @@ import {
   Building2,
   Globe,
   Info,
+  X,
+  University,
+  Sparkles,
 } from "lucide-react-native";
 import { Button, Input, SimpleProgress } from "../../src/components";
 import { useAppStore } from "../../src/store";
@@ -26,8 +31,69 @@ import {
   validateCorporateEmail,
   validateFreelanceLink,
   validateEmailFormat,
+  detectInstitutionFromEmail,
 } from "../../src/utils";
 import { useDebounce } from "../../src/hooks";
+
+interface InstitutionBadgeProps {
+  institution: {
+    name: string;
+    displayName: string;
+    type: string;
+    isVerified: boolean;
+  };
+}
+
+const InstitutionBadge: React.FC<InstitutionBadgeProps> = ({ institution }) => {
+  if (institution.type === "university") {
+    return (
+      <View className="flex-row items-center">
+        <View className="w-8 h-8 bg-indigo-100 rounded-lg items-center justify-center mr-2">
+          <University size={16} color="#6366f1" />
+        </View>
+        <View>
+          <Text className="text-indigo-700 font-semibold text-sm">
+            {institution.displayName}
+          </Text>
+          <Text className="text-indigo-500 text-xs">University Detected</Text>
+        </View>
+      </View>
+    );
+  }
+
+  return (
+    <View className="flex-row items-center">
+      <View
+        className={`w-8 h-8 rounded-lg items-center justify-center mr-2 ${
+          institution.isVerified ? "bg-green-100" : "bg-slate-100"
+        }`}
+      >
+        <Building2
+          size={16}
+          color={institution.isVerified ? "#22c55e" : "#64748b"}
+        />
+      </View>
+      <View>
+        <Text
+          className={`font-semibold text-sm ${
+            institution.isVerified ? "text-green-700" : "text-slate-700"
+          }`}
+        >
+          {institution.displayName}
+        </Text>
+        <Text
+          className={`text-xs ${
+            institution.isVerified ? "text-green-500" : "text-slate-500"
+          }`}
+        >
+          {institution.isVerified
+            ? "Verified Organization"
+            : "Organization Detected"}
+        </Text>
+      </View>
+    </View>
+  );
+};
 
 export default function EmploymentVerifyScreen() {
   const router = useRouter();
@@ -37,38 +103,41 @@ export default function EmploymentVerifyScreen() {
   );
   const user = useAppStore((state) => state.user);
 
-  // Salaried employee fields
   const [workEmail, setWorkEmail] = useState("");
   const [emailError, setEmailError] = useState("");
   const [isValidEmail, setIsValidEmail] = useState(false);
   const [isVerifyingEmail, setIsVerifyingEmail] = useState(false);
   const [emailVerified, setEmailVerified] = useState(false);
   const [verifiedCompany, setVerifiedCompany] = useState<string | null>(null);
-  const [domainNotVerified, setDomainNotVerified] = useState(false);
+  const [detectedInstitution, setDetectedInstitution] = useState<any>(null);
+  const [showInstitutionModal, setShowInstitutionModal] = useState(false);
 
-  // Debounced email for validation
   const debouncedEmail = useDebounce(workEmail, 400);
 
-  // Validate email format when debounced value changes
   useEffect(() => {
     if (!debouncedEmail) {
       setIsValidEmail(false);
       setEmailError("");
+      setDetectedInstitution(null);
       return;
     }
 
     const result = validateEmailFormat(debouncedEmail);
     setIsValidEmail(result.isValid);
 
-    // Only show error if user has typed something and it's invalid
     if (!result.isValid && result.error && debouncedEmail.length > 0) {
       setEmailError(result.error);
     } else {
       setEmailError("");
     }
+
+    // Detect institution from email
+    if (result.isValid) {
+      const institution = detectInstitutionFromEmail(debouncedEmail);
+      setDetectedInstitution(institution);
+    }
   }, [debouncedEmail]);
 
-  // Freelancer fields
   const [businessName, setBusinessName] = useState("");
   const [profileLink, setProfileLink] = useState("");
   const [linkError, setLinkError] = useState("");
@@ -81,7 +150,6 @@ export default function EmploymentVerifyScreen() {
   const isBusiness = user?.employmentType === "business";
 
   const handleVerifyEmail = async () => {
-    // First validate email format
     const formatResult = validateEmailFormat(workEmail);
     if (!formatResult.isValid) {
       setEmailError(formatResult.error || "Please enter a valid email address");
@@ -90,10 +158,8 @@ export default function EmploymentVerifyScreen() {
 
     setEmailError("");
     setIsVerifyingEmail(true);
-    setDomainNotVerified(false);
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    await new Promise((resolve) => setTimeout(resolve, 1200));
 
     const result = validateCorporateEmail(workEmail);
 
@@ -106,20 +172,37 @@ export default function EmploymentVerifyScreen() {
       });
       updateVerificationStatus({ employment: true });
     } else {
-      // Domain not in verified list - but this is NOT an error!
-      // User can still continue, we just note it's not a verified employer
-      setDomainNotVerified(true);
+      // Check if it's a known institution (like PAU)
+      const institution = detectInstitutionFromEmail(workEmail);
+      if (institution) {
+        setDetectedInstitution(institution);
+        // Show institution verification modal
+        setShowInstitutionModal(true);
+      }
       updateUser({ workEmail });
     }
 
     setIsVerifyingEmail(false);
   };
 
+  const confirmInstitutionVerification = () => {
+    if (detectedInstitution) {
+      setEmailVerified(true);
+      setVerifiedCompany(detectedInstitution.name);
+      updateUser({
+        workEmail,
+        isEmploymentVerified: true,
+        institutionName: detectedInstitution.displayName,
+      });
+      updateVerificationStatus({ employment: true });
+    }
+    setShowInstitutionModal(false);
+  };
+
   const handleVerifyLink = async () => {
     setLinkError("");
     setIsVerifyingLink(true);
 
-    // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1500));
 
     const result = validateFreelanceLink(profileLink);
@@ -153,10 +236,6 @@ export default function EmploymentVerifyScreen() {
     router.push("/onboarding/income");
   };
 
-  // Key fix: Allow continuation when email format is valid OR domain is verified
-  // Salaried: valid email format is enough (domain verification is optional)
-  // Freelancer: link must be verified
-  // Business: always allowed to continue
   const canContinue =
     (isSalaried && (isValidEmail || emailVerified)) ||
     (isFreelancer && linkVerified) ||
@@ -164,7 +243,6 @@ export default function EmploymentVerifyScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      {/* Header */}
       <View className="px-6 py-4">
         <View className="flex-row items-center mb-4">
           <Button
@@ -178,7 +256,7 @@ export default function EmploymentVerifyScreen() {
             <SimpleProgress current={3} total={6} />
           </View>
         </View>
-        <Text className="text-sm text-dark-500">Step 3 of 6</Text>
+        <Text className="text-sm text-slate-500">Step 3 of 6</Text>
       </View>
 
       <KeyboardAvoidingView
@@ -191,33 +269,31 @@ export default function EmploymentVerifyScreen() {
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
-          {/* Hero */}
           <View className="py-6">
-            <Text className="text-2xl font-bold text-dark-800">
+            <Text className="text-2xl font-bold text-slate-900">
               {isSalaried && "Verify Your Employment"}
               {isFreelancer && "Verify Your Freelance Profile"}
               {isBusiness && "Tell Us About Your Business"}
             </Text>
-            <Text className="text-base text-dark-500 mt-2">
-              {isSalaried && "Use your work email to verify your employer."}
+            <Text className="text-base text-slate-500 mt-2">
+              {isSalaried &&
+                "Enter your work email to automatically detect your organization."}
               {isFreelancer &&
                 "Link your professional profile to verify your work."}
               {isBusiness && "Provide your business details for verification."}
             </Text>
           </View>
 
-          {/* Salaried Employee Form */}
           {isSalaried && (
             <View>
               <Input
                 label="Work Email Address"
-                placeholder="your.name@company.com"
+                placeholder="your.name@company.edu.ng"
                 value={workEmail}
                 onChangeText={(text) => {
                   setWorkEmail(text);
                   setEmailVerified(false);
-                  setDomainNotVerified(false);
-                  // Don't clear emailError here - let debounced validation handle it
+                  setDetectedInstitution(null);
                 }}
                 keyboardType="email-address"
                 autoCapitalize="none"
@@ -229,77 +305,88 @@ export default function EmploymentVerifyScreen() {
                       emailError
                         ? "#ef4444"
                         : isValidEmail
-                          ? "#16a34a"
+                          ? "#22c55e"
                           : "#64748b"
                     }
                   />
                 }
               />
 
+              {detectedInstitution && !emailVerified && (
+                <View className="bg-indigo-50 border border-indigo-100 p-4 rounded-xl mb-4">
+                  <View className="flex-row items-center justify-between">
+                    <InstitutionBadge institution={detectedInstitution} />
+                    <View className="bg-indigo-100 px-2 py-1 rounded-full">
+                      <Text className="text-indigo-700 text-xs font-medium">
+                        Detected
+                      </Text>
+                    </View>
+                  </View>
+                  <Text className="text-indigo-600 text-sm mt-2">
+                    {detectedInstitution.isVerified
+                      ? "This organization is verified. Tap verify to confirm."
+                      : "We'll calculate your credit limit based on this information."}
+                  </Text>
+                </View>
+              )}
+
               {emailVerified && verifiedCompany && (
-                <View className="bg-primary-50 p-4 rounded-xl mb-4 flex-row items-center">
-                  <View className="w-10 h-10 bg-primary-100 rounded-full items-center justify-center mr-3">
-                    <Check size={20} color="#16a34a" />
+                <View className="bg-green-50 border border-green-100 p-4 rounded-xl mb-4 flex-row items-center">
+                  <View className="w-10 h-10 bg-green-100 rounded-full items-center justify-center mr-3">
+                    <Check size={20} color="#22c55e" />
                   </View>
                   <View>
-                    <Text className="text-primary-700 font-medium">
+                    <Text className="text-green-700 font-semibold">
                       Employment Verified!
                     </Text>
-                    <Text className="text-primary-600 text-sm">
-                      Employee at {verifiedCompany}
+                    <Text className="text-green-600 text-sm">
+                      {detectedInstitution?.type === "university"
+                        ? `Verified as ${detectedInstitution.displayName} member`
+                        : `Employee at ${verifiedCompany}`}
                     </Text>
                   </View>
                 </View>
               )}
 
-              {/* Domain not in verified list - informational only */}
-              {domainNotVerified && !emailVerified && (
-                <View className="bg-blue-50 p-4 rounded-xl mb-4 flex-row items-start">
-                  <Info size={20} color="#3b82f6" style={{ marginTop: 2 }} />
-                  <View className="ml-3 flex-1">
-                    <Text className="text-blue-800 font-medium">
-                      Email saved
-                    </Text>
-                    <Text className="text-blue-700 text-sm mt-1">
-                      Your employer isn't in our verified list yet — no problem.
-                      We'll still calculate your Safe Amount from your income
-                      and spending.
-                    </Text>
-                  </View>
-                </View>
-              )}
-
-              {!emailVerified && !domainNotVerified && (
+              {!emailVerified && (
                 <Button
                   title={
                     isVerifyingEmail
                       ? "Verifying..."
-                      : "Verify Email (Optional)"
+                      : detectedInstitution
+                        ? "Verify & Continue"
+                        : "Continue"
                   }
                   onPress={handleVerifyEmail}
                   disabled={!isValidEmail || isVerifyingEmail}
                   loading={isVerifyingEmail}
-                  variant="outline"
+                  icon={
+                    detectedInstitution?.isVerified ? (
+                      <Sparkles size={18} color="#fff" />
+                    ) : null
+                  }
                   className="mb-4"
                 />
               )}
 
-              <View className="bg-gray-50 p-4 rounded-xl">
-                <View className="flex-row items-center mb-2">
-                  <Building2 size={18} color="#64748b" />
-                  <Text className="text-sm font-medium text-dark-700 ml-2">
-                    Verified Employers
+              {!detectedInstitution && (
+                <View className="bg-slate-50 p-4 rounded-xl">
+                  <View className="flex-row items-center mb-2">
+                    <Info size={18} color="#64748b" />
+                    <Text className="text-sm font-medium text-slate-700 ml-2">
+                      Smart Detection
+                    </Text>
+                  </View>
+                  <Text className="text-xs text-slate-500">
+                    We automatically detect Nigerian universities (.edu.ng) and
+                    major organizations. Your credit limit will be calculated
+                    based on your institution's profile.
                   </Text>
                 </View>
-                <Text className="text-xs text-dark-500">
-                  MTN, Dangote, GTBank, Access Bank, Flutterwave, Paystack,
-                  Andela, Shell, Chevron, and 200+ more.
-                </Text>
-              </View>
+              )}
             </View>
           )}
 
-          {/* Freelancer Form */}
           {isFreelancer && (
             <View>
               <Input
@@ -326,15 +413,15 @@ export default function EmploymentVerifyScreen() {
               />
 
               {linkVerified && verifiedPlatform && (
-                <View className="bg-primary-50 p-4 rounded-xl mb-4 flex-row items-center">
-                  <View className="w-10 h-10 bg-primary-100 rounded-full items-center justify-center mr-3">
-                    <Check size={20} color="#16a34a" />
+                <View className="bg-green-50 border border-green-100 p-4 rounded-xl mb-4 flex-row items-center">
+                  <View className="w-10 h-10 bg-green-100 rounded-full items-center justify-center mr-3">
+                    <Check size={20} color="#22c55e" />
                   </View>
                   <View>
-                    <Text className="text-primary-700 font-medium">
+                    <Text className="text-green-700 font-semibold">
                       Freelancer Verified!
                     </Text>
-                    <Text className="text-primary-600 text-sm">
+                    <Text className="text-green-600 text-sm">
                       Profile on {verifiedPlatform}
                     </Text>
                   </View>
@@ -352,14 +439,14 @@ export default function EmploymentVerifyScreen() {
                 />
               )}
 
-              <View className="bg-gray-50 p-4 rounded-xl">
+              <View className="bg-slate-50 p-4 rounded-xl">
                 <View className="flex-row items-center mb-2">
                   <Globe size={18} color="#64748b" />
-                  <Text className="text-sm font-medium text-dark-700 ml-2">
+                  <Text className="text-sm font-medium text-slate-700 ml-2">
                     Accepted Platforms
                   </Text>
                 </View>
-                <Text className="text-xs text-dark-500">
+                <Text className="text-xs text-slate-500">
                   LinkedIn, Upwork, Fiverr, Toptal, Freelancer, GitHub, Behance,
                   Dribbble, and more.
                 </Text>
@@ -367,7 +454,6 @@ export default function EmploymentVerifyScreen() {
             </View>
           )}
 
-          {/* Business Owner Form */}
           {isBusiness && (
             <View>
               <Input
@@ -378,7 +464,7 @@ export default function EmploymentVerifyScreen() {
                 icon={<Building2 size={20} color="#64748b" />}
               />
 
-              <View className="bg-yellow-50 p-4 rounded-xl mt-4">
+              <View className="bg-amber-50 p-4 rounded-xl mt-4">
                 <View className="flex-row items-start">
                   <AlertCircle
                     size={20}
@@ -386,10 +472,10 @@ export default function EmploymentVerifyScreen() {
                     style={{ marginTop: 2 }}
                   />
                   <View className="ml-3 flex-1">
-                    <Text className="text-sm font-medium text-yellow-800 mb-1">
+                    <Text className="text-sm font-medium text-amber-800 mb-1">
                       Business Verification
                     </Text>
-                    <Text className="text-sm text-yellow-700">
+                    <Text className="text-sm text-amber-700">
                       We'll verify your business through your transaction
                       history. Make sure to grant SMS access in the next step.
                     </Text>
@@ -400,8 +486,7 @@ export default function EmploymentVerifyScreen() {
           )}
         </ScrollView>
 
-        {/* Bottom CTA */}
-        <View className="px-6 pb-6 pt-4 bg-white border-t border-gray-100">
+        <View className="px-6 pb-6 pt-4 bg-white border-t border-slate-100">
           <Button
             title="Continue"
             onPress={handleContinue}
@@ -416,17 +501,64 @@ export default function EmploymentVerifyScreen() {
             size="lg"
           />
           {!canContinue && isSalaried && (
-            <Text className="text-center text-xs text-dark-400 mt-3">
-              Please enter a valid work email to continue
+            <Text className="text-center text-xs text-slate-400 mt-3">
+              Please enter a valid email to continue
             </Text>
           )}
           {!canContinue && isFreelancer && (
-            <Text className="text-center text-xs text-dark-400 mt-3">
+            <Text className="text-center text-xs text-slate-400 mt-3">
               Please verify your professional profile to continue
             </Text>
           )}
         </View>
       </KeyboardAvoidingView>
+
+      <Modal
+        visible={showInstitutionModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowInstitutionModal(false)}
+      >
+        <View className="flex-1 bg-black/50 items-center justify-center px-6">
+          <View className="bg-white rounded-2xl p-6 w-full max-w-sm">
+            <View className="items-center mb-4">
+              <View className="w-16 h-16 bg-indigo-100 rounded-full items-center justify-center mb-3">
+                <University size={32} color="#6366f1" />
+              </View>
+              <Text className="text-xl font-bold text-slate-900 text-center">
+                {detectedInstitution?.displayName}
+              </Text>
+              <Text className="text-sm text-slate-500 text-center mt-1">
+                Institution Detected
+              </Text>
+            </View>
+
+            <Text className="text-slate-600 text-center mb-6">
+              We detected that you're affiliated with{" "}
+              {detectedInstitution?.displayName}. Would you like to verify your
+              membership?
+            </Text>
+
+            <TouchableOpacity
+              onPress={confirmInstitutionVerification}
+              className="bg-indigo-600 rounded-xl py-3.5 items-center mb-3"
+              activeOpacity={0.9}
+            >
+              <Text className="text-white font-semibold">
+                Yes, Verify My Membership
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => setShowInstitutionModal(false)}
+              className="py-3.5 items-center"
+              activeOpacity={0.7}
+            >
+              <Text className="text-slate-500 font-medium">Skip for Now</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }

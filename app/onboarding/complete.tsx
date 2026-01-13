@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { View, Text, ScrollView } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
@@ -8,10 +8,12 @@ import {
   ShieldCheck,
   Wallet,
   TrendingUp,
+  CheckCircle,
 } from "lucide-react-native";
 import { Button, CreditScoreGauge, BadgeRow } from "../../src/components";
 import { useAppStore } from "../../src/store";
 import { formatNaira } from "../../src/utils";
+import { getTierColor, creditTiers } from "../../src/theme";
 
 export default function CompleteScreen() {
   const router = useRouter();
@@ -27,127 +29,193 @@ export default function CompleteScreen() {
   const safeAmount = financialProfile?.safeMonthlyRepayment || 0;
   const creditScore = financialProfile?.creditScore || 0;
   const badges = financialProfile?.badges || [];
+  const tierColor = getTierColor(creditScore);
+  const tierInfo =
+    creditTiers[
+      creditScore >= 85
+        ? "platinum"
+        : creditScore >= 70
+          ? "gold"
+          : creditScore >= 55
+            ? "silver"
+            : "bronze"
+    ];
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView className="flex-1 bg-slate-50">
       <ScrollView
         className="flex-1"
         contentContainerStyle={{ paddingBottom: 32 }}
         showsVerticalScrollIndicator={false}
       >
-        {/* Celebration Header */}
-        <View className="items-center pt-8 pb-6 px-6">
-          <View className="w-20 h-20 bg-primary-100 rounded-full items-center justify-center mb-4">
-            <PartyPopper size={40} color="#22c55e" />
-          </View>
-          <Text className="text-2xl font-bold text-dark-800 text-center">
-            You're All Set! 🎉
-          </Text>
-          <Text className="text-base text-dark-500 text-center mt-2">
-            Your CreditGo profile is ready. Here's what we found.
-          </Text>
-        </View>
-
-        {/* Credit Score Card */}
-        <View
-          className="mx-6 bg-gradient-to-b from-primary-500 to-primary-600 rounded-2xl p-6 mb-6"
-          style={{ backgroundColor: "#22c55e" }}
-        >
-          <Text className="text-white text-center font-medium mb-4">
-            Your CreditGo Score
-          </Text>
-          <View className="items-center bg-white rounded-xl py-6">
-            <CreditScoreGauge score={creditScore} size={160} />
-          </View>
-        </View>
-
-        {/* Safe Amount Card */}
-        <View className="mx-6 bg-accent-50 rounded-xl p-6 mb-6">
-          <View className="flex-row items-center mb-3">
-            <Wallet size={20} color="#3b82f6" />
-            <Text className="text-accent-700 font-medium ml-2">
-              Your Safe Monthly Limit
+        <View className="px-6 pt-6 pb-4">
+          <View className="flex-row items-center justify-between mb-4">
+            <Text className="text-sm text-slate-500 font-medium">
+              CreditGo Score
             </Text>
+            <View className="flex-row items-center">
+              <Text className="text-xs text-slate-400">Powered by </Text>
+              <Text className="text-xs font-semibold text-lime-600">
+                CreditGo
+              </Text>
+            </View>
           </View>
-          <Text className="text-4xl font-bold text-accent-800">
-            {formatNaira(safeAmount)}
-          </Text>
-          <Text className="text-sm text-accent-600 mt-2">
-            This is the maximum monthly repayment you can afford without
-            financial stress.
-          </Text>
         </View>
 
-        {/* Verification Badges */}
+        <View className="px-6">
+          <View
+            className="bg-slate-900 rounded-3xl p-6 overflow-hidden"
+            style={{
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 8 },
+              shadowOpacity: 0.15,
+              shadowRadius: 16,
+              elevation: 8,
+            }}
+          >
+            <View className="absolute -top-12 -right-12 w-40 h-40 rounded-full bg-lime-400 opacity-10" />
+            <View className="absolute -bottom-16 -left-16 w-32 h-32 rounded-full bg-lime-400 opacity-5" />
+
+            <View className="items-center mb-6">
+              <View className="bg-white/10 rounded-2xl px-4 py-2 mb-4">
+                <Text
+                  className="text-lime-400 font-semibold text-sm uppercase tracking-wider"
+                  style={{ color: "#c8ff00" }}
+                >
+                  {tierInfo.name} Member
+                </Text>
+              </View>
+
+              <View className="bg-slate-800/50 rounded-2xl p-4 mb-4">
+                <CreditScoreGauge
+                  score={creditScore}
+                  size={140}
+                  strokeWidth={12}
+                  variant="dark"
+                />
+              </View>
+
+              <Text className="text-slate-400 text-sm">
+                Based on your financial profile
+              </Text>
+            </View>
+
+            <View
+              className="flex-row items-center justify-center py-3 px-4 bg-slate-800/50 rounded-xl"
+              style={{ borderColor: tierColor, borderWidth: 1 }}
+            >
+              <TrendingUp size={18} color={tierColor} />
+              <Text className="ml-2 font-medium" style={{ color: tierColor }}>
+                {tierInfo.benefits[0]} • {tierInfo.benefits[1]}
+              </Text>
+            </View>
+          </View>
+        </View>
+
+        <View className="px-6 mt-6">
+          <View className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm">
+            <View className="flex-row items-center mb-4">
+              <View className="w-12 h-12 bg-lime-100 rounded-xl items-center justify-center mr-4">
+                <Wallet size={24} color="#65a30d" />
+              </View>
+              <View className="flex-1">
+                <Text className="text-slate-500 text-xs font-medium uppercase tracking-wide">
+                  Your Safe Amount
+                </Text>
+                <Text className="text-3xl font-bold text-slate-900">
+                  {formatNaira(safeAmount)}
+                </Text>
+                <Text className="text-slate-400 text-sm">per month</Text>
+              </View>
+            </View>
+
+            <View className="flex-row items-center py-3 border-t border-slate-100">
+              <View className="flex-1">
+                <Text className="text-slate-500 text-xs">Monthly Income</Text>
+                <Text className="text-slate-900 font-semibold">
+                  {formatNaira(user?.monthlyIncome || 0)}
+                </Text>
+              </View>
+              <View className="flex-1">
+                <Text className="text-slate-500 text-xs">Repayment Ratio</Text>
+                <Text className="text-slate-900 font-semibold">15-20%</Text>
+              </View>
+              <View className="flex-1 items-end">
+                <Text className="text-slate-500 text-xs">Status</Text>
+                <View className="flex-row items-center">
+                  <CheckCircle size={14} color="#22c55e" />
+                  <Text className="text-green-600 font-semibold ml-1">
+                    Approved
+                  </Text>
+                </View>
+              </View>
+            </View>
+          </View>
+        </View>
+
         {badges.length > 0 && (
-          <View className="mx-6 mb-6">
-            <Text className="text-lg font-semibold text-dark-800 mb-3">
+          <View className="px-6 mt-6">
+            <Text className="text-lg font-bold text-slate-900 mb-3">
               Your Achievements
             </Text>
             <BadgeRow badges={badges} />
           </View>
         )}
 
-        {/* Summary Stats */}
-        <View className="mx-6 bg-gray-50 rounded-xl p-4">
-          <Text className="text-sm font-medium text-dark-700 mb-3">
-            Profile Summary
-          </Text>
-          <View className="space-y-2">
-            <View className="flex-row justify-between py-2 border-b border-gray-200">
-              <Text className="text-sm text-dark-500">Monthly Income</Text>
-              <Text className="text-sm font-medium text-dark-700">
-                {formatNaira(user?.monthlyIncome || 0)}
-              </Text>
-            </View>
-            <View className="flex-row justify-between py-2 border-b border-gray-200">
-              <Text className="text-sm text-dark-500">Identity</Text>
-              <View className="flex-row items-center">
-                <ShieldCheck size={14} color="#22c55e" />
-                <Text className="text-sm font-medium text-primary-600 ml-1">
-                  Verified
+        <View className="px-6 mt-6">
+          <View className="bg-lime-50 rounded-xl p-4 border border-lime-100">
+            <View className="flex-row items-start">
+              <View className="w-8 h-8 bg-lime-100 rounded-lg items-center justify-center mr-3 mt-0.5">
+                <TrendingUp size={16} color="#65a30d" />
+              </View>
+              <View className="flex-1">
+                <Text className="text-lime-800 font-semibold mb-1">
+                  What's Next?
+                </Text>
+                <Text className="text-lime-700 text-sm leading-5">
+                  Start saving to boost your credit score. Every on-time
+                  repayment builds your financial reputation!
                 </Text>
               </View>
             </View>
-            <View className="flex-row justify-between py-2 border-b border-gray-200">
-              <Text className="text-sm text-dark-500">Employment</Text>
-              <Text className="text-sm font-medium text-dark-700 capitalize">
-                {user?.employmentType || "N/A"}
-              </Text>
-            </View>
-            <View className="flex-row justify-between py-2">
-              <Text className="text-sm text-dark-500">Credit Limit</Text>
-              <Text className="text-sm font-medium text-primary-600">
-                {formatNaira(safeAmount)}/month
-              </Text>
-            </View>
           </View>
         </View>
 
-        {/* What's Next */}
-        <View className="mx-6 mt-6 p-4 bg-secondary-50 rounded-xl">
-          <View className="flex-row items-center mb-2">
-            <TrendingUp size={18} color="#ca8a04" />
-            <Text className="text-sm font-medium text-secondary-800 ml-2">
-              What's Next?
-            </Text>
+        <View className="px-6 mt-6 mb-4">
+          <View className="bg-white rounded-xl p-4 border border-slate-100">
+            <View className="flex-row items-center justify-between py-2">
+              <View className="flex-row items-center">
+                <ShieldCheck size={16} color="#22c55e" />
+                <Text className="text-slate-600 text-sm ml-2">Identity</Text>
+              </View>
+              <Text className="text-green-600 text-sm font-medium">
+                Verified
+              </Text>
+            </View>
+            <View className="flex-row items-center justify-between py-2">
+              <View className="flex-row items-center">
+                <ShieldCheck size={16} color="#22c55e" />
+                <Text className="text-slate-600 text-sm ml-2">Employment</Text>
+              </View>
+              <Text className="text-green-600 text-sm font-medium">
+                Verified
+              </Text>
+            </View>
           </View>
-          <Text className="text-sm text-secondary-700">
-            Browse financing options that match your budget. We'll only show you
-            products you can actually afford!
-          </Text>
         </View>
       </ScrollView>
 
-      {/* Bottom CTA */}
-      <View className="px-6 pb-6 pt-4 bg-white border-t border-gray-100">
-        <Button
-          title="Explore Financing Options"
+      <View className="px-6 pb-8 pt-4 bg-slate-50 border-t border-slate-200">
+        <TouchableOpacity
           onPress={handleContinue}
-          icon={<ChevronRight size={20} color="#fff" />}
-          iconPosition="right"
-          size="lg"
-        />
+          className="bg-slate-900 rounded-2xl py-4 flex-row items-center justify-center"
+          activeOpacity={0.9}
+        >
+          <Text className="text-lime-400 font-bold text-lg mr-2">
+            Explore Financing
+          </Text>
+          <ChevronRight size={20} color="#c8ff00" />
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );

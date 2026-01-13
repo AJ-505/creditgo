@@ -17,6 +17,7 @@ export interface User {
   lastName?: string;
   employmentType: "salaried" | "freelancer" | "business" | null;
   workEmail?: string;
+  institutionName?: string;
   businessName?: string;
   professionalProfileLink?: string;
   monthlyIncome: number;

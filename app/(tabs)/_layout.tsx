@@ -10,16 +10,23 @@ interface TabIconProps {
 }
 
 const TabIcon = ({ Icon, label, focused }: TabIconProps) => (
-  <View className="items-center justify-center pt-2">
-    <View className={`p-2 rounded-xl ${focused ? "bg-slate-900" : ""}`}>
+  <View className="items-center justify-center px-2 py-1 min-w-[64px]">
+    <View
+      className={`p-2.5 rounded-xl mb-1 ${focused ? "bg-lime-400/20" : ""}`}
+    >
       <Icon
-        size={20}
+        size={22}
         color={focused ? "#c8ff00" : "#94a3b8"}
         strokeWidth={focused ? 2.5 : 2}
       />
     </View>
     <Text
-      className={`text-[10px] mt-1 ${focused ? "text-slate-900 font-semibold" : "text-slate-400"}`}
+      className={`text-[11px] font-medium leading-tight ${
+        focused ? "text-lime-600" : "text-slate-400"
+      }`}
+      numberOfLines={1}
+      adjustsFontSizeToFit={true}
+      minimumFontScale={0.8}
     >
       {label}
     </Text>
@@ -37,14 +44,22 @@ export default function TabsLayout() {
           backgroundColor: "#ffffff",
           borderTopColor: "#f1f5f9",
           borderTopWidth: 1,
-          height:
-            (Platform.OS === "ios" ? 70 : 64) + Math.max(insets.bottom, 8),
-          paddingBottom: Math.max(insets.bottom, 10),
-          paddingTop: 5,
-          elevation: 0,
-          shadowOpacity: 0,
+          height: Platform.OS === "ios" ? 88 : 72,
+          paddingBottom: Math.max(insets.bottom, 12),
+          paddingTop: 8,
+          paddingHorizontal: 8,
+          elevation: 8,
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: -2 },
+          shadowOpacity: 0.05,
+          shadowRadius: 8,
         },
         tabBarShowLabel: false,
+        tabBarItemStyle: {
+          justifyContent: "center",
+          alignItems: "center",
+          paddingVertical: 4,
+        },
       }}
     >
       <Tabs.Screen

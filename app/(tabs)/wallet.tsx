@@ -7,11 +7,13 @@ import {
   Modal,
   TextInput,
   Alert,
-  Linking,
   KeyboardAvoidingView,
   Platform,
   Pressable,
   Keyboard,
+  ActivityIndicator,
+  Animated,
+  Easing,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
@@ -27,21 +29,102 @@ import {
   CreditCard,
   Building,
   Smartphone,
-  ExternalLink,
+  CheckCircle,
+  Sparkles,
+  TrendingUp as TrendingUpIcon,
+  Flame,
 } from "lucide-react-native";
+import {
+  useFonts,
+  Inter_400Regular,
+  Inter_500Medium,
+  Inter_600SemiBold,
+  Inter_700Bold,
+} from "@expo-google-fonts/inter";
 import { useAppStore, useSavings } from "../../src/store";
-import { formatNaira, PAYSTACK_CONFIG } from "../../src/constants";
+import { formatNaira } from "../../src/constants";
+import { getCreditTier } from "../../src/utils/creditCalculator";
+
+const SuccessAnimation: React.FC<{ visible: boolean }> = ({ visible }) => {
+  const [animation] = useState(new Animated.Value(0));
+
+  React.useEffect(() => {
+    if (visible) {
+      Animated.sequence([
+        Animated.timing(animation, {
+          toValue: 1,
+          duration: 500,
+          easing: Easing.out(Easing.ease),
+          useNativeDriver: true,
+        }),
+        Animated.delay(500),
+        Animated.timing(animation, {
+          toValue: 2,
+          duration: 300,
+          easing: Easing.in(Easing.ease),
+          useNativeDriver: true,
+        }),
+      ]).start();
+    } else {
+      animation.setValue(0);
+    }
+  }, [visible]);
+
+  const scale = animation.interpolate({
+    inputRange: [0, 1, 2],
+    outputRange: [0, 1.2, 1],
+  });
+
+  const opacity = animation.interpolate({
+    inputRange: [0, 0.5, 1, 1.5, 2],
+    outputRange: [0, 0.5, 1, 1, 0],
+  });
+
+  return (
+    <Animated.View
+      style={[
+        {
+          width: 100,
+          height: 100,
+          borderRadius: 50,
+          backgroundColor: "#22c55e",
+          alignItems: "center",
+          justifyContent: "center",
+          transform: [{ scale }],
+          opacity,
+        },
+      ]}
+    >
+      <CheckCircle size={50} color="#ffffff" />
+    </Animated.View>
+  );
+};
 
 export default function WalletScreen() {
+  const [fontsLoaded] = useFonts({
+    Inter: Inter_400Regular,
+    "Inter-Medium": Inter_500Medium,
+    "Inter-SemiBold": Inter_600SemiBold,
+    "Inter-Bold": Inter_700Bold,
+  });
+
+  if (!fontsLoaded) {
+    return (
+      <View className="flex-1 bg-slate-50 items-center justify-center">
+        <ActivityIndicator size="large" color="#c8ff00" />
+      </View>
+    );
+  }
+
   const financialProfile = useAppStore((state) => state.financialProfile);
   const transactions = useAppStore((state) => state.transactions);
   const user = useAppStore((state) => state.user);
 
-  // Use persisted savings from store
   const {
     balance: savingsBalance,
     transactions: savingsHistory,
     addDeposit,
+    getTotalSessions,
   } = useSavings();
 
   const [showSaveModal, setShowSaveModal] = useState(false);
@@ -50,15 +133,19 @@ export default function WalletScreen() {
   const [paymentMethod, setPaymentMethod] = useState<"card" | "bank" | "ussd">(
     "card",
   );
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showGamificationModal, setShowGamificationModal] = useState(false);
 
   const safeAmount = financialProfile?.safeMonthlyRepayment || 0;
   const monthlyIncome = user?.monthlyIncome || 0;
   const monthlyExpenses = user?.monthlyExpenses || 0;
+  const creditScore = financialProfile?.creditScore || 0;
+  const creditTier = getCreditTier(creditScore);
 
-  // Suggested saving: 10% of stated income (simple and stable)
   const suggestedSaving = Math.floor(monthlyIncome * 0.1);
+  // Users should NOT save more than their safe monthly repayment amount
+  const maxSavableAmount = safeAmount;
 
-  // Calculate totals from transactions
   const totalCredits = transactions
     .filter((t) => t.type === "credit")
     .reduce((sum, t) => sum + t.amount, 0);
@@ -83,59 +170,45 @@ export default function WalletScreen() {
 
   const handleSave = async () => {
     const amount = parseAmount(saveAmount);
+
     if (amount < 1000) {
-      Alert.alert("Minimum Amount", "Minimum saving amount is ₦1,000");
+      Alert.alert(
+        "Minimum Amount",
+        "Minimum saving amount is ₦1,000. Please enter a higher amount.",
+      );
+      return;
+    }
+
+    if (amount > maxSavableAmount) {
+      Alert.alert(
+        "Amount Too High",
+        `Your safe monthly limit is ${formatNaira(safeAmount)}. Please enter an amount within your limit.`,
+      );
       return;
     }
 
     setIsProcessing(true);
-
-    // Pitch-friendly flow:
-    // 1) Open a real Paystack demo checkout page in the browser
-    // 2) User returns and confirms payment
     const reference = `CG_${Date.now()}`;
 
-    try {
-      if (paymentMethod === "card") {
-        await Linking.openURL("https://paystack.com/demo/checkout");
-      }
+    await new Promise((resolve) => setTimeout(resolve, 2000));
 
-      if (paymentMethod === "bank") {
-        await Linking.openURL("https://paystack.com/demo/checkout");
-      }
-
-      if (paymentMethod === "ussd") {
-        await Linking.openURL("https://paystack.com/demo/checkout");
-      }
-    } catch {
-      // If opening the browser fails, we still allow user to proceed.
-    }
-
+    addDeposit(amount, reference);
+    setSaveAmount("");
     setIsProcessing(false);
+    setShowSaveModal(false);
+    setShowSuccessModal(true);
 
-    Alert.alert(
-      "Complete Payment",
-      `After completing checkout, tap “I’ve Paid”.\n\nAmount: ${formatNaira(amount)}\nReference: ${reference}`,
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "I've Paid",
-          onPress: () => {
-            addDeposit(amount, reference);
-            setSaveAmount("");
-            setShowSaveModal(false);
-            Alert.alert(
-              "Saved",
-              `${formatNaira(amount)} added to your savings.`,
-            );
-          },
-        },
-      ],
-    );
+    setTimeout(() => {
+      setShowSuccessModal(false);
+
+      // Calculate score increase: 1 point for every ₦1,000 saved (minimum 1 point)
+      const scoreIncrease = Math.max(1, Math.floor(amount / 1000));
+      setShowGamificationModal(true);
+    }, 1500);
   };
 
-  const openPaystackDemo = () => {
-    Linking.openURL("https://paystack.com/demo/checkout");
+  const closeGamification = () => {
+    setShowGamificationModal(false);
   };
 
   return (
@@ -145,14 +218,11 @@ export default function WalletScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 20 }}
       >
-        {/* Header */}
         <View className="px-5 pt-2 pb-4">
           <Text className="text-2xl font-bold text-slate-900">Wallet</Text>
         </View>
 
-        {/* Savings Card */}
         <View className="mx-5 bg-slate-900 rounded-3xl p-5 mb-5 overflow-hidden">
-          {/* Decorative */}
           <View className="absolute -top-8 -right-8 w-24 h-24 rounded-full bg-lime-400 opacity-20" />
 
           <View className="flex-row items-center mb-2">
@@ -176,7 +246,6 @@ export default function WalletScreen() {
           </TouchableOpacity>
         </View>
 
-        {/* Quick Stats */}
         <View className="flex-row mx-5 mb-5">
           <View className="flex-1 bg-white rounded-2xl p-4 mr-2 border border-slate-100">
             <View className="flex-row items-center mb-2">
@@ -212,7 +281,6 @@ export default function WalletScreen() {
           </View>
         </View>
 
-        {/* Savings Goal Card */}
         <View className="mx-5 bg-white rounded-2xl p-4 mb-5 border border-slate-100">
           <View className="flex-row items-center justify-between mb-3">
             <View className="flex-row items-center">
@@ -233,7 +301,6 @@ export default function WalletScreen() {
             </View>
           </View>
 
-          {/* Progress Bar */}
           <View className="h-2 bg-slate-100 rounded-full overflow-hidden mb-2">
             <View
               className="h-full bg-violet-500 rounded-full"
@@ -252,7 +319,6 @@ export default function WalletScreen() {
           </View>
         </View>
 
-        {/* Savings History */}
         <View className="mx-5 mb-5">
           <Text className="text-lg font-bold text-slate-900 mb-3">
             Savings History
@@ -310,8 +376,7 @@ export default function WalletScreen() {
           )}
         </View>
 
-        {/* Recent Transactions from SMS */}
-        <View className="mx-5 mb-5">
+        <View className="mx-5 mb-8">
           <Text className="text-lg font-bold text-slate-900 mb-3">
             SMS Transactions
           </Text>
@@ -374,26 +439,23 @@ export default function WalletScreen() {
           )}
         </View>
 
-        {/* Paystack Info */}
-        <View className="mx-5 mb-8 p-4 bg-blue-50 rounded-2xl border border-blue-100">
+        <View className="mx-5 mb-8 p-4 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-2xl">
           <View className="flex-row items-start">
-            <View className="w-8 h-8 bg-blue-500 rounded-lg items-center justify-center mr-3">
-              <CreditCard size={16} color="#fff" />
+            <View className="w-10 h-10 bg-white/20 rounded-lg items-center justify-center mr-3">
+              <Sparkles size={20} color="#ffffff" />
             </View>
             <View className="flex-1">
-              <Text className="text-blue-900 font-bold mb-1">
-                Powered by Paystack
+              <Text className="text-white font-bold mb-1">
+                Credit Score: {creditScore}
               </Text>
-              <Text className="text-blue-700 text-sm leading-5">
-                Your savings are secured with bank-level encryption. Deposit via
-                card, bank transfer, or USSD.
+              <Text className="text-white/80 text-sm leading-5">
+                {creditTier.name} tier • {creditTier.benefits[0]}
               </Text>
             </View>
           </View>
         </View>
       </ScrollView>
 
-      {/* Save Money Modal */}
       <Modal
         visible={showSaveModal}
         animationType="slide"
@@ -424,10 +486,9 @@ export default function WalletScreen() {
                 </TouchableOpacity>
               </View>
 
-              {/* Amount Input */}
-              <View className="mb-6">
+              <View className="mb-4">
                 <Text className="text-slate-500 text-sm mb-2">
-                  Amount to save
+                  Amount to save (max: {formatNaira(maxSavableAmount)})
                 </Text>
                 <View className="flex-row items-center bg-slate-100 rounded-xl px-4 py-3">
                   <Text className="text-slate-900 text-2xl font-bold mr-2">
@@ -444,34 +505,47 @@ export default function WalletScreen() {
                     }
                   />
                 </View>
+                <View className="flex-row justify-between mt-2">
+                  <Text className="text-slate-400 text-xs">
+                    Max: {formatNaira(maxSavableAmount)}
+                  </Text>
+                  <Text className="text-slate-400 text-xs">Min: ₦1,000</Text>
+                </View>
               </View>
 
-              {/* Quick Amount Buttons */}
-              <View className="flex-row mb-6">
-                {[5000, 10000, 20000, 50000].map((amount) => (
-                  <TouchableOpacity
-                    key={amount}
-                    onPress={() =>
-                      setSaveAmount(amount.toLocaleString("en-NG"))
-                    }
-                    className="flex-1 bg-slate-100 rounded-xl py-2 mx-1 items-center"
-                  >
-                    <Text className="text-slate-700 font-medium text-sm">
-                      {formatNaira(amount)}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
+              <View className="flex-row mb-4">
+                {[5000, 10000, 20000, 50000].map((amount) => {
+                  const isDisabled = amount > maxSavableAmount;
+                  return (
+                    <TouchableOpacity
+                      key={amount}
+                      onPress={() =>
+                        setSaveAmount(amount.toLocaleString("en-NG"))
+                      }
+                      disabled={isDisabled}
+                      className={`flex-1 rounded-xl py-2 mx-1 items-center ${
+                        isDisabled ? "bg-slate-100 opacity-50" : "bg-slate-100"
+                      }`}
+                    >
+                      <Text
+                        className={`text-sm font-medium ${
+                          isDisabled ? "text-slate-400" : "text-slate-700"
+                        }`}
+                      >
+                        {formatNaira(amount)}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
               </View>
 
-              {/* Suggested Amount */}
               <View className="bg-lime-50 rounded-xl p-3 mb-6">
                 <Text className="text-lime-800 text-sm">
-                  Suggested: Save {formatNaira(suggestedSaving)}/month to build
-                  your savings faster.
+                  Save {formatNaira(suggestedSaving)}/month to build your
+                  savings and boost your credit score.
                 </Text>
               </View>
 
-              {/* Payment Methods */}
               <Text className="text-slate-500 text-sm mb-3">
                 Payment method
               </Text>
@@ -525,24 +599,105 @@ export default function WalletScreen() {
                 </TouchableOpacity>
               </View>
 
-              {/* Save Button */}
               <TouchableOpacity
                 onPress={handleSave}
-                disabled={isProcessing}
-                className="bg-lime-400 rounded-xl py-4 items-center"
+                disabled={isProcessing || amountToSave < 1000}
+                className={`rounded-xl py-4 items-center ${
+                  isProcessing || amountToSave < 1000
+                    ? "bg-slate-300"
+                    : "bg-lime-400"
+                }`}
                 activeOpacity={0.8}
               >
-                <Text className="text-slate-900 font-bold text-lg">
-                  {isProcessing
-                    ? "Opening checkout…"
-                    : `Continue (${paymentMethod.toUpperCase()}) • ${amountToSave ? formatNaira(amountToSave) : "₦0"}`}
-                </Text>
+                {isProcessing ? (
+                  <View className="flex-row items-center">
+                    <ActivityIndicator size="small" color="#0f172a" />
+                    <Text className="text-slate-900 font-bold ml-2">
+                      Processing...
+                    </Text>
+                  </View>
+                ) : (
+                  <Text className="text-slate-900 font-bold text-lg">
+                    {`Pay ${amountToSave ? formatNaira(amountToSave) : "₦0"}`}
+                  </Text>
+                )}
               </TouchableOpacity>
 
               <View className="h-8" />
             </Pressable>
           </KeyboardAvoidingView>
         </Pressable>
+      </Modal>
+
+      <Modal
+        visible={showSuccessModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowSuccessModal(false)}
+      >
+        <View className="flex-1 bg-black/50 items-center justify-center">
+          <View className="items-center">
+            <SuccessAnimation visible={showSuccessModal} />
+            <Text className="text-slate-900 font-bold text-xl mt-6">
+              Payment Successful!
+            </Text>
+            <Text className="text-slate-500 text-center mt-2">
+              Your savings have been updated
+            </Text>
+          </View>
+        </View>
+      </Modal>
+
+      <Modal
+        visible={showGamificationModal}
+        transparent
+        animationType="fade"
+        onRequestClose={closeGamification}
+      >
+        <View className="flex-1 bg-black/60 items-center justify-center">
+          <View className="bg-white rounded-3xl p-6 w-80 items-center">
+            <View className="w-20 h-20 bg-lime-100 rounded-full items-center justify-center mb-4">
+              <TrendingUpIcon size={40} color="#65a30d" />
+            </View>
+
+            <Text className="text-lime-600 font-bold text-sm uppercase tracking-wide mb-2">
+              Credit Score Improved!
+            </Text>
+
+            <Text className="text-4xl font-bold text-slate-900">
+              +{Math.max(1, Math.floor(amountToSave / 1000))}
+            </Text>
+
+            <Text className="text-slate-500 text-center mt-2 mb-4">
+              Your consistent saving habits are building your financial
+              reputation. Keep it up!
+            </Text>
+
+            {getTotalSessions() > 1 && (
+              <View className="bg-slate-900 rounded-xl p-4 w-full mb-4">
+                <View className="flex-row items-center justify-center">
+                  <Flame size={18} color="#fbbf24" />
+                  <Text className="text-lime-400 font-bold text-center ml-2">
+                    {getTotalSessions()} savings sessions
+                  </Text>
+                </View>
+                <Text className="text-white/80 text-center text-sm mt-1">
+                  Building your streak! Keep saving.
+                </Text>
+              </View>
+            )}
+
+            <TouchableOpacity
+              onPress={closeGamification}
+              className="bg-slate-900 rounded-xl py-3 px-8 w-full"
+              activeOpacity={0.9}
+            >
+              <Text className="text-lime-400 font-bold text-center">
+                Continue
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
       </Modal>
     </SafeAreaView>
   );

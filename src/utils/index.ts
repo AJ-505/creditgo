@@ -597,3 +597,212 @@ export const generateId = (): string => {
 };
 
 export { formatNaira };
+
+/**
+ * Smart Institution Detection for Nigerian Universities and Organizations
+ * This function intelligently detects and verifies institutions from email domains
+ */
+export interface InstitutionInfo {
+  name: string;
+  type: "university" | "corporate" | "government" | "ngo" | "personal";
+  displayName: string;
+  isVerified: boolean;
+  logo?: string;
+}
+
+export const detectInstitutionFromEmail = (
+  email: string,
+): InstitutionInfo | null => {
+  const domain = email.split("@")[1]?.toLowerCase();
+
+  if (!domain) return null;
+
+  // Nigerian Universities with .edu.ng domains
+  const nigerianUniversities: Record<
+    string,
+    { name: string; displayName: string }
+  > = {
+    "pau.edu.ng": { name: "PAU", displayName: "Pan-Atlantic University" },
+    "unilag.edu.ng": { name: "UNILAG", displayName: "University of Lagos" },
+    "ui.edu.ng": { name: "UI", displayName: "University of Ibadan" },
+    "oau.edu.ng": { name: "OAU", displayName: "Obafemi Awolowo University" },
+    "uniabuja.edu.ng": { name: "ABSU", displayName: "Ahmadu Bello University" },
+    "lasu.edu.ng": { name: "LASU", displayName: "Lagos State University" },
+    "covenantuniversity.edu.ng": {
+      name: "CU",
+      displayName: "Covenant University",
+    },
+    "bowen.edu.ng": { name: "BOWEN", displayName: "Bowen University" },
+    "babcock.edu.ng": { name: "BU", displayName: "Babcock University" },
+    "redeemers.edu.ng": { name: "RUN", displayName: "Redeemer's University" },
+    "ntnu.edu.ng": {
+      name: "NTNU",
+      displayName: "Nigerian Turkish Nile University",
+    },
+    "襄University.edu.ng": {
+      name: "IBU",
+      displayName: "Istanbul Bilgi University",
+    },
+    "afit.edu.ng": {
+      name: "AFIT",
+      displayName: "Air Force Institute of Technology",
+    },
+    "futminna.edu.ng": {
+      name: "FUTMINNA",
+      displayName: "Federal University of Technology, Minna",
+    },
+    "futo.edu.ng": {
+      name: "FUTO",
+      displayName: "Federal University of Technology, Owerri",
+    },
+    "futela.edu.ng": {
+      name: "FUTELECA",
+      displayName: "Federal University of Technology, Ekiti",
+    },
+    "fupre.edu.ng": {
+      name: "FUPRE",
+      displayName: "Federal University of Petroleum Resources",
+    },
+  };
+
+  // Check Nigerian universities first
+  if (nigerianUniversities[domain]) {
+    const uni = nigerianUniversities[domain];
+    return {
+      name: uni.name,
+      type: "university",
+      displayName: uni.displayName,
+      isVerified: true,
+    };
+  }
+
+  // Check if it's any .edu.ng domain (other universities)
+  if (domain.endsWith(".edu.ng")) {
+    const universityName = domain.replace(".edu.ng", "").toUpperCase();
+    return {
+      name: universityName,
+      type: "university",
+      displayName: universityName,
+      isVerified: true,
+    };
+  }
+
+  // Check corporate domains (already in VERIFIED_CORPORATE_DOMAINS)
+  const corporateDomains: Record<
+    string,
+    { name: string; displayName: string }
+  > = {
+    "mtn.ng": { name: "MTN", displayName: "MTN Nigeria" },
+    "mtn.com": { name: "MTN", displayName: "MTN Nigeria" },
+    "dangote.com": { name: "Dangote", displayName: "Dangote Group" },
+    "gtbank.com": { name: "GTBank", displayName: "Guaranty Trust Bank" },
+    "gtco.com": { name: "GTCO", displayName: "Guaranty Trust Holding Company" },
+    "accessbankplc.com": {
+      name: "Access Bank",
+      displayName: "Access Bank Plc",
+    },
+    "zenithbank.com": { name: "Zenith Bank", displayName: "Zenith Bank" },
+    "firstbanknigeria.com": {
+      name: "First Bank",
+      displayName: "First Bank of Nigeria",
+    },
+    "ubagroup.com": { name: "UBA", displayName: "United Bank for Africa" },
+    "sterlingbank.com": { name: "Sterling Bank", displayName: "Sterling Bank" },
+    "flutterwave.com": { name: "Flutterwave", displayName: "Flutterwave" },
+    "paystack.com": { name: "Paystack", displayName: "Paystack" },
+    "interswitch.com": { name: "Interswitch", displayName: "Interswitch" },
+    "andela.com": { name: "Andela", displayName: "Andela" },
+    "shell.com": { name: "Shell", displayName: "Shell Petroleum" },
+    "totalenergies.com": { name: "Total", displayName: "TotalEnergies" },
+    "chevron.com": { name: "Chevron", displayName: "Chevron" },
+    "microsoft.com": { name: "Microsoft", displayName: "Microsoft" },
+    "google.com": { name: "Google", displayName: "Google" },
+    "amazon.com": { name: "Amazon", displayName: "Amazon" },
+    "meta.com": { name: "Meta", displayName: "Meta" },
+  };
+
+  if (corporateDomains[domain]) {
+    const corp = corporateDomains[domain];
+    return {
+      name: corp.name,
+      type: "corporate",
+      displayName: corp.displayName,
+      isVerified: true,
+    };
+  }
+
+  // Check if domain is in the verified list
+  const isVerifiedCorporate = VERIFIED_CORPORATE_DOMAINS.some(
+    (d) => domain === d || domain.endsWith(`.${d}`),
+  );
+
+  if (isVerifiedCorporate) {
+    const companyName = domain.split(".")[0];
+    return {
+      name: companyName,
+      type: "corporate",
+      displayName: companyName.charAt(0).toUpperCase() + companyName.slice(1),
+      isVerified: true,
+    };
+  }
+
+  // Free email providers - not verified but we can still use the info
+  const freeProviders = [
+    "gmail.com",
+    "yahoo.com",
+    "hotmail.com",
+    "outlook.com",
+    "live.com",
+  ];
+
+  if (freeProviders.includes(domain)) {
+    return {
+      name: "Personal",
+      type: "personal",
+      displayName: "Personal Email",
+      isVerified: false,
+    };
+  }
+
+  // Unknown domain - still return info but mark as not verified
+  const domainName = domain.split(".")[0];
+  return {
+    name: domainName,
+    type: "corporate",
+    displayName: domainName.charAt(0).toUpperCase() + domainName.slice(1),
+    isVerified: false,
+  };
+};
+
+/**
+ * Enhanced corporate email validation with smart institution detection
+ */
+export const validateCorporateEmailWithDetection = (
+  email: string,
+): {
+  isValid: boolean;
+  company: string | null;
+  institution: InstitutionInfo | null;
+} => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  if (!emailRegex.test(email)) {
+    return { isValid: false, company: null, institution: null };
+  }
+
+  const institution = detectInstitutionFromEmail(email);
+
+  if (institution?.isVerified) {
+    return {
+      isValid: true,
+      company: institution.name,
+      institution,
+    };
+  }
+
+  return {
+    isValid: false,
+    company: null,
+    institution,
+  };
+};
