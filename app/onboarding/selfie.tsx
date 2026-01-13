@@ -6,6 +6,7 @@ import {
   ActivityIndicator,
   Image,
   StyleSheet,
+  Dimensions,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -21,6 +22,8 @@ import {
 import { Button, SimpleProgress } from "../../src/components";
 import { useAppStore } from "../../src/store";
 import { simulateBiometricVerification } from "../../src/utils";
+
+const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
 export default function SelfieScreen() {
   const router = useRouter();
@@ -101,16 +104,16 @@ export default function SelfieScreen() {
   ): Promise<string> => {
     try {
       // Calculate center crop (face area)
-      // Crop to center 60% of the image, focused on upper portion (where face typically is)
-      const cropWidthRatio = 0.6;
-      const cropHeightRatio = 0.5;
+      // Crop to center 70% width and 60% height, focused on upper-center portion
+      const cropWidthRatio = 0.7;
+      const cropHeightRatio = 0.6;
 
       const cropWidth = imageWidth * cropWidthRatio;
       const cropHeight = imageHeight * cropHeightRatio;
 
-      // Center horizontally, but bias towards top for face
+      // Center horizontally, bias towards top for face
       const cropX = (imageWidth - cropWidth) / 2;
-      const cropY = imageHeight * 0.1; // Start from 10% from top
+      const cropY = imageHeight * 0.08; // Start from 8% from top
 
       const manipulated = await ImageManipulator.manipulateAsync(
         uri,
@@ -144,7 +147,7 @@ export default function SelfieScreen() {
 
   // Manual capture
   const takePictureManually = () => {
-    if (countdown !== null) return; // Already counting down
+    if (countdown !== null) return;
     startCountdownCapture();
   };
 
@@ -259,15 +262,17 @@ export default function SelfieScreen() {
       {/* Camera or Photo Preview */}
       <View className="flex-1">
         {photo ? (
-          <View className="flex-1">
+          // Photo Preview - Fixed layout
+          <View style={styles.photoPreviewContainer}>
             <Image
               source={{ uri: photo }}
-              className="flex-1"
-              resizeMode="cover"
+              style={styles.photoPreview}
+              resizeMode="contain"
             />
 
+            {/* Verification Overlay */}
             {isVerifying && (
-              <View className="absolute inset-0 bg-black/70 items-center justify-center">
+              <View style={styles.overlay}>
                 <ActivityIndicator size="large" color="#22c55e" />
                 <Text className="text-white text-lg font-medium mt-4">
                   Verifying your identity...
@@ -278,8 +283,9 @@ export default function SelfieScreen() {
               </View>
             )}
 
+            {/* Verified Overlay */}
             {isVerified && !isVerifying && (
-              <View className="absolute inset-0 bg-black/70 items-center justify-center">
+              <View style={styles.overlay}>
                 <View className="w-24 h-24 bg-primary-500 rounded-full items-center justify-center mb-4">
                   <ShieldCheck size={48} color="#ffffff" />
                 </View>
@@ -298,45 +304,45 @@ export default function SelfieScreen() {
             )}
           </View>
         ) : (
-          <View className="flex-1">
+          // Camera View - Fixed to not use children
+          <View style={styles.cameraContainer}>
             <CameraView
               ref={cameraRef}
               style={StyleSheet.absoluteFill}
               facing={facing}
-            >
-              <View className="flex-1 items-center justify-center">
-                {/* Face guide oval */}
+            />
+
+            {/* Overlay elements - Positioned absolutely OUTSIDE CameraView */}
+            <View style={styles.cameraOverlay} pointerEvents="box-none">
+              {/* Face guide oval */}
+              <View style={styles.faceGuideContainer}>
                 <View style={styles.faceOval} />
-
-                {/* Countdown overlay */}
-                {countdown !== null && (
-                  <View className="absolute inset-0 bg-black/50 items-center justify-center">
-                    <View className="w-32 h-32 bg-white/20 rounded-full items-center justify-center">
-                      <Text className="text-white text-6xl font-bold">
-                        {countdown}
-                      </Text>
-                    </View>
-                  </View>
-                )}
-
-                {/* Capturing indicator */}
-                {isCapturing && (
-                  <View className="absolute inset-0 bg-black/50 items-center justify-center">
-                    <ActivityIndicator size="large" color="#fff" />
-                    <Text className="text-white text-lg mt-4">
-                      Capturing...
-                    </Text>
-                  </View>
-                )}
 
                 {/* Instructions */}
                 {countdown === null && !isCapturing && (
-                  <Text className="text-white text-center mt-6 px-8 text-base">
+                  <Text style={styles.instructionText}>
                     Position your face within the oval and tap the button
                   </Text>
                 )}
               </View>
-            </CameraView>
+
+              {/* Countdown overlay */}
+              {countdown !== null && (
+                <View style={styles.countdownOverlay}>
+                  <View style={styles.countdownCircle}>
+                    <Text style={styles.countdownText}>{countdown}</Text>
+                  </View>
+                </View>
+              )}
+
+              {/* Capturing indicator */}
+              {isCapturing && (
+                <View style={styles.countdownOverlay}>
+                  <ActivityIndicator size="large" color="#fff" />
+                  <Text style={styles.capturingText}>Capturing...</Text>
+                </View>
+              )}
+            </View>
           </View>
         )}
       </View>
@@ -347,14 +353,12 @@ export default function SelfieScreen() {
           <View className="items-center">
             <TouchableOpacity
               onPress={takePictureManually}
-              className="w-20 h-20 bg-white rounded-full items-center justify-center border-4 border-primary-500"
+              style={styles.captureButton}
               activeOpacity={0.8}
               disabled={isCapturing || countdown !== null}
             >
               {countdown !== null ? (
-                <Text className="text-primary-500 text-2xl font-bold">
-                  {countdown}
-                </Text>
+                <Text style={styles.captureButtonCountdown}>{countdown}</Text>
               ) : (
                 <Camera size={32} color="#22c55e" />
               )}
@@ -399,6 +403,25 @@ export default function SelfieScreen() {
 }
 
 const styles = StyleSheet.create({
+  // Camera container
+  cameraContainer: {
+    flex: 1,
+    position: "relative",
+  },
+
+  // Camera overlay - sits on top of camera but outside CameraView component
+  cameraOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 10,
+  },
+
+  // Face guide positioning
+  faceGuideContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
   faceOval: {
     width: 256,
     height: 320,
@@ -406,5 +429,79 @@ const styles = StyleSheet.create({
     borderRadius: 160,
     borderColor: "rgba(255,255,255,0.6)",
     backgroundColor: "transparent",
+  },
+
+  instructionText: {
+    color: "#ffffff",
+    textAlign: "center",
+    marginTop: 24,
+    paddingHorizontal: 32,
+    fontSize: 16,
+  },
+
+  // Countdown overlay
+  countdownOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  countdownCircle: {
+    width: 128,
+    height: 128,
+    borderRadius: 64,
+    backgroundColor: "rgba(255,255,255,0.2)",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  countdownText: {
+    color: "#ffffff",
+    fontSize: 64,
+    fontWeight: "bold",
+  },
+
+  capturingText: {
+    color: "#ffffff",
+    fontSize: 18,
+    marginTop: 16,
+  },
+
+  // Photo preview
+  photoPreviewContainer: {
+    flex: 1,
+    backgroundColor: "#000",
+    position: "relative",
+  },
+
+  photoPreview: {
+    flex: 1,
+    width: "100%",
+  },
+
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0,0,0,0.7)",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  // Capture button
+  captureButton: {
+    width: 80,
+    height: 80,
+    backgroundColor: "#ffffff",
+    borderRadius: 40,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 4,
+    borderColor: "#22c55e",
+  },
+
+  captureButtonCountdown: {
+    color: "#22c55e",
+    fontSize: 24,
+    fontWeight: "bold",
   },
 });
