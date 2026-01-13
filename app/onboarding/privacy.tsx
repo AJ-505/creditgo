@@ -1,17 +1,17 @@
-import React from 'react';
-import { View, Text, ScrollView } from 'react-native';
-import { useRouter } from 'expo-router';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { 
-  Shield, 
-  Lock, 
-  Eye, 
+import React from "react";
+import { View, Text, ScrollView } from "react-native";
+import { useRouter } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  Shield,
+  Lock,
+  Eye,
   MessageSquare,
   Check,
   X,
-  ArrowLeft
-} from 'lucide-react-native';
-import { Button } from '../../src/components';
+  ArrowLeft,
+} from "lucide-react-native";
+import { Button } from "../../src/components";
 
 export default function PrivacyScreen() {
   const router = useRouter();
@@ -19,23 +19,23 @@ export default function PrivacyScreen() {
   const whatWeDo = [
     {
       icon: MessageSquare,
-      text: 'Analyze bank transaction alerts to calculate your score',
+      text: "Analyze bank transaction alerts to calculate your score",
     },
     {
       icon: Shield,
-      text: 'Verify your identity with NIN for lender confidence',
+      text: "Verify your identity with NIN for lender confidence",
     },
     {
       icon: Lock,
-      text: 'Keep all your data encrypted and secure',
+      text: "Keep all your data encrypted and secure",
     },
   ];
 
   const whatWeDont = [
-    'Read your personal messages or chats',
-    'Access your OTPs or passwords',
-    'Share your data without consent',
-    'Sell your information to third parties',
+    "Read your personal messages or chats",
+    "Access your OTPs or passwords",
+    "Share your data without consent",
+    "Sell your information to third parties",
   ];
 
   return (
@@ -49,11 +49,13 @@ export default function PrivacyScreen() {
           icon={<ArrowLeft size={24} color="#334155" />}
           className="p-0 mr-4"
         />
-        <Text className="text-lg font-semibold text-dark-800">Your Privacy</Text>
+        <Text className="text-lg font-semibold text-dark-800">
+          Your Privacy
+        </Text>
       </View>
 
-      <ScrollView 
-        className="flex-1 px-6" 
+      <ScrollView
+        className="flex-1 px-6"
         contentContainerStyle={{ paddingBottom: 32 }}
         showsVerticalScrollIndicator={false}
       >
@@ -66,7 +68,8 @@ export default function PrivacyScreen() {
             We Respect Your Privacy
           </Text>
           <Text className="text-base text-dark-500 text-center mt-2">
-            Your trust is everything to us. Here's exactly how we handle your data.
+            Your trust is everything to us. Here's exactly how we handle your
+            data.
           </Text>
         </View>
 
@@ -93,7 +96,10 @@ export default function PrivacyScreen() {
             What We NEVER Do
           </Text>
           {whatWeDont.map((item, index) => (
-            <View key={index} className="flex-row items-center mb-2.5 last:mb-0">
+            <View
+              key={index}
+              className="flex-row items-center mb-2.5 last:mb-0"
+            >
               <View className="w-6 h-6 bg-red-100 rounded-full items-center justify-center mr-3">
                 <X size={12} color="#dc2626" />
               </View>
@@ -111,9 +117,10 @@ export default function PrivacyScreen() {
             </Text>
           </View>
           <Text className="text-sm text-dark-600 leading-relaxed">
-            We ONLY analyze transaction alerts from banks (e.g., "Credit Alert: NGN..."). 
-            We filter for financial keywords and ignore all other messages. 
-            Your personal SMS, WhatsApp, and OTPs are never read or stored.
+            We ONLY analyze transaction alerts from banks (e.g., "Credit Alert:
+            NGN..."). We filter for financial keywords and ignore all other
+            messages. Your personal SMS, WhatsApp, and OTPs are never read or
+            stored.
           </Text>
         </View>
       </ScrollView>
@@ -122,7 +129,7 @@ export default function PrivacyScreen() {
       <View className="px-6 pb-6 pt-4 bg-white border-t border-gray-100">
         <Button
           title="I Understand & Agree"
-          onPress={() => router.push('/onboarding/nin')}
+          onPress={() => router.push("/onboarding/nin")}
           icon={<Check size={20} color="#fff" />}
           iconPosition="left"
           size="lg"

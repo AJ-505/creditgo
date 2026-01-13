@@ -23,6 +23,7 @@ CreditGo solves the information gap for users and the default risk for lenders t
 ## 📱 Features (MVP)
 
 ### User App
+
 - ✅ Identity Verification (NIN + Selfie)
 - ✅ Employment Verification (Corporate Email / Freelance Profile)
 - ✅ "Safe Amount" Algorithm
@@ -31,6 +32,7 @@ CreditGo solves the information gap for users and the default risk for lenders t
 - ✅ One-click Applications
 
 ### Coming Soon
+
 - 🔜 SMS Transaction Analysis
 - 🔜 Save-to-Repay Wallet
 - 🔜 Repayment Reminders
@@ -110,10 +112,10 @@ creditgo/
 ```typescript
 // Core algorithm for calculating safe repayment limit
 const calculateSafeAmount = (monthlyIncome: number) => {
-  const estimatedExpenses = monthlyIncome * 0.5;  // 50% expenses
+  const estimatedExpenses = monthlyIncome * 0.5; // 50% expenses
   const disposableIncome = monthlyIncome - estimatedExpenses;
-  const safetyBuffer = disposableIncome * 0.3;   // 30% buffer
-  return disposableIncome - safetyBuffer;         // Safe Amount
+  const safetyBuffer = disposableIncome * 0.3; // 30% buffer
+  return disposableIncome - safetyBuffer; // Safe Amount
 };
 
 // Example: ₦300,000 income → ₦105,000 safe monthly repayment
@@ -123,14 +125,14 @@ const calculateSafeAmount = (monthlyIncome: number) => {
 
 We connect users to trusted Nigerian fintech partners:
 
-| Category | Partners |
-|----------|----------|
-| Devices | Easybuy, CDcare, Keza Africa |
-| Solar | M-KOPA, Sun King, Arnergy, Auxano |
-| Rent | Spleet Africa, Ule Homes, Sofri Sofri |
-| Education | NELFUND, Edubanc, Edupoint |
-| Health | MyItura |
-| Business | Sycamore, Carbon, Lendha, Salad Africa |
+| Category  | Partners                               |
+| --------- | -------------------------------------- |
+| Devices   | Easybuy, CDcare, Keza Africa           |
+| Solar     | M-KOPA, Sun King, Arnergy, Auxano      |
+| Rent      | Spleet Africa, Ule Homes, Sofri Sofri  |
+| Education | NELFUND, Edubanc, Edupoint             |
+| Health    | MyItura                                |
+| Business  | Sycamore, Carbon, Lendha, Salad Africa |
 
 ## 🧪 Demo Mode
 

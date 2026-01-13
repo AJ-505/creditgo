@@ -1,9 +1,16 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, ScrollView, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native';
-import { useRouter } from 'expo-router';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { 
-  Mail, 
+import React, { useState, useEffect, useCallback } from "react";
+import {
+  View,
+  Text,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
+  ActivityIndicator,
+} from "react-native";
+import { useRouter } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  Mail,
   Link as LinkIcon,
   ArrowLeft,
   ChevronRight,
@@ -11,85 +18,91 @@ import {
   AlertCircle,
   Building2,
   Globe,
-  Info
-} from 'lucide-react-native';
-import { Button, Input, SimpleProgress } from '../../src/components';
-import { useAppStore } from '../../src/store';
-import { validateCorporateEmail, validateFreelanceLink, validateEmailFormat } from '../../src/utils';
-import { useDebounce } from '../../src/hooks';
+  Info,
+} from "lucide-react-native";
+import { Button, Input, SimpleProgress } from "../../src/components";
+import { useAppStore } from "../../src/store";
+import {
+  validateCorporateEmail,
+  validateFreelanceLink,
+  validateEmailFormat,
+} from "../../src/utils";
+import { useDebounce } from "../../src/hooks";
 
 export default function EmploymentVerifyScreen() {
   const router = useRouter();
   const updateUser = useAppStore((state) => state.updateUser);
-  const updateVerificationStatus = useAppStore((state) => state.updateVerificationStatus);
+  const updateVerificationStatus = useAppStore(
+    (state) => state.updateVerificationStatus,
+  );
   const user = useAppStore((state) => state.user);
-  
+
   // Salaried employee fields
-  const [workEmail, setWorkEmail] = useState('');
-  const [emailError, setEmailError] = useState('');
+  const [workEmail, setWorkEmail] = useState("");
+  const [emailError, setEmailError] = useState("");
   const [isValidEmail, setIsValidEmail] = useState(false);
   const [isVerifyingEmail, setIsVerifyingEmail] = useState(false);
   const [emailVerified, setEmailVerified] = useState(false);
   const [verifiedCompany, setVerifiedCompany] = useState<string | null>(null);
   const [domainNotVerified, setDomainNotVerified] = useState(false);
-  
+
   // Debounced email for validation
   const debouncedEmail = useDebounce(workEmail, 400);
-  
+
   // Validate email format when debounced value changes
   useEffect(() => {
     if (!debouncedEmail) {
       setIsValidEmail(false);
-      setEmailError('');
+      setEmailError("");
       return;
     }
-    
+
     const result = validateEmailFormat(debouncedEmail);
     setIsValidEmail(result.isValid);
-    
+
     // Only show error if user has typed something and it's invalid
     if (!result.isValid && result.error && debouncedEmail.length > 0) {
       setEmailError(result.error);
     } else {
-      setEmailError('');
+      setEmailError("");
     }
   }, [debouncedEmail]);
-  
+
   // Freelancer fields
-  const [businessName, setBusinessName] = useState('');
-  const [profileLink, setProfileLink] = useState('');
-  const [linkError, setLinkError] = useState('');
+  const [businessName, setBusinessName] = useState("");
+  const [profileLink, setProfileLink] = useState("");
+  const [linkError, setLinkError] = useState("");
   const [isVerifyingLink, setIsVerifyingLink] = useState(false);
   const [linkVerified, setLinkVerified] = useState(false);
   const [verifiedPlatform, setVerifiedPlatform] = useState<string | null>(null);
 
-  const isSalaried = user?.employmentType === 'salaried';
-  const isFreelancer = user?.employmentType === 'freelancer';
-  const isBusiness = user?.employmentType === 'business';
+  const isSalaried = user?.employmentType === "salaried";
+  const isFreelancer = user?.employmentType === "freelancer";
+  const isBusiness = user?.employmentType === "business";
 
   const handleVerifyEmail = async () => {
     // First validate email format
     const formatResult = validateEmailFormat(workEmail);
     if (!formatResult.isValid) {
-      setEmailError(formatResult.error || 'Please enter a valid email address');
+      setEmailError(formatResult.error || "Please enter a valid email address");
       return;
     }
-    
-    setEmailError('');
+
+    setEmailError("");
     setIsVerifyingEmail(true);
     setDomainNotVerified(false);
-    
+
     // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+
     const result = validateCorporateEmail(workEmail);
-    
+
     if (result.isValid) {
       setEmailVerified(true);
       setVerifiedCompany(result.company);
-      updateUser({ 
+      updateUser({
         workEmail,
-        isEmploymentVerified: true 
+        isEmploymentVerified: true,
       });
       updateVerificationStatus({ employment: true });
     } else {
@@ -98,53 +111,55 @@ export default function EmploymentVerifyScreen() {
       setDomainNotVerified(true);
       updateUser({ workEmail });
     }
-    
+
     setIsVerifyingEmail(false);
   };
 
   const handleVerifyLink = async () => {
-    setLinkError('');
+    setLinkError("");
     setIsVerifyingLink(true);
-    
+
     // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+
     const result = validateFreelanceLink(profileLink);
-    
+
     if (result.isValid) {
       setLinkVerified(true);
       setVerifiedPlatform(result.platform);
-      updateUser({ 
+      updateUser({
         professionalProfileLink: profileLink,
         businessName: businessName || undefined,
-        isEmploymentVerified: true 
+        isEmploymentVerified: true,
       });
       updateVerificationStatus({ employment: true });
     } else {
-      setLinkError('Please provide a link from LinkedIn, Upwork, Fiverr, or similar platforms.');
+      setLinkError(
+        "Please provide a link from LinkedIn, Upwork, Fiverr, or similar platforms.",
+      );
     }
-    
+
     setIsVerifyingLink(false);
   };
 
   const handleContinue = () => {
     if (isBusiness) {
-      updateUser({ 
+      updateUser({
         businessName: businessName || undefined,
-        isEmploymentVerified: true 
+        isEmploymentVerified: true,
       });
       updateVerificationStatus({ employment: true });
     }
-    router.push('/onboarding/income');
+    router.push("/onboarding/income");
   };
 
   // Key fix: Allow continuation when email format is valid OR domain is verified
   // Salaried: valid email format is enough (domain verification is optional)
   // Freelancer: link must be verified
   // Business: always allowed to continue
-  const canContinue = 
-    (isSalaried && (isValidEmail || emailVerified)) || 
-    (isFreelancer && linkVerified) || 
+  const canContinue =
+    (isSalaried && (isValidEmail || emailVerified)) ||
+    (isFreelancer && linkVerified) ||
     isBusiness;
 
   return (
@@ -166,12 +181,12 @@ export default function EmploymentVerifyScreen() {
         <Text className="text-sm text-dark-500">Step 3 of 6</Text>
       </View>
 
-      <KeyboardAvoidingView 
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
         className="flex-1"
       >
-        <ScrollView 
-          className="flex-1 px-6" 
+        <ScrollView
+          className="flex-1 px-6"
           contentContainerStyle={{ paddingBottom: 32 }}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
@@ -179,14 +194,15 @@ export default function EmploymentVerifyScreen() {
           {/* Hero */}
           <View className="py-6">
             <Text className="text-2xl font-bold text-dark-800">
-              {isSalaried && 'Verify Your Employment'}
-              {isFreelancer && 'Verify Your Freelance Profile'}
-              {isBusiness && 'Tell Us About Your Business'}
+              {isSalaried && "Verify Your Employment"}
+              {isFreelancer && "Verify Your Freelance Profile"}
+              {isBusiness && "Tell Us About Your Business"}
             </Text>
             <Text className="text-base text-dark-500 mt-2">
-              {isSalaried && 'Use your work email to verify your employer.'}
-              {isFreelancer && 'Link your professional profile to verify your work.'}
-              {isBusiness && 'Provide your business details for verification.'}
+              {isSalaried && "Use your work email to verify your employer."}
+              {isFreelancer &&
+                "Link your professional profile to verify your work."}
+              {isBusiness && "Provide your business details for verification."}
             </Text>
           </View>
 
@@ -206,7 +222,18 @@ export default function EmploymentVerifyScreen() {
                 keyboardType="email-address"
                 autoCapitalize="none"
                 error={emailError}
-                icon={<Mail size={20} color={emailError ? "#ef4444" : isValidEmail ? "#16a34a" : "#64748b"} />}
+                icon={
+                  <Mail
+                    size={20}
+                    color={
+                      emailError
+                        ? "#ef4444"
+                        : isValidEmail
+                          ? "#16a34a"
+                          : "#64748b"
+                    }
+                  />
+                }
               />
 
               {emailVerified && verifiedCompany && (
@@ -235,7 +262,8 @@ export default function EmploymentVerifyScreen() {
                     </Text>
                     <Text className="text-blue-700 text-sm mt-1">
                       Your employer isn't in our verified list yet — no problem.
-                      We'll still calculate your Safe Amount from your income and spending.
+                      We'll still calculate your Safe Amount from your income
+                      and spending.
                     </Text>
                   </View>
                 </View>
@@ -243,7 +271,11 @@ export default function EmploymentVerifyScreen() {
 
               {!emailVerified && !domainNotVerified && (
                 <Button
-                  title={isVerifyingEmail ? 'Verifying...' : 'Verify Email (Optional)'}
+                  title={
+                    isVerifyingEmail
+                      ? "Verifying..."
+                      : "Verify Email (Optional)"
+                  }
                   onPress={handleVerifyEmail}
                   disabled={!isValidEmail || isVerifyingEmail}
                   loading={isVerifyingEmail}
@@ -260,7 +292,7 @@ export default function EmploymentVerifyScreen() {
                   </Text>
                 </View>
                 <Text className="text-xs text-dark-500">
-                  MTN, Dangote, GTBank, Access Bank, Flutterwave, Paystack, 
+                  MTN, Dangote, GTBank, Access Bank, Flutterwave, Paystack,
                   Andela, Shell, Chevron, and 200+ more.
                 </Text>
               </View>
@@ -284,7 +316,7 @@ export default function EmploymentVerifyScreen() {
                 value={profileLink}
                 onChangeText={(text) => {
                   setProfileLink(text);
-                  setLinkError('');
+                  setLinkError("");
                   setLinkVerified(false);
                 }}
                 keyboardType="url"
@@ -311,7 +343,7 @@ export default function EmploymentVerifyScreen() {
 
               {!linkVerified && (
                 <Button
-                  title={isVerifyingLink ? 'Verifying...' : 'Verify Profile'}
+                  title={isVerifyingLink ? "Verifying..." : "Verify Profile"}
                   onPress={handleVerifyLink}
                   disabled={!profileLink || isVerifyingLink}
                   loading={isVerifyingLink}
@@ -328,8 +360,8 @@ export default function EmploymentVerifyScreen() {
                   </Text>
                 </View>
                 <Text className="text-xs text-dark-500">
-                  LinkedIn, Upwork, Fiverr, Toptal, Freelancer, GitHub, 
-                  Behance, Dribbble, and more.
+                  LinkedIn, Upwork, Fiverr, Toptal, Freelancer, GitHub, Behance,
+                  Dribbble, and more.
                 </Text>
               </View>
             </View>
@@ -348,14 +380,18 @@ export default function EmploymentVerifyScreen() {
 
               <View className="bg-yellow-50 p-4 rounded-xl mt-4">
                 <View className="flex-row items-start">
-                  <AlertCircle size={20} color="#f59e0b" style={{ marginTop: 2 }} />
+                  <AlertCircle
+                    size={20}
+                    color="#f59e0b"
+                    style={{ marginTop: 2 }}
+                  />
                   <View className="ml-3 flex-1">
                     <Text className="text-sm font-medium text-yellow-800 mb-1">
                       Business Verification
                     </Text>
                     <Text className="text-sm text-yellow-700">
-                      We'll verify your business through your transaction history. 
-                      Make sure to grant SMS access in the next step.
+                      We'll verify your business through your transaction
+                      history. Make sure to grant SMS access in the next step.
                     </Text>
                   </View>
                 </View>
@@ -370,7 +406,12 @@ export default function EmploymentVerifyScreen() {
             title="Continue"
             onPress={handleContinue}
             disabled={!canContinue}
-            icon={<ChevronRight size={20} color={canContinue ? "#fff" : "#94a3b8"} />}
+            icon={
+              <ChevronRight
+                size={20}
+                color={canContinue ? "#fff" : "#94a3b8"}
+              />
+            }
             iconPosition="right"
             size="lg"
           />

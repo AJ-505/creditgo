@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { View, TextInput, Text, TouchableOpacity } from 'react-native';
-import { Eye, EyeOff } from 'lucide-react-native';
+import React, { useState } from "react";
+import { View, TextInput, Text, TouchableOpacity } from "react-native";
+import { Eye, EyeOff } from "lucide-react-native";
 
 interface InputProps {
   label?: string;
@@ -10,9 +10,9 @@ interface InputProps {
   error?: string;
   hint?: string;
   secureTextEntry?: boolean;
-  keyboardType?: 'default' | 'email-address' | 'numeric' | 'phone-pad' | 'url';
-  autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';
-  autoComplete?: 'off' | 'email' | 'name' | 'password' | 'tel' | 'username';
+  keyboardType?: "default" | "email-address" | "numeric" | "phone-pad" | "url";
+  autoCapitalize?: "none" | "sentences" | "words" | "characters";
+  autoComplete?: "off" | "email" | "name" | "password" | "tel" | "username";
   maxLength?: number;
   multiline?: boolean;
   numberOfLines?: number;
@@ -30,16 +30,16 @@ export const Input: React.FC<InputProps> = ({
   error,
   hint,
   secureTextEntry = false,
-  keyboardType = 'default',
-  autoCapitalize = 'none',
-  autoComplete = 'off',
+  keyboardType = "default",
+  autoCapitalize = "none",
+  autoComplete = "off",
   maxLength,
   multiline = false,
   numberOfLines = 1,
   editable = true,
   icon,
-  className = '',
-  inputClassName = '',
+  className = "",
+  inputClassName = "",
 }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
@@ -49,22 +49,20 @@ export const Input: React.FC<InputProps> = ({
   return (
     <View className={`mb-4 ${className}`}>
       {label && (
-        <Text className="text-dark-700 font-medium mb-2 text-sm">
-          {label}
-        </Text>
+        <Text className="text-dark-700 font-medium mb-2 text-sm">{label}</Text>
       )}
       <View
         className={`
           flex-row items-center bg-white rounded-xl border-2 px-4
-          ${isFocused ? 'border-primary-500' : error ? 'border-red-500' : 'border-gray-200'}
-          ${!editable ? 'bg-gray-100' : ''}
+          ${isFocused ? "border-primary-500" : error ? "border-red-500" : "border-gray-200"}
+          ${!editable ? "bg-gray-100" : ""}
         `}
       >
         {icon && <View className="mr-3">{icon}</View>}
         <TextInput
           className={`
             flex-1 py-3.5 text-base text-dark-800
-            ${multiline ? 'min-h-[100px]' : ''}
+            ${multiline ? "min-h-[100px]" : ""}
             ${inputClassName}
           `}
           placeholder={placeholder}
@@ -81,7 +79,7 @@ export const Input: React.FC<InputProps> = ({
           editable={editable}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
-          textAlignVertical={multiline ? 'top' : 'center'}
+          textAlignVertical={multiline ? "top" : "center"}
         />
         {secureTextEntry && (
           <TouchableOpacity
@@ -96,9 +94,7 @@ export const Input: React.FC<InputProps> = ({
           </TouchableOpacity>
         )}
       </View>
-      {error && (
-        <Text className="text-red-500 text-sm mt-1">{error}</Text>
-      )}
+      {error && <Text className="text-red-500 text-sm mt-1">{error}</Text>}
       {hint && !error && (
         <Text className="text-dark-400 text-sm mt-1">{hint}</Text>
       )}

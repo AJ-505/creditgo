@@ -1,8 +1,8 @@
-import React from 'react';
-import { View, Text, Image, TouchableOpacity } from 'react-native';
-import { Check, Lock, ChevronRight } from 'lucide-react-native';
-import { FinancingOption } from '../types';
-import { formatNaira } from '../constants';
+import React from "react";
+import { View, Text, Image, TouchableOpacity } from "react-native";
+import { Check, Lock, ChevronRight } from "lucide-react-native";
+import { FinancingOption } from "../types";
+import { formatNaira } from "../constants";
 
 interface AssetCardProps {
   asset: FinancingOption;
@@ -23,7 +23,7 @@ export const AssetCard: React.FC<AssetCardProps> = ({
       disabled={!isAffordable}
       className={`
         bg-white rounded-2xl overflow-hidden mb-4 border-2
-        ${isAffordable ? 'border-transparent shadow-sm' : 'border-gray-200 opacity-75'}
+        ${isAffordable ? "border-transparent shadow-sm" : "border-gray-200 opacity-75"}
       `}
       activeOpacity={0.8}
     >
@@ -40,23 +40,27 @@ export const AssetCard: React.FC<AssetCardProps> = ({
             <Text className="text-gray-400">No Image</Text>
           </View>
         )}
-        
+
         {/* Affordability Badge */}
-        <View 
+        <View
           className={`
             absolute top-3 right-3 px-3 py-1 rounded-full flex-row items-center
-            ${isAffordable ? 'bg-primary-500' : 'bg-gray-500'}
+            ${isAffordable ? "bg-primary-500" : "bg-gray-500"}
           `}
         >
           {isAffordable ? (
             <>
               <Check size={14} color="#fff" />
-              <Text className="text-white text-xs font-medium ml-1">Affordable</Text>
+              <Text className="text-white text-xs font-medium ml-1">
+                Affordable
+              </Text>
             </>
           ) : (
             <>
               <Lock size={14} color="#fff" />
-              <Text className="text-white text-xs font-medium ml-1">Locked</Text>
+              <Text className="text-white text-xs font-medium ml-1">
+                Locked
+              </Text>
             </>
           )}
         </View>
@@ -88,10 +92,7 @@ export const AssetCard: React.FC<AssetCardProps> = ({
         {/* Features */}
         <View className="flex-row flex-wrap mt-3 gap-2">
           {asset.features.slice(0, 3).map((feature, index) => (
-            <View 
-              key={index} 
-              className="bg-primary-50 px-2 py-1 rounded-md"
-            >
+            <View key={index} className="bg-primary-50 px-2 py-1 rounded-md">
               <Text className="text-xs text-primary-700">{feature}</Text>
             </View>
           ))}
@@ -105,14 +106,16 @@ export const AssetCard: React.FC<AssetCardProps> = ({
               {formatNaira(asset.totalPrice)}
             </Text>
           </View>
-          <View 
+          <View
             className={`
               flex-row items-center px-4 py-2 rounded-lg
-              ${isAffordable ? 'bg-primary-500' : 'bg-gray-300'}
+              ${isAffordable ? "bg-primary-500" : "bg-gray-300"}
             `}
           >
-            <Text className={`font-medium mr-1 ${isAffordable ? 'text-white' : 'text-gray-500'}`}>
-              {isAffordable ? 'Apply Now' : 'Locked'}
+            <Text
+              className={`font-medium mr-1 ${isAffordable ? "text-white" : "text-gray-500"}`}
+            >
+              {isAffordable ? "Apply Now" : "Locked"}
             </Text>
             {isAffordable && <ChevronRight size={16} color="#fff" />}
           </View>

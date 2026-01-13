@@ -1,17 +1,17 @@
-import React, { useEffect } from 'react';
-import { View, Text, ScrollView } from 'react-native';
-import { useRouter } from 'expo-router';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { 
+import React, { useEffect } from "react";
+import { View, Text, ScrollView } from "react-native";
+import { useRouter } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
+import {
   PartyPopper,
   ChevronRight,
   ShieldCheck,
   Wallet,
-  TrendingUp
-} from 'lucide-react-native';
-import { Button, CreditScoreGauge, BadgeRow } from '../../src/components';
-import { useAppStore } from '../../src/store';
-import { formatNaira } from '../../src/utils';
+  TrendingUp,
+} from "lucide-react-native";
+import { Button, CreditScoreGauge, BadgeRow } from "../../src/components";
+import { useAppStore } from "../../src/store";
+import { formatNaira } from "../../src/utils";
 
 export default function CompleteScreen() {
   const router = useRouter();
@@ -21,7 +21,7 @@ export default function CompleteScreen() {
 
   const handleContinue = () => {
     completeOnboarding();
-    router.replace('/(tabs)');
+    router.replace("/(tabs)");
   };
 
   const safeAmount = financialProfile?.safeMonthlyRepayment || 0;
@@ -30,8 +30,8 @@ export default function CompleteScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      <ScrollView 
-        className="flex-1" 
+      <ScrollView
+        className="flex-1"
         contentContainerStyle={{ paddingBottom: 32 }}
         showsVerticalScrollIndicator={false}
       >
@@ -49,7 +49,10 @@ export default function CompleteScreen() {
         </View>
 
         {/* Credit Score Card */}
-        <View className="mx-6 bg-gradient-to-b from-primary-500 to-primary-600 rounded-2xl p-6 mb-6" style={{ backgroundColor: '#22c55e' }}>
+        <View
+          className="mx-6 bg-gradient-to-b from-primary-500 to-primary-600 rounded-2xl p-6 mb-6"
+          style={{ backgroundColor: "#22c55e" }}
+        >
           <Text className="text-white text-center font-medium mb-4">
             Your CreditGo Score
           </Text>
@@ -70,7 +73,8 @@ export default function CompleteScreen() {
             {formatNaira(safeAmount)}
           </Text>
           <Text className="text-sm text-accent-600 mt-2">
-            This is the maximum monthly repayment you can afford without financial stress.
+            This is the maximum monthly repayment you can afford without
+            financial stress.
           </Text>
         </View>
 
@@ -108,7 +112,7 @@ export default function CompleteScreen() {
             <View className="flex-row justify-between py-2 border-b border-gray-200">
               <Text className="text-sm text-dark-500">Employment</Text>
               <Text className="text-sm font-medium text-dark-700 capitalize">
-                {user?.employmentType || 'N/A'}
+                {user?.employmentType || "N/A"}
               </Text>
             </View>
             <View className="flex-row justify-between py-2">
@@ -129,8 +133,8 @@ export default function CompleteScreen() {
             </Text>
           </View>
           <Text className="text-sm text-secondary-700">
-            Browse financing options that match your budget. We'll only show 
-            you products you can actually afford!
+            Browse financing options that match your budget. We'll only show you
+            products you can actually afford!
           </Text>
         </View>
       </ScrollView>

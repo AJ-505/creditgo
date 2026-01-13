@@ -1,18 +1,18 @@
-import React from 'react';
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
-import { useRouter } from 'expo-router';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { 
-  Building2, 
-  Laptop, 
+import React from "react";
+import { View, Text, ScrollView, TouchableOpacity } from "react-native";
+import { useRouter } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  Building2,
+  Laptop,
   Briefcase,
   ArrowLeft,
-  ChevronRight
-} from 'lucide-react-native';
-import { Button, SimpleProgress } from '../../src/components';
-import { useAppStore } from '../../src/store';
+  ChevronRight,
+} from "lucide-react-native";
+import { Button, SimpleProgress } from "../../src/components";
+import { useAppStore } from "../../src/store";
 
-type EmploymentType = 'salaried' | 'freelancer' | 'business';
+type EmploymentType = "salaried" | "freelancer" | "business";
 
 interface EmploymentOption {
   type: EmploymentType;
@@ -25,28 +25,28 @@ interface EmploymentOption {
 
 const employmentOptions: EmploymentOption[] = [
   {
-    type: 'salaried',
-    title: 'Salaried Employee',
-    description: 'I work for a company and receive a monthly salary.',
+    type: "salaried",
+    title: "Salaried Employee",
+    description: "I work for a company and receive a monthly salary.",
     icon: Building2,
-    examples: ['Banks', 'Tech companies', 'Government', 'NGOs'],
-    color: '#3b82f6',
+    examples: ["Banks", "Tech companies", "Government", "NGOs"],
+    color: "#3b82f6",
   },
   {
-    type: 'freelancer',
-    title: 'Freelancer / Gig Worker',
-    description: 'I work independently and have multiple clients.',
+    type: "freelancer",
+    title: "Freelancer / Gig Worker",
+    description: "I work independently and have multiple clients.",
     icon: Laptop,
-    examples: ['Developers', 'Designers', 'Writers', 'Consultants'],
-    color: '#8b5cf6',
+    examples: ["Developers", "Designers", "Writers", "Consultants"],
+    color: "#8b5cf6",
   },
   {
-    type: 'business',
-    title: 'Business Owner / SME',
-    description: 'I run my own business or startup.',
+    type: "business",
+    title: "Business Owner / SME",
+    description: "I run my own business or startup.",
     icon: Briefcase,
-    examples: ['Shop owners', 'Service providers', 'Entrepreneurs'],
-    color: '#10b981',
+    examples: ["Shop owners", "Service providers", "Entrepreneurs"],
+    color: "#10b981",
   },
 ];
 
@@ -57,7 +57,7 @@ export default function EmploymentTypeScreen() {
 
   const handleSelect = (type: EmploymentType) => {
     updateUser({ employmentType: type });
-    router.push('/onboarding/employment-verify');
+    router.push("/onboarding/employment-verify");
   };
 
   return (
@@ -79,8 +79,8 @@ export default function EmploymentTypeScreen() {
         <Text className="text-sm text-dark-500">Step 3 of 6</Text>
       </View>
 
-      <ScrollView 
-        className="flex-1 px-6" 
+      <ScrollView
+        className="flex-1 px-6"
         contentContainerStyle={{ paddingBottom: 32 }}
         showsVerticalScrollIndicator={false}
       >
@@ -101,15 +101,16 @@ export default function EmploymentTypeScreen() {
             onPress={() => handleSelect(option.type)}
             className={`
               p-4 rounded-xl mb-4 border-2
-              ${user?.employmentType === option.type 
-                ? 'border-primary-500 bg-primary-50' 
-                : 'border-gray-200 bg-white'
+              ${
+                user?.employmentType === option.type
+                  ? "border-primary-500 bg-primary-50"
+                  : "border-gray-200 bg-white"
               }
             `}
             activeOpacity={0.7}
           >
             <View className="flex-row items-start">
-              <View 
+              <View
                 className="w-12 h-12 rounded-xl items-center justify-center mr-4"
                 style={{ backgroundColor: `${option.color}15` }}
               >
@@ -127,7 +128,7 @@ export default function EmploymentTypeScreen() {
                 </Text>
                 <View className="flex-row flex-wrap mt-3 gap-2">
                   {option.examples.map((example, idx) => (
-                    <View 
+                    <View
                       key={idx}
                       className="bg-gray-100 px-2 py-1 rounded-md"
                     >

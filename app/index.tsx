@@ -1,19 +1,21 @@
-import React, { useEffect } from 'react';
-import { View, Text, Image, ActivityIndicator } from 'react-native';
-import { useRouter } from 'expo-router';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useAppStore } from '../src/store';
+import React, { useEffect } from "react";
+import { View, Text, Image, ActivityIndicator } from "react-native";
+import { useRouter } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useAppStore } from "../src/store";
 
 export default function SplashScreen() {
   const router = useRouter();
-  const isOnboardingComplete = useAppStore((state) => state.isOnboardingComplete);
+  const isOnboardingComplete = useAppStore(
+    (state) => state.isOnboardingComplete,
+  );
 
   useEffect(() => {
     const timer = setTimeout(() => {
       if (isOnboardingComplete) {
-        router.replace('/(tabs)');
+        router.replace("/(tabs)");
       } else {
-        router.replace('/onboarding');
+        router.replace("/onboarding");
       }
     }, 2000);
 
@@ -27,7 +29,7 @@ export default function SplashScreen() {
         <View className="w-24 h-24 bg-white rounded-3xl items-center justify-center mb-6 shadow-lg">
           <Text className="text-4xl font-bold text-primary-500">C</Text>
         </View>
-        
+
         {/* App Name */}
         <Text className="text-4xl font-bold text-white mb-2">CreditGo</Text>
         <Text className="text-lg text-primary-100 text-center">

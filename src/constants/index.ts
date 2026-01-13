@@ -1,5 +1,5 @@
 // Re-export from partners file
-export { 
+export {
   formatNaira,
   COLORS,
   ASSET_CATEGORIES,
@@ -9,15 +9,15 @@ export {
   VERIFIED_FREELANCE_PLATFORMS,
   SMS_CREDIT_KEYWORDS,
   SMS_DEBIT_KEYWORDS,
-  DEMO_SMS_DATA
-} from './partners';
+  DEMO_SMS_DATA,
+} from "./partners";
 
 // Legacy exports for backward compatibility
-import { PARTNERS } from './partners';
-import { FinancingOption } from '../types';
+import { PARTNERS } from "./partners";
+import { FinancingOption } from "../types";
 
 // Map partners to financing options for components that still use them
-export const FINANCING_OPTIONS: FinancingOption[] = PARTNERS.map(partner => ({
+export const FINANCING_OPTIONS: FinancingOption[] = PARTNERS.map((partner) => ({
   id: partner.id,
   name: partner.name,
   description: partner.description,
@@ -29,5 +29,8 @@ export const FINANCING_OPTIONS: FinancingOption[] = PARTNERS.map(partner => ({
   interestRate: 0,
   imageUrl: partner.logo,
   isAffordable: true,
-  features: ['Flexible payments', `From ₦${(partner.minPayment || 0).toLocaleString('en-NG')}/mo`],
+  features: [
+    "Flexible payments",
+    `From ₦${(partner.minPayment || 0).toLocaleString("en-NG")}/mo`,
+  ],
 }));

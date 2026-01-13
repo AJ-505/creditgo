@@ -1,13 +1,13 @@
-import React, { useEffect, useRef } from 'react';
-import { View, Text, Animated } from 'react-native';
-import { useRouter } from 'expo-router';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { CheckCircle, ArrowRight, Bell, Clock } from 'lucide-react-native';
-import { Button } from '../src/components';
+import React, { useEffect, useRef } from "react";
+import { View, Text, Animated } from "react-native";
+import { useRouter } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { CheckCircle, ArrowRight, Bell, Clock } from "lucide-react-native";
+import { Button } from "../src/components";
 
 export default function ApplicationSuccessScreen() {
   const router = useRouter();
-  
+
   const scaleAnim = useRef(new Animated.Value(0)).current;
   const opacityAnim = useRef(new Animated.Value(0)).current;
 
@@ -28,11 +28,11 @@ export default function ApplicationSuccessScreen() {
   }, []);
 
   const handleGoHome = () => {
-    router.replace('/(tabs)');
+    router.replace("/(tabs)");
   };
 
   const handleViewApplications = () => {
-    router.replace('/(tabs)/wallet');
+    router.replace("/(tabs)/wallet");
   };
 
   return (
@@ -46,12 +46,16 @@ export default function ApplicationSuccessScreen() {
         </Animated.View>
 
         {/* Content */}
-        <Animated.View style={{ opacity: opacityAnim }} className="items-center">
+        <Animated.View
+          style={{ opacity: opacityAnim }}
+          className="items-center"
+        >
           <Text className="text-3xl font-bold text-dark-800 text-center mb-2">
             Application Sent! 🎉
           </Text>
           <Text className="text-base text-dark-500 text-center mb-8">
-            Your application has been sent to the financing partner. They'll review your CreditGo profile and get back to you.
+            Your application has been sent to the financing partner. They'll
+            review your CreditGo profile and get back to you.
           </Text>
 
           {/* What Happens Next */}
@@ -59,38 +63,45 @@ export default function ApplicationSuccessScreen() {
             <Text className="text-lg font-semibold text-dark-800 mb-4">
               What happens next?
             </Text>
-            
+
             <View className="space-y-4">
               <View className="flex-row items-start">
                 <View className="w-8 h-8 bg-primary-100 rounded-full items-center justify-center mr-3">
                   <Text className="text-primary-600 font-bold text-sm">1</Text>
                 </View>
                 <View className="flex-1">
-                  <Text className="text-dark-700 font-medium">Partner Review</Text>
+                  <Text className="text-dark-700 font-medium">
+                    Partner Review
+                  </Text>
                   <Text className="text-dark-500 text-sm">
-                    The financing partner will review your profile and credit score.
+                    The financing partner will review your profile and credit
+                    score.
                   </Text>
                 </View>
               </View>
-              
+
               <View className="flex-row items-start">
                 <View className="w-8 h-8 bg-primary-100 rounded-full items-center justify-center mr-3">
                   <Text className="text-primary-600 font-bold text-sm">2</Text>
                 </View>
                 <View className="flex-1">
-                  <Text className="text-dark-700 font-medium">Quick Decision</Text>
+                  <Text className="text-dark-700 font-medium">
+                    Quick Decision
+                  </Text>
                   <Text className="text-dark-500 text-sm">
                     Most partners respond within 24-48 hours.
                   </Text>
                 </View>
               </View>
-              
+
               <View className="flex-row items-start">
                 <View className="w-8 h-8 bg-primary-100 rounded-full items-center justify-center mr-3">
                   <Text className="text-primary-600 font-bold text-sm">3</Text>
                 </View>
                 <View className="flex-1">
-                  <Text className="text-dark-700 font-medium">Get Your Asset</Text>
+                  <Text className="text-dark-700 font-medium">
+                    Get Your Asset
+                  </Text>
                   <Text className="text-dark-500 text-sm">
                     Once approved, you'll receive your asset and start repaying!
                   </Text>
@@ -103,7 +114,8 @@ export default function ApplicationSuccessScreen() {
           <View className="w-full flex-row items-center bg-accent-50 rounded-xl p-4 mb-8">
             <Bell size={20} color="#3b82f6" />
             <Text className="flex-1 text-accent-700 text-sm ml-3">
-              We'll send you a notification when there's an update on your application.
+              We'll send you a notification when there's an update on your
+              application.
             </Text>
           </View>
         </Animated.View>

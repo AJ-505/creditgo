@@ -1,6 +1,6 @@
-declare module 'react-native-get-sms-android' {
+declare module "react-native-get-sms-android" {
   interface SmsFilter {
-    box?: 'inbox' | 'sent' | 'draft' | 'outbox' | 'failed' | 'queued' | '';
+    box?: "inbox" | "sent" | "draft" | "outbox" | "failed" | "queued" | "";
     minDate?: number;
     maxDate?: number;
     bodyRegex?: string;
@@ -31,7 +31,7 @@ declare module 'react-native-get-sms-android' {
     list(
       filter: string,
       fail: (error: string) => void,
-      success: (count: number, smsList: string) => void
+      success: (count: number, smsList: string) => void,
     ): void;
   }
 

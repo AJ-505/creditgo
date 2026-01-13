@@ -1,6 +1,6 @@
-import { Platform, PermissionsAndroid, Alert } from 'react-native';
-import { SMSTransaction } from '../types';
-import { SMS_CREDIT_KEYWORDS, SMS_DEBIT_KEYWORDS } from '../constants';
+import { Platform, PermissionsAndroid, Alert } from "react-native";
+import { SMSTransaction } from "../types";
+import { SMS_CREDIT_KEYWORDS, SMS_DEBIT_KEYWORDS } from "../constants";
 
 // Type for the SMS reading library
 interface SmsMessage {
@@ -12,7 +12,7 @@ interface SmsMessage {
 }
 
 interface SmsFilter {
-  box: 'inbox' | 'sent' | 'draft';
+  box: "inbox" | "sent" | "draft";
   maxCount?: number;
   indexFrom?: number;
 }
@@ -22,24 +22,24 @@ let SmsAndroid: {
   list: (
     filter: string,
     fail: (error: string) => void,
-    success: (count: number, smsList: string) => void
+    success: (count: number, smsList: string) => void,
   ) => void;
 } | null = null;
 
 // Try to import the SMS library - will fail gracefully in Expo Go
 const loadSmsLibrary = async (): Promise<boolean> => {
-  if (Platform.OS !== 'android') {
-    console.log('SMS reading only available on Android');
+  if (Platform.OS !== "android") {
+    console.log("SMS reading only available on Android");
     return false;
   }
 
   try {
     // Dynamic import to avoid crashes in Expo Go
-    const module = await import('react-native-get-sms-android');
+    const module = await import("react-native-get-sms-android");
     SmsAndroid = module.default;
     return true;
   } catch (error) {
-    console.log('SMS library not available (running in Expo Go?):', error);
+    console.log("SMS library not available (running in Expo Go?):", error);
     return false;
   }
 };
@@ -48,7 +48,7 @@ const loadSmsLibrary = async (): Promise<boolean> => {
  * Request SMS permission on Android
  */
 export const requestSmsPermission = async (): Promise<boolean> => {
-  if (Platform.OS !== 'android') {
+  if (Platform.OS !== "android") {
     return false;
   }
 
@@ -56,17 +56,17 @@ export const requestSmsPermission = async (): Promise<boolean> => {
     const granted = await PermissionsAndroid.request(
       PermissionsAndroid.PERMISSIONS.READ_SMS,
       {
-        title: 'SMS Permission Required',
+        title: "SMS Permission Required",
         message:
-          'CreditGo needs access to your SMS to analyze your bank transaction alerts and calculate your credit capacity. We ONLY read bank alerts - never personal messages.',
-        buttonNeutral: 'Ask Me Later',
-        buttonNegative: 'Cancel',
-        buttonPositive: 'Allow',
-      }
+          "CreditGo needs access to your SMS to analyze your bank transaction alerts and calculate your credit capacity. We ONLY read bank alerts - never personal messages.",
+        buttonNeutral: "Ask Me Later",
+        buttonNegative: "Cancel",
+        buttonPositive: "Allow",
+      },
     );
     return granted === PermissionsAndroid.RESULTS.GRANTED;
   } catch (err) {
-    console.warn('SMS permission error:', err);
+    console.warn("SMS permission error:", err);
     return false;
   }
 };
@@ -75,17 +75,17 @@ export const requestSmsPermission = async (): Promise<boolean> => {
  * Check if SMS permission is granted
  */
 export const hasSmsPermission = async (): Promise<boolean> => {
-  if (Platform.OS !== 'android') {
+  if (Platform.OS !== "android") {
     return false;
   }
 
   try {
     const result = await PermissionsAndroid.check(
-      PermissionsAndroid.PERMISSIONS.READ_SMS
+      PermissionsAndroid.PERMISSIONS.READ_SMS,
     );
     return result;
   } catch (err) {
-    console.warn('SMS permission check error:', err);
+    console.warn("SMS permission check error:", err);
     return false;
   }
 };
@@ -94,13 +94,13 @@ export const hasSmsPermission = async (): Promise<boolean> => {
  * Read SMS messages from the device
  */
 export const readSmsMessages = async (
-  maxCount: number = 100
+  maxCount: number = 100,
 ): Promise<SmsMessage[]> => {
   // First, try to load the SMS library
   const libraryLoaded = await loadSmsLibrary();
-  
+
   if (!libraryLoaded || !SmsAndroid) {
-    console.log('SMS library not available');
+    console.log("SMS library not available");
     return [];
   }
 
@@ -110,8 +110,8 @@ export const readSmsMessages = async (
     const granted = await requestSmsPermission();
     if (!granted) {
       Alert.alert(
-        'Permission Denied',
-        'Cannot read SMS without permission. Please enable SMS permission in settings.'
+        "Permission Denied",
+        "Cannot read SMS without permission. Please enable SMS permission in settings.",
       );
       return [];
     }
@@ -119,12 +119,12 @@ export const readSmsMessages = async (
 
   return new Promise((resolve) => {
     const filter: SmsFilter = {
-      box: 'inbox',
+      box: "inbox",
       maxCount: maxCount,
     };
 
     if (!SmsAndroid) {
-      console.log('SmsAndroid is not loaded');
+      console.log("SmsAndroid is not loaded");
       resolve([]);
       return;
     }
@@ -132,7 +132,7 @@ export const readSmsMessages = async (
     SmsAndroid.list(
       JSON.stringify(filter),
       (fail: string) => {
-        console.log('Failed to read SMS:', fail);
+        console.log("Failed to read SMS:", fail);
         resolve([]);
       },
       (_count: number, smsList: string) => {
@@ -140,10 +140,10 @@ export const readSmsMessages = async (
           const messages: SmsMessage[] = JSON.parse(smsList);
           resolve(messages);
         } catch (error) {
-          console.log('Failed to parse SMS list:', error);
+          console.log("Failed to parse SMS list:", error);
           resolve([]);
         }
-      }
+      },
     );
   });
 };
@@ -153,50 +153,74 @@ export const readSmsMessages = async (
  */
 export const filterBankAlerts = (messages: SmsMessage[]): SmsMessage[] => {
   const bankKeywords = [
-    'credit',
-    'debit',
-    'credited',
-    'debited',
-    'transfer',
-    'payment',
-    'ngn',
-    'balance',
-    'alert',
-    'transaction',
-    'withdrawal',
-    'deposit',
+    "credit",
+    "debit",
+    "credited",
+    "debited",
+    "transfer",
+    "payment",
+    "ngn",
+    "balance",
+    "alert",
+    "transaction",
+    "withdrawal",
+    "deposit",
   ];
 
   // Common Nigerian bank sender IDs (real-world patterns vary widely)
   const bankSenders = [
     // Traditional banks
-    'gtbank', 'gtb', 'gtbalert', 'gtworld',
-    'zenith', 'zenithbank', 'zenithalert',
-    'access', 'accessbank', 'accessalert',
-    'firstbank', 'firstbankng', 'firstbankalert', 'first',
-    'uba', 'ubabank',
-    'sterling', 'sterlingbank',
-    'fcmb',
-    'fidelity', 'fidelitysms',
-    'union', 'unionbank',
-    'wema', 'wemabank',
-    'polaris', 'polarisbank',
-    'stanbic', 'stanbicibtc',
-    'ecobank',
-    'keystone', 'keystonebank',
-    'heritage', 'heritagebank',
-    'jaiz', 'jaizbank',
-    'providus', 'providusbank',
-    'suntrust', 'suntrustbank',
-    'titan', 'titantrust',
+    "gtbank",
+    "gtb",
+    "gtbalert",
+    "gtworld",
+    "zenith",
+    "zenithbank",
+    "zenithalert",
+    "access",
+    "accessbank",
+    "accessalert",
+    "firstbank",
+    "firstbankng",
+    "firstbankalert",
+    "first",
+    "uba",
+    "ubabank",
+    "sterling",
+    "sterlingbank",
+    "fcmb",
+    "fidelity",
+    "fidelitysms",
+    "union",
+    "unionbank",
+    "wema",
+    "wemabank",
+    "polaris",
+    "polarisbank",
+    "stanbic",
+    "stanbicibtc",
+    "ecobank",
+    "keystone",
+    "keystonebank",
+    "heritage",
+    "heritagebank",
+    "jaiz",
+    "jaizbank",
+    "providus",
+    "providusbank",
+    "suntrust",
+    "suntrustbank",
+    "titan",
+    "titantrust",
 
     // Popular fintech / MMOs
-    'opay', 'opayng',
-    'palmpay',
-    'moniepoint',
-    'kuda',
-    'carbon',
-    'fairmoney',
+    "opay",
+    "opayng",
+    "palmpay",
+    "moniepoint",
+    "kuda",
+    "carbon",
+    "fairmoney",
   ];
 
   return messages.filter((sms) => {
@@ -204,13 +228,18 @@ export const filterBankAlerts = (messages: SmsMessage[]): SmsMessage[] => {
     const sender = sms.address.toLowerCase();
 
     // Check if sender looks like a bank (sender ID or contains 'bank')
-    const isFromBank = bankSenders.some((bank) => sender.includes(bank)) || sender.includes('bank');
+    const isFromBank =
+      bankSenders.some((bank) => sender.includes(bank)) ||
+      sender.includes("bank");
 
     // Check if message contains banking keywords
     const hasBankContent = bankKeywords.some((kw) => body.includes(kw));
 
     // Check if message contains an amount pattern
-    const hasAmount = /ngn|₦|\bnaira\b|\bamt\b|\bamount\b|\d{1,3}(,\d{3})*(\.\d{2})?/i.test(body);
+    const hasAmount =
+      /ngn|₦|\bnaira\b|\bamt\b|\bamount\b|\d{1,3}(,\d{3})*(\.\d{2})?/i.test(
+        body,
+      );
 
     return (isFromBank || hasBankContent) && hasAmount;
   });
@@ -220,7 +249,7 @@ export const filterBankAlerts = (messages: SmsMessage[]): SmsMessage[] => {
  * Parse bank SMS messages into transactions
  */
 export const parseBankSmsToTransactions = (
-  messages: SmsMessage[]
+  messages: SmsMessage[],
 ): SMSTransaction[] => {
   const transactions: SMSTransaction[] = [];
 
@@ -247,7 +276,7 @@ export const parseBankSmsToTransactions = (
     for (const pattern of amountPatterns) {
       const match = sms.body.match(pattern);
       if (match) {
-        amount = parseFloat(match[1].replace(/,/g, ''));
+        amount = parseFloat(match[1].replace(/,/g, ""));
         break;
       }
     }
@@ -255,7 +284,7 @@ export const parseBankSmsToTransactions = (
     if (amount <= 0) continue;
 
     // Extract description/reference
-    let description = 'Transaction';
+    let description = "Transaction";
     const refPatterns = [
       /ref[:\s]+([^\n.]+)/i,
       /reference[:\s]+([^\n.]+)/i,
@@ -275,15 +304,15 @@ export const parseBankSmsToTransactions = (
     // Detect source
     let source: string | undefined;
     const sourceKeywords: Record<string, string> = {
-      salary: 'Salary',
-      fiverr: 'Fiverr',
-      upwork: 'Upwork',
-      paystack: 'Paystack',
-      flutterwave: 'Flutterwave',
-      paypal: 'PayPal',
-      pos: 'POS',
-      atm: 'ATM',
-      transfer: 'Transfer',
+      salary: "Salary",
+      fiverr: "Fiverr",
+      upwork: "Upwork",
+      paystack: "Paystack",
+      flutterwave: "Flutterwave",
+      paypal: "PayPal",
+      pos: "POS",
+      atm: "ATM",
+      transfer: "Transfer",
     };
 
     for (const [keyword, sourceName] of Object.entries(sourceKeywords)) {
@@ -295,7 +324,7 @@ export const parseBankSmsToTransactions = (
 
     transactions.push({
       id: `sms_${sms._id}_${Date.now()}`,
-      type: isCredit ? 'credit' : 'debit',
+      type: isCredit ? "credit" : "debit",
       amount,
       description,
       date: new Date(parseInt(sms.date)),
@@ -325,13 +354,15 @@ export const analyzeRealSms = async (): Promise<{
         success: false,
         transactions: [],
         error:
-          'Could not read SMS. Make sure you are using a development build (not Expo Go) and have granted SMS permission.',
+          "Could not read SMS. Make sure you are using a development build (not Expo Go) and have granted SMS permission.",
       };
     }
 
     // Filter to bank alerts only
     const bankAlerts = filterBankAlerts(allMessages);
-    console.log(`Found ${bankAlerts.length} bank alerts out of ${allMessages.length} messages`);
+    console.log(
+      `Found ${bankAlerts.length} bank alerts out of ${allMessages.length} messages`,
+    );
 
     // Parse to transactions
     const transactions = parseBankSmsToTransactions(bankAlerts);
@@ -342,11 +373,12 @@ export const analyzeRealSms = async (): Promise<{
       transactions,
     };
   } catch (error) {
-    console.error('SMS analysis error:', error);
+    console.error("SMS analysis error:", error);
     return {
       success: false,
       transactions: [],
-      error: error instanceof Error ? error.message : 'Unknown error reading SMS',
+      error:
+        error instanceof Error ? error.message : "Unknown error reading SMS",
     };
   }
 };
@@ -356,7 +388,7 @@ export const analyzeRealSms = async (): Promise<{
  * (Only true in development builds, not Expo Go)
  */
 export const isSmsReadingAvailable = async (): Promise<boolean> => {
-  if (Platform.OS !== 'android') {
+  if (Platform.OS !== "android") {
     return false;
   }
   return await loadSmsLibrary();

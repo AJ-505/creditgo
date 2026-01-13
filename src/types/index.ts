@@ -15,7 +15,7 @@ export interface User {
   email?: string;
   firstName?: string;
   lastName?: string;
-  employmentType: 'salaried' | 'freelancer' | 'business' | null;
+  employmentType: "salaried" | "freelancer" | "business" | null;
   workEmail?: string;
   businessName?: string;
   professionalProfileLink?: string;
@@ -73,13 +73,13 @@ export interface FinancingOption {
   features: string[];
 }
 
-export type AssetCategory = 
-  | 'devices'
-  | 'solar'
-  | 'rent'
-  | 'education'
-  | 'health'
-  | 'business';
+export type AssetCategory =
+  | "devices"
+  | "solar"
+  | "rent"
+  | "education"
+  | "health"
+  | "business";
 
 export interface AssetCategoryInfo {
   id: AssetCategory;
@@ -92,7 +92,7 @@ export interface AssetCategoryInfo {
 // SMS Analysis Types
 export interface SMSTransaction {
   id: string;
-  type: 'credit' | 'debit';
+  type: "credit" | "debit";
   amount: number;
   description: string;
   date: Date;
@@ -114,7 +114,7 @@ export interface LoanApplication {
   id: string;
   userId: string;
   assetId: string;
-  status: 'pending' | 'approved' | 'rejected' | 'in_review';
+  status: "pending" | "approved" | "rejected" | "in_review";
   appliedAt: Date;
   creditScore: number;
   safeAmount: number;
@@ -136,23 +136,23 @@ export interface SavingsTransaction {
   id: string;
   goalId: string;
   amount: number;
-  type: 'deposit' | 'withdrawal';
+  type: "deposit" | "withdrawal";
   reference: string;
-  status: 'pending' | 'successful' | 'failed';
+  status: "pending" | "successful" | "failed";
   createdAt: Date;
 }
 
 // Onboarding Types
-export type OnboardingStep = 
-  | 'welcome'
-  | 'privacy'
-  | 'nin_input'
-  | 'selfie'
-  | 'employment_type'
-  | 'employment_verify'
-  | 'income_input'
-  | 'sms_permission'
-  | 'complete';
+export type OnboardingStep =
+  | "welcome"
+  | "privacy"
+  | "nin_input"
+  | "selfie"
+  | "employment_type"
+  | "employment_verify"
+  | "income_input"
+  | "sms_permission"
+  | "complete";
 
 // Partner/Lender Types
 export interface Partner {
@@ -174,7 +174,7 @@ export interface Lead {
   assetRequested: string;
   creditScore: number;
   safeAmount: number;
-  status: 'verified' | 'pending' | 'rejected';
+  status: "verified" | "pending" | "rejected";
   verifications: {
     identity: boolean;
     employment: boolean;

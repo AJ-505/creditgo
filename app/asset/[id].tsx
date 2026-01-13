@@ -1,8 +1,15 @@
-import React, { useState } from 'react';
-import { View, Text, ScrollView, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
-import { useRouter, useLocalSearchParams } from 'expo-router';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { 
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  ScrollView,
+  Image,
+  TouchableOpacity,
+  ActivityIndicator,
+} from "react-native";
+import { useRouter, useLocalSearchParams } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
+import {
   X,
   Check,
   Lock,
@@ -11,12 +18,12 @@ import {
   Calendar,
   Shield,
   ChevronRight,
-  ExternalLink
-} from 'lucide-react-native';
-import { useAppStore } from '../../src/store';
-import { FINANCING_OPTIONS, PARTNERS, formatNaira } from '../../src/constants';
-import { Button } from '../../src/components';
-import { generateId } from '../../src/utils';
+  ExternalLink,
+} from "lucide-react-native";
+import { useAppStore } from "../../src/store";
+import { FINANCING_OPTIONS, PARTNERS, formatNaira } from "../../src/constants";
+import { Button } from "../../src/components";
+import { generateId } from "../../src/utils";
 
 export default function AssetDetailScreen() {
   const router = useRouter();
@@ -24,37 +31,39 @@ export default function AssetDetailScreen() {
   const financialProfile = useAppStore((state) => state.financialProfile);
   const user = useAppStore((state) => state.user);
   const addApplication = useAppStore((state) => state.addApplication);
-  
+
   const [isApplying, setIsApplying] = useState(false);
 
-  const asset = FINANCING_OPTIONS.find(a => a.id === id);
-  const partner = asset ? PARTNERS.find(p => p.name === asset.provider) : null;
-  
+  const asset = FINANCING_OPTIONS.find((a) => a.id === id);
+  const partner = asset
+    ? PARTNERS.find((p) => p.name === asset.provider)
+    : null;
+
   const safeAmount = financialProfile?.safeMonthlyRepayment || 0;
   const creditScore = financialProfile?.creditScore || 0;
   const isAffordable = asset ? asset.monthlyPayment <= safeAmount : false;
 
   const handleApply = async () => {
     if (!asset || !isAffordable) return;
-    
+
     setIsApplying(true);
-    
+
     // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
     // Add application
     addApplication({
       id: generateId(),
-      userId: user?.id || 'demo-user',
+      userId: user?.id || "demo-user",
       assetId: asset.id,
-      status: 'pending',
+      status: "pending",
       appliedAt: new Date(),
       creditScore,
       safeAmount,
     });
-    
+
     setIsApplying(false);
-    router.push('/application-success');
+    router.push("/application-success");
   };
 
   if (!asset) {
@@ -81,9 +90,9 @@ export default function AssetDetailScreen() {
         >
           <X size={20} color="#334155" />
         </TouchableOpacity>
-        <View 
+        <View
           className={`px-3 py-1 rounded-full flex-row items-center ${
-            isAffordable ? 'bg-primary-100' : 'bg-gray-100'
+            isAffordable ? "bg-primary-100" : "bg-gray-100"
           }`}
         >
           {isAffordable ? (
@@ -131,9 +140,7 @@ export default function AssetDetailScreen() {
             <Text className="text-2xl font-bold text-dark-800">
               {asset.name}
             </Text>
-            <Text className="text-dark-500 mt-1">
-              via {asset.provider}
-            </Text>
+            <Text className="text-dark-500 mt-1">via {asset.provider}</Text>
           </View>
 
           {/* Price Cards */}
@@ -164,12 +171,14 @@ export default function AssetDetailScreen() {
             </Text>
             <View className="flex-row flex-wrap gap-2">
               {asset.features.map((feature, index) => (
-                <View 
+                <View
                   key={index}
                   className="bg-primary-50 px-3 py-2 rounded-lg flex-row items-center"
                 >
                   <Check size={14} color="#16a34a" />
-                  <Text className="text-primary-700 text-sm ml-1">{feature}</Text>
+                  <Text className="text-primary-700 text-sm ml-1">
+                    {feature}
+                  </Text>
                 </View>
               ))}
             </View>
@@ -195,8 +204,12 @@ export default function AssetDetailScreen() {
                   <Percent size={16} color="#64748b" />
                   <Text className="text-dark-600 ml-2">Interest Rate</Text>
                 </View>
-                <Text className={`font-medium ${asset.interestRate === 0 ? 'text-primary-600' : 'text-dark-800'}`}>
-                  {asset.interestRate === 0 ? 'No Interest!' : `${asset.interestRate}%`}
+                <Text
+                  className={`font-medium ${asset.interestRate === 0 ? "text-primary-600" : "text-dark-800"}`}
+                >
+                  {asset.interestRate === 0
+                    ? "No Interest!"
+                    : `${asset.interestRate}%`}
                 </Text>
               </View>
               <View className="flex-row items-center justify-between py-2">
@@ -235,34 +248,46 @@ export default function AssetDetailScreen() {
               <Text className="text-lg font-semibold text-dark-800">
                 Your Eligibility
               </Text>
-              <View className={`px-2 py-1 rounded-full ${isAffordable ? 'bg-primary-100' : 'bg-red-100'}`}>
-                <Text className={`text-xs font-medium ${isAffordable ? 'text-primary-700' : 'text-red-700'}`}>
-                  {isAffordable ? 'Eligible' : 'Not Eligible'}
+              <View
+                className={`px-2 py-1 rounded-full ${isAffordable ? "bg-primary-100" : "bg-red-100"}`}
+              >
+                <Text
+                  className={`text-xs font-medium ${isAffordable ? "text-primary-700" : "text-red-700"}`}
+                >
+                  {isAffordable ? "Eligible" : "Not Eligible"}
                 </Text>
               </View>
             </View>
-            
+
             <View className="space-y-2">
               <View className="flex-row justify-between">
                 <Text className="text-dark-500">Your Safe Amount</Text>
-                <Text className="text-dark-800 font-medium">{formatNaira(safeAmount)}/mo</Text>
+                <Text className="text-dark-800 font-medium">
+                  {formatNaira(safeAmount)}/mo
+                </Text>
               </View>
               <View className="flex-row justify-between">
                 <Text className="text-dark-500">Required Monthly</Text>
-                <Text className={`font-medium ${isAffordable ? 'text-primary-600' : 'text-red-600'}`}>
+                <Text
+                  className={`font-medium ${isAffordable ? "text-primary-600" : "text-red-600"}`}
+                >
                   {formatNaira(asset.monthlyPayment)}/mo
                 </Text>
               </View>
               <View className="flex-row justify-between">
                 <Text className="text-dark-500">Your Credit Score</Text>
-                <Text className="text-dark-800 font-medium">{creditScore}/100</Text>
+                <Text className="text-dark-800 font-medium">
+                  {creditScore}/100
+                </Text>
               </View>
             </View>
 
             {!isAffordable && (
               <View className="mt-3 pt-3 border-t border-gray-200">
                 <Text className="text-red-600 text-sm">
-                  This item requires {formatNaira(asset.monthlyPayment - safeAmount)} more than your safe limit.
+                  This item requires{" "}
+                  {formatNaira(asset.monthlyPayment - safeAmount)} more than
+                  your safe limit.
                 </Text>
               </View>
             )}
@@ -273,11 +298,21 @@ export default function AssetDetailScreen() {
       {/* Bottom CTA */}
       <View className="absolute bottom-0 left-0 right-0 px-6 pb-8 pt-4 bg-white border-t border-gray-100">
         <Button
-          title={isApplying ? 'Submitting Application...' : 'Apply with CreditGo Score'}
+          title={
+            isApplying
+              ? "Submitting Application..."
+              : "Apply with CreditGo Score"
+          }
           onPress={handleApply}
           disabled={!isAffordable || isApplying}
           loading={isApplying}
-          icon={isAffordable ? <ChevronRight size={20} color="#fff" /> : <Lock size={20} color="#9ca3af" />}
+          icon={
+            isAffordable ? (
+              <ChevronRight size={20} color="#fff" />
+            ) : (
+              <Lock size={20} color="#9ca3af" />
+            )
+          }
           iconPosition="right"
           size="lg"
         />

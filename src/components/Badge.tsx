@@ -1,60 +1,64 @@
-import React from 'react';
-import { View, Text } from 'react-native';
-import { 
-  ShieldCheck, 
-  Building2, 
-  UserCheck, 
-  TrendingUp, 
+import React from "react";
+import { View, Text } from "react-native";
+import {
+  ShieldCheck,
+  Building2,
+  UserCheck,
+  TrendingUp,
   Wallet,
   Coins,
-  LucideIcon
-} from 'lucide-react-native';
-import { CreditBadge } from '../types';
+  LucideIcon,
+} from "lucide-react-native";
+import { CreditBadge } from "../types";
 
 const iconMap: Record<string, LucideIcon> = {
-  'shield-check': ShieldCheck,
-  'building': Building2,
-  'user-check': UserCheck,
-  'trending-up': TrendingUp,
-  'wallet': Wallet,
-  'coins': Coins,
+  "shield-check": ShieldCheck,
+  building: Building2,
+  "user-check": UserCheck,
+  "trending-up": TrendingUp,
+  wallet: Wallet,
+  coins: Coins,
 };
 
 interface BadgeDisplayProps {
   badge: CreditBadge;
-  size?: 'sm' | 'md' | 'lg';
+  size?: "sm" | "md" | "lg";
 }
 
 export const BadgeDisplay: React.FC<BadgeDisplayProps> = ({
   badge,
-  size = 'md',
+  size = "md",
 }) => {
   const Icon = iconMap[badge.icon] || ShieldCheck;
-  
+
   const sizeStyles = {
     sm: {
-      container: 'p-2',
+      container: "p-2",
       icon: 16,
-      text: 'text-xs',
+      text: "text-xs",
     },
     md: {
-      container: 'p-3',
+      container: "p-3",
       icon: 20,
-      text: 'text-sm',
+      text: "text-sm",
     },
     lg: {
-      container: 'p-4',
+      container: "p-4",
       icon: 24,
-      text: 'text-base',
+      text: "text-base",
     },
   };
 
   return (
-    <View className={`bg-primary-50 rounded-xl ${sizeStyles[size].container} items-center`}>
+    <View
+      className={`bg-primary-50 rounded-xl ${sizeStyles[size].container} items-center`}
+    >
       <View className="bg-primary-100 rounded-full p-2 mb-2">
         <Icon size={sizeStyles[size].icon} color="#16a34a" />
       </View>
-      <Text className={`text-primary-700 font-medium text-center ${sizeStyles[size].text}`}>
+      <Text
+        className={`text-primary-700 font-medium text-center ${sizeStyles[size].text}`}
+      >
         {badge.name}
       </Text>
     </View>

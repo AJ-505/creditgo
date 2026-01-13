@@ -1,32 +1,40 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, TouchableOpacity, ActivityIndicator, Image } from 'react-native';
-import { useRouter } from 'expo-router';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
-import { 
-  Camera, 
+import React, { useState, useRef, useEffect } from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ActivityIndicator,
+  Image,
+} from "react-native";
+import { useRouter } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { CameraView, CameraType, useCameraPermissions } from "expo-camera";
+import {
+  Camera,
   ArrowLeft,
   RefreshCw,
   Check,
   ShieldCheck,
-  AlertCircle
-} from 'lucide-react-native';
-import { Button, SimpleProgress } from '../../src/components';
-import { useAppStore } from '../../src/store';
-import { simulateBiometricVerification } from '../../src/utils';
+  AlertCircle,
+} from "lucide-react-native";
+import { Button, SimpleProgress } from "../../src/components";
+import { useAppStore } from "../../src/store";
+import { simulateBiometricVerification } from "../../src/utils";
 
 export default function SelfieScreen() {
   const router = useRouter();
   const updateUser = useAppStore((state) => state.updateUser);
-  const updateVerificationStatus = useAppStore((state) => state.updateVerificationStatus);
+  const updateVerificationStatus = useAppStore(
+    (state) => state.updateVerificationStatus,
+  );
   const user = useAppStore((state) => state.user);
-  
+
   const [permission, requestPermission] = useCameraPermissions();
-  const [facing, setFacing] = useState<CameraType>('front');
+  const [facing, setFacing] = useState<CameraType>("front");
   const [photo, setPhoto] = useState<string | null>(null);
   const [isVerifying, setIsVerifying] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
-  
+
   const cameraRef = useRef<CameraView>(null);
 
   const takePicture = async () => {
@@ -40,7 +48,7 @@ export default function SelfieScreen() {
           setPhoto(result.uri);
         }
       } catch (error) {
-        console.log('Error taking picture:', error);
+        console.log("Error taking picture:", error);
       }
     }
   };
@@ -60,24 +68,24 @@ export default function SelfieScreen() {
 
   const verifyIdentity = async () => {
     setIsVerifying(true);
-    
+
     // Simulate biometric verification (2 second delay for demo)
     const success = await simulateBiometricVerification();
-    
+
     if (success) {
       setIsVerified(true);
-      updateUser({ 
+      updateUser({
         selfieUri: photo || undefined,
-        isIdentityVerified: true 
+        isIdentityVerified: true,
       });
       updateVerificationStatus({ identity: true });
     }
-    
+
     setIsVerifying(false);
   };
 
   const handleContinue = () => {
-    router.push('/onboarding/employment-type');
+    router.push("/onboarding/employment-type");
   };
 
   // Camera permission not granted
@@ -107,7 +115,7 @@ export default function SelfieScreen() {
             </View>
           </View>
         </View>
-        
+
         <View className="flex-1 items-center justify-center px-6">
           <View className="w-20 h-20 bg-yellow-100 rounded-full items-center justify-center mb-4">
             <Camera size={40} color="#f59e0b" />
@@ -116,7 +124,7 @@ export default function SelfieScreen() {
             Camera Access Required
           </Text>
           <Text className="text-base text-dark-500 text-center mb-6">
-            We need camera access to take a selfie for identity verification. 
+            We need camera access to take a selfie for identity verification.
             This helps lenders trust that you are who you say you are.
           </Text>
           <Button
@@ -153,12 +161,12 @@ export default function SelfieScreen() {
         {photo ? (
           // Photo Preview
           <View className="flex-1">
-            <Image 
-              source={{ uri: photo }} 
+            <Image
+              source={{ uri: photo }}
               className="flex-1"
               resizeMode="cover"
             />
-            
+
             {/* Verification Overlay */}
             {isVerifying && (
               <View className="absolute inset-0 bg-black/70 items-center justify-center">
@@ -171,7 +179,7 @@ export default function SelfieScreen() {
                 </Text>
               </View>
             )}
-            
+
             {/* Verified Overlay */}
             {isVerified && !isVerifying && (
               <View className="absolute inset-0 bg-black/70 items-center justify-center">
@@ -190,11 +198,7 @@ export default function SelfieScreen() {
         ) : (
           // Camera View
           <View className="flex-1">
-            <CameraView 
-              ref={cameraRef}
-              style={{ flex: 1 }} 
-              facing={facing}
-            >
+            <CameraView ref={cameraRef} style={{ flex: 1 }} facing={facing}>
               {/* Face Guide Overlay */}
               <View className="flex-1 items-center justify-center">
                 <View className="w-64 h-80 border-4 border-white/50 rounded-[100px]" />
@@ -239,7 +243,7 @@ export default function SelfieScreen() {
               className="flex-1"
             />
             <Button
-              title={isVerifying ? 'Verifying…' : 'Verifying…'}
+              title={isVerifying ? "Verifying…" : "Verifying…"}
               onPress={() => {}}
               loading={isVerifying}
               disabled={true}

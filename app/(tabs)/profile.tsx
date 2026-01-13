@@ -1,16 +1,16 @@
-import React, { useState } from 'react';
-import { 
-  View, 
-  Text, 
-  ScrollView, 
-  TouchableOpacity, 
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
   Alert,
   Modal,
-  TextInput
-} from 'react-native';
-import { useRouter } from 'expo-router';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { 
+  TextInput,
+} from "react-native";
+import { useRouter } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
+import {
   User,
   ShieldCheck,
   Building2,
@@ -21,13 +21,16 @@ import {
   ChevronRight,
   Settings,
   Edit3,
-  X
-} from 'lucide-react-native';
-import { useAppStore } from '../../src/store';
-import { formatNaira } from '../../src/constants';
-import { CreditScoreGauge } from '../../src/components';
-import { getCreditTier, calculateCreditLimit } from '../../src/utils/creditCalculator';
-import { buildFinancialProfile } from '../../src/utils';
+  X,
+} from "lucide-react-native";
+import { useAppStore } from "../../src/store";
+import { formatNaira } from "../../src/constants";
+import { CreditScoreGauge } from "../../src/components";
+import {
+  getCreditTier,
+  calculateCreditLimit,
+} from "../../src/utils/creditCalculator";
+import { buildFinancialProfile } from "../../src/utils";
 
 export default function ProfileScreen() {
   const router = useRouter();
@@ -39,7 +42,7 @@ export default function ProfileScreen() {
   const resetState = useAppStore((state) => state.resetState);
 
   const [showIncomeModal, setShowIncomeModal] = useState(false);
-  const [newIncome, setNewIncome] = useState('');
+  const [newIncome, setNewIncome] = useState("");
   const [showNotificationsModal, setShowNotificationsModal] = useState(false);
   const [nudgeSavings, setNudgeSavings] = useState(true);
   const [nudgeRepayments, setNudgeRepayments] = useState(true);
@@ -49,22 +52,25 @@ export default function ProfileScreen() {
   const badges = financialProfile?.badges || [];
 
   const formatIncomeInput = (text: string) => {
-    const cleaned = text.replace(/\D/g, '');
+    const cleaned = text.replace(/\D/g, "");
     if (cleaned) {
-      return parseInt(cleaned).toLocaleString('en-NG');
+      return parseInt(cleaned).toLocaleString("en-NG");
     }
-    return '';
+    return "";
   };
 
   const parseIncome = (formatted: string): number => {
-    return parseInt(formatted.replace(/\D/g, '')) || 0;
+    return parseInt(formatted.replace(/\D/g, "")) || 0;
   };
 
   const handleUpdateIncome = () => {
     const incomeValue = parseIncome(newIncome);
-    
+
     if (incomeValue < 50000) {
-      Alert.alert('Invalid Amount', 'Minimum income for our services is ₦50,000/month');
+      Alert.alert(
+        "Invalid Amount",
+        "Minimum income for our services is ₦50,000/month",
+      );
       return;
     }
 
@@ -77,34 +83,34 @@ export default function ProfileScreen() {
       user?.isIdentityVerified || false,
       user?.isEmploymentVerified || false,
       user?.employmentType || null,
-      undefined
+      undefined,
     );
     setFinancialProfile(profile);
 
     setShowIncomeModal(false);
-    setNewIncome('');
-    
+    setNewIncome("");
+
     Alert.alert(
-      '✅ Income Updated',
-      `Your monthly income has been updated to ${formatNaira(incomeValue)}.\n\nNew safe amount: ${formatNaira(profile.safeMonthlyRepayment)}/month`
+      "✅ Income Updated",
+      `Your monthly income has been updated to ${formatNaira(incomeValue)}.\n\nNew safe amount: ${formatNaira(profile.safeMonthlyRepayment)}/month`,
     );
   };
 
   const handleLogout = () => {
     Alert.alert(
-      'Reset App',
-      'This will clear all your data and restart the onboarding. Are you sure?',
+      "Reset App",
+      "This will clear all your data and restart the onboarding. Are you sure?",
       [
-        { text: 'Cancel', style: 'cancel' },
-        { 
-          text: 'Reset', 
-          style: 'destructive',
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Reset",
+          style: "destructive",
           onPress: () => {
             resetState();
-            router.replace('/');
-          }
+            router.replace("/");
+          },
         },
-      ]
+      ],
     );
   };
 
@@ -117,9 +123,7 @@ export default function ProfileScreen() {
       >
         {/* Header */}
         <View className="px-5 pt-2 pb-4">
-          <Text className="text-2xl font-bold text-slate-900">
-            Profile
-          </Text>
+          <Text className="text-2xl font-bold text-slate-900">Profile</Text>
         </View>
 
         {/* Profile Card */}
@@ -130,10 +134,10 @@ export default function ProfileScreen() {
             </View>
             <View className="ml-4 flex-1">
               <Text className="text-xl font-bold text-slate-900">
-                {user?.firstName || 'CreditGo User'}
+                {user?.firstName || "CreditGo User"}
               </Text>
               <Text className="text-slate-500 text-sm">
-                {user?.email || user?.workEmail || 'Member since 2026'}
+                {user?.email || user?.workEmail || "Member since 2026"}
               </Text>
             </View>
           </View>
@@ -142,7 +146,11 @@ export default function ProfileScreen() {
           <View className="flex-row items-center justify-between pt-4 border-t border-slate-100">
             <View className="items-center flex-1">
               <View className="w-12 h-12">
-                <CreditScoreGauge score={creditScore} size={48} strokeWidth={5} />
+                <CreditScoreGauge
+                  score={creditScore}
+                  size={48}
+                  strokeWidth={5}
+                />
               </View>
               <Text className="text-xs text-slate-500 mt-1">Score</Text>
             </View>
@@ -153,7 +161,7 @@ export default function ProfileScreen() {
               <Text className="text-xs text-slate-500">Safe Amount</Text>
             </View>
             <View className="items-center flex-1">
-              <Text 
+              <Text
                 className="text-lg font-bold"
                 style={{ color: creditTier.color }}
               >
@@ -169,12 +177,12 @@ export default function ProfileScreen() {
           <Text className="text-lg font-bold text-slate-900 mb-3">
             Income & Verification
           </Text>
-          
+
           <View className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
             {/* Monthly Income - Editable */}
-            <TouchableOpacity 
+            <TouchableOpacity
               onPress={() => {
-                setNewIncome(user?.monthlyIncome?.toString() || '');
+                setNewIncome(user?.monthlyIncome?.toString() || "");
                 setShowIncomeModal(true);
               }}
               className="flex-row items-center p-4 border-b border-slate-100"
@@ -183,7 +191,9 @@ export default function ProfileScreen() {
                 <Wallet size={20} color="#22c55e" />
               </View>
               <View className="flex-1 ml-3">
-                <Text className="text-slate-900 font-medium">Monthly Income</Text>
+                <Text className="text-slate-900 font-medium">
+                  Monthly Income
+                </Text>
                 <Text className="text-green-600 font-bold">
                   {formatNaira(user?.monthlyIncome || 0)}
                 </Text>
@@ -193,57 +203,81 @@ export default function ProfileScreen() {
                 <Text className="text-slate-500 text-sm ml-1">Update</Text>
               </View>
             </TouchableOpacity>
-            
+
             {/* Identity Verification */}
             <View className="flex-row items-center p-4 border-b border-slate-100">
-              <View className={`w-10 h-10 rounded-xl items-center justify-center ${
-                verificationStatus.identity ? 'bg-green-100' : 'bg-slate-100'
-              }`}>
-                <ShieldCheck 
-                  size={20} 
-                  color={verificationStatus.identity ? '#22c55e' : '#94a3b8'} 
+              <View
+                className={`w-10 h-10 rounded-xl items-center justify-center ${
+                  verificationStatus.identity ? "bg-green-100" : "bg-slate-100"
+                }`}
+              >
+                <ShieldCheck
+                  size={20}
+                  color={verificationStatus.identity ? "#22c55e" : "#94a3b8"}
                 />
               </View>
               <View className="flex-1 ml-3">
-                <Text className="text-slate-900 font-medium">Identity (NIN)</Text>
+                <Text className="text-slate-900 font-medium">
+                  Identity (NIN)
+                </Text>
                 <Text className="text-slate-500 text-sm">
-                  {verificationStatus.identity ? 'Verified' : 'Pending verification'}
+                  {verificationStatus.identity
+                    ? "Verified"
+                    : "Pending verification"}
                 </Text>
               </View>
-              <View className={`px-2 py-1 rounded-full ${
-                verificationStatus.identity ? 'bg-green-100' : 'bg-amber-100'
-              }`}>
-                <Text className={`text-xs font-medium ${
-                  verificationStatus.identity ? 'text-green-700' : 'text-amber-700'
-                }`}>
-                  {verificationStatus.identity ? '✓ Verified' : 'Pending'}
+              <View
+                className={`px-2 py-1 rounded-full ${
+                  verificationStatus.identity ? "bg-green-100" : "bg-amber-100"
+                }`}
+              >
+                <Text
+                  className={`text-xs font-medium ${
+                    verificationStatus.identity
+                      ? "text-green-700"
+                      : "text-amber-700"
+                  }`}
+                >
+                  {verificationStatus.identity ? "✓ Verified" : "Pending"}
                 </Text>
               </View>
             </View>
-            
+
             {/* Employment */}
             <View className="flex-row items-center p-4 border-b border-slate-100">
-              <View className={`w-10 h-10 rounded-xl items-center justify-center ${
-                verificationStatus.employment ? 'bg-green-100' : 'bg-slate-100'
-              }`}>
-                <Building2 
-                  size={20} 
-                  color={verificationStatus.employment ? '#22c55e' : '#94a3b8'} 
+              <View
+                className={`w-10 h-10 rounded-xl items-center justify-center ${
+                  verificationStatus.employment
+                    ? "bg-green-100"
+                    : "bg-slate-100"
+                }`}
+              >
+                <Building2
+                  size={20}
+                  color={verificationStatus.employment ? "#22c55e" : "#94a3b8"}
                 />
               </View>
               <View className="flex-1 ml-3">
                 <Text className="text-slate-900 font-medium">Employment</Text>
                 <Text className="text-slate-500 text-sm capitalize">
-                  {user?.employmentType || 'Not specified'}
+                  {user?.employmentType || "Not specified"}
                 </Text>
               </View>
-              <View className={`px-2 py-1 rounded-full ${
-                verificationStatus.employment ? 'bg-green-100' : 'bg-amber-100'
-              }`}>
-                <Text className={`text-xs font-medium ${
-                  verificationStatus.employment ? 'text-green-700' : 'text-amber-700'
-                }`}>
-                  {verificationStatus.employment ? '✓ Verified' : 'Pending'}
+              <View
+                className={`px-2 py-1 rounded-full ${
+                  verificationStatus.employment
+                    ? "bg-green-100"
+                    : "bg-amber-100"
+                }`}
+              >
+                <Text
+                  className={`text-xs font-medium ${
+                    verificationStatus.employment
+                      ? "text-green-700"
+                      : "text-amber-700"
+                  }`}
+                >
+                  {verificationStatus.employment ? "✓ Verified" : "Pending"}
                 </Text>
               </View>
             </View>
@@ -255,7 +289,7 @@ export default function ProfileScreen() {
           <Text className="text-lg font-bold text-slate-900 mb-3">
             Settings
           </Text>
-          
+
           <View className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
             <TouchableOpacity className="flex-row items-center p-4 border-b border-slate-100">
               <View className="w-10 h-10 bg-slate-100 rounded-xl items-center justify-center">
@@ -266,7 +300,7 @@ export default function ProfileScreen() {
               </Text>
               <ChevronRight size={20} color="#94a3b8" />
             </TouchableOpacity>
-            
+
             <TouchableOpacity
               onPress={() => setShowNotificationsModal(true)}
               className="flex-row items-center p-4 border-b border-slate-100"
@@ -279,7 +313,7 @@ export default function ProfileScreen() {
               </Text>
               <ChevronRight size={20} color="#94a3b8" />
             </TouchableOpacity>
-            
+
             <TouchableOpacity className="flex-row items-center p-4 border-b border-slate-100">
               <View className="w-10 h-10 bg-slate-100 rounded-xl items-center justify-center">
                 <HelpCircle size={20} color="#64748b" />
@@ -289,8 +323,8 @@ export default function ProfileScreen() {
               </Text>
               <ChevronRight size={20} color="#94a3b8" />
             </TouchableOpacity>
-            
-            <TouchableOpacity 
+
+            <TouchableOpacity
               onPress={handleLogout}
               className="flex-row items-center p-4"
             >
@@ -307,9 +341,9 @@ export default function ProfileScreen() {
         {/* Credit Tier Info */}
         <View className="mx-5 mb-8 p-4 bg-slate-900 rounded-2xl">
           <View className="flex-row items-center mb-3">
-            <View 
+            <View
               className="w-8 h-8 rounded-lg items-center justify-center mr-3"
-              style={{ backgroundColor: creditTier.color + '30' }}
+              style={{ backgroundColor: creditTier.color + "30" }}
             >
               <Text className="text-lg">🏆</Text>
             </View>
@@ -321,7 +355,7 @@ export default function ProfileScreen() {
           </View>
           <View className="flex-row flex-wrap">
             {creditTier.benefits.map((benefit, index) => (
-              <View 
+              <View
                 key={index}
                 className="bg-slate-800 rounded-lg px-3 py-1 mr-2 mb-2"
               >
@@ -342,7 +376,9 @@ export default function ProfileScreen() {
         <View className="flex-1 bg-black/50 justify-end">
           <View className="bg-white rounded-t-3xl p-5">
             <View className="flex-row items-center justify-between mb-5">
-              <Text className="text-xl font-bold text-slate-900">Notifications</Text>
+              <Text className="text-xl font-bold text-slate-900">
+                Notifications
+              </Text>
               <TouchableOpacity
                 onPress={() => setShowNotificationsModal(false)}
                 className="w-8 h-8 bg-slate-100 rounded-full items-center justify-center"
@@ -352,7 +388,8 @@ export default function ProfileScreen() {
             </View>
 
             <Text className="text-slate-500 text-sm mb-4">
-              Turn on in-app nudges (pitch-friendly). Push notifications can be added later.
+              Turn on in-app nudges (pitch-friendly). Push notifications can be
+              added later.
             </Text>
 
             <TouchableOpacity
@@ -361,11 +398,19 @@ export default function ProfileScreen() {
               activeOpacity={0.8}
             >
               <View>
-                <Text className="text-slate-900 font-semibold">Savings nudges</Text>
-                <Text className="text-slate-500 text-xs mt-1">Reminds you to save weekly</Text>
+                <Text className="text-slate-900 font-semibold">
+                  Savings nudges
+                </Text>
+                <Text className="text-slate-500 text-xs mt-1">
+                  Reminds you to save weekly
+                </Text>
               </View>
-              <View className={`w-12 h-6 rounded-full p-1 ${nudgeSavings ? 'bg-slate-900' : 'bg-slate-300'}`}>
-                <View className={`w-4 h-4 rounded-full bg-white ${nudgeSavings ? 'ml-auto' : ''}`} />
+              <View
+                className={`w-12 h-6 rounded-full p-1 ${nudgeSavings ? "bg-slate-900" : "bg-slate-300"}`}
+              >
+                <View
+                  className={`w-4 h-4 rounded-full bg-white ${nudgeSavings ? "ml-auto" : ""}`}
+                />
               </View>
             </TouchableOpacity>
 
@@ -375,18 +420,29 @@ export default function ProfileScreen() {
               activeOpacity={0.8}
             >
               <View>
-                <Text className="text-slate-900 font-semibold">Repayment reminders</Text>
-                <Text className="text-slate-500 text-xs mt-1">Nudges before your due date</Text>
+                <Text className="text-slate-900 font-semibold">
+                  Repayment reminders
+                </Text>
+                <Text className="text-slate-500 text-xs mt-1">
+                  Nudges before your due date
+                </Text>
               </View>
-              <View className={`w-12 h-6 rounded-full p-1 ${nudgeRepayments ? 'bg-slate-900' : 'bg-slate-300'}`}>
-                <View className={`w-4 h-4 rounded-full bg-white ${nudgeRepayments ? 'ml-auto' : ''}`} />
+              <View
+                className={`w-12 h-6 rounded-full p-1 ${nudgeRepayments ? "bg-slate-900" : "bg-slate-300"}`}
+              >
+                <View
+                  className={`w-4 h-4 rounded-full bg-white ${nudgeRepayments ? "ml-auto" : ""}`}
+                />
               </View>
             </TouchableOpacity>
 
             <TouchableOpacity
               onPress={() => {
                 setShowNotificationsModal(false);
-                Alert.alert('Saved', 'Your notification preferences have been saved.');
+                Alert.alert(
+                  "Saved",
+                  "Your notification preferences have been saved.",
+                );
               }}
               className="bg-lime-400 rounded-xl py-4 items-center mt-5"
               activeOpacity={0.85}
@@ -409,8 +465,10 @@ export default function ProfileScreen() {
         <View className="flex-1 bg-black/50 justify-end">
           <View className="bg-white rounded-t-3xl p-5">
             <View className="flex-row items-center justify-between mb-6">
-              <Text className="text-xl font-bold text-slate-900">Update Income</Text>
-              <TouchableOpacity 
+              <Text className="text-xl font-bold text-slate-900">
+                Update Income
+              </Text>
+              <TouchableOpacity
                 onPress={() => setShowIncomeModal(false)}
                 className="w-8 h-8 bg-slate-100 rounded-full items-center justify-center"
               >
@@ -419,15 +477,19 @@ export default function ProfileScreen() {
             </View>
 
             <Text className="text-slate-500 text-sm mb-4">
-              Update your monthly income to recalculate your safe repayment amount. 
-              This affects which financing options are available to you.
+              Update your monthly income to recalculate your safe repayment
+              amount. This affects which financing options are available to you.
             </Text>
 
             {/* Amount Input */}
             <View className="mb-6">
-              <Text className="text-slate-500 text-sm mb-2">New monthly income</Text>
+              <Text className="text-slate-500 text-sm mb-2">
+                New monthly income
+              </Text>
               <View className="flex-row items-center bg-slate-100 rounded-xl px-4 py-3">
-                <Text className="text-slate-900 text-2xl font-bold mr-2">₦</Text>
+                <Text className="text-slate-900 text-2xl font-bold mr-2">
+                  ₦
+                </Text>
                 <TextInput
                   className="flex-1 text-2xl font-bold text-slate-900"
                   placeholder="0"
@@ -446,10 +508,11 @@ export default function ProfileScreen() {
                   New Safe Amount Preview
                 </Text>
                 <Text className="text-green-700 text-sm">
-                  With {formatNaira(parseIncome(newIncome))}/month income, 
-                  your new safe repayment would be approximately{' '}
+                  With {formatNaira(parseIncome(newIncome))}/month income, your
+                  new safe repayment would be approximately{" "}
                   <Text className="font-bold">
-                    {formatNaira(Math.floor(parseIncome(newIncome) * 0.15))}-{formatNaira(Math.floor(parseIncome(newIncome) * 0.18))}
+                    {formatNaira(Math.floor(parseIncome(newIncome) * 0.15))}-
+                    {formatNaira(Math.floor(parseIncome(newIncome) * 0.18))}
                   </Text>
                   /month
                 </Text>

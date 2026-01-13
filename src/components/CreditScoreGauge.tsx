@@ -1,6 +1,6 @@
-import React from 'react';
-import { View, Text } from 'react-native';
-import Svg, { Circle } from 'react-native-svg';
+import React from "react";
+import { View, Text } from "react-native";
+import Svg, { Circle } from "react-native-svg";
 
 interface CreditScoreGaugeProps {
   score: number;
@@ -23,25 +23,25 @@ export const CreditScoreGauge: React.FC<CreditScoreGaugeProps> = ({
   const offset = circumference - progress;
 
   const getScoreColor = (score: number): string => {
-    if (score >= 85) return '#c8ff00'; // Lime - Platinum
-    if (score >= 70) return '#eab308'; // Gold
-    if (score >= 55) return '#94a3b8'; // Silver
-    return '#d97706'; // Bronze
+    if (score >= 85) return "#c8ff00"; // Lime - Platinum
+    if (score >= 70) return "#eab308"; // Gold
+    if (score >= 55) return "#94a3b8"; // Silver
+    return "#d97706"; // Bronze
   };
 
   const getScoreLabel = (score: number): string => {
-    if (score >= 85) return 'Platinum';
-    if (score >= 70) return 'Gold';
-    if (score >= 55) return 'Silver';
-    return 'Bronze';
+    if (score >= 85) return "Platinum";
+    if (score >= 70) return "Gold";
+    if (score >= 55) return "Silver";
+    return "Bronze";
   };
 
   const color = getScoreColor(score);
   const label = getScoreLabel(score);
 
   // Calculate font size based on gauge size
-  const fontSize = size < 80 ? 'text-lg' : size < 120 ? 'text-2xl' : 'text-4xl';
-  const labelSize = size < 80 ? 'text-[8px]' : 'text-xs';
+  const fontSize = size < 80 ? "text-lg" : size < 120 ? "text-2xl" : "text-4xl";
+  const labelSize = size < 80 ? "text-[8px]" : "text-xs";
 
   return (
     <View className="items-center justify-center">
@@ -72,7 +72,7 @@ export const CreditScoreGauge: React.FC<CreditScoreGaugeProps> = ({
           />
         </Svg>
         {/* Center Content */}
-        <View 
+        <View
           className="absolute inset-0 items-center justify-center"
           style={{ width: size, height: size }}
         >

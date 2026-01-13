@@ -1,40 +1,41 @@
-import React, { useState } from 'react';
-import { View, Text, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
-import { useRouter } from 'expo-router';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { 
-  CreditCard, 
-  ArrowLeft,
-  ChevronRight,
-  Info
-} from 'lucide-react-native';
-import { Button, Input, SimpleProgress } from '../../src/components';
-import { useAppStore } from '../../src/store';
-import { validateNIN, formatNIN } from '../../src/utils';
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
+import { useRouter } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { CreditCard, ArrowLeft, ChevronRight, Info } from "lucide-react-native";
+import { Button, Input, SimpleProgress } from "../../src/components";
+import { useAppStore } from "../../src/store";
+import { validateNIN, formatNIN } from "../../src/utils";
 
 export default function NINScreen() {
   const router = useRouter();
   const updateUser = useAppStore((state) => state.updateUser);
-  
-  const [nin, setNin] = useState('');
-  const [error, setError] = useState('');
+
+  const [nin, setNin] = useState("");
+  const [error, setError] = useState("");
 
   const handleNINChange = (text: string) => {
     // Only allow digits
-    const cleaned = text.replace(/\D/g, '');
+    const cleaned = text.replace(/\D/g, "");
     if (cleaned.length > 11) return;
     setNin(cleaned);
-    setError('');
+    setError("");
   };
 
   const handleContinue = () => {
     if (!validateNIN(nin)) {
-      setError('Please enter a valid 11-digit NIN');
+      setError("Please enter a valid 11-digit NIN");
       return;
     }
-    
+
     updateUser({ nin });
-    router.push('/onboarding/selfie');
+    router.push("/onboarding/selfie");
   };
 
   const isValid = validateNIN(nin);
@@ -58,12 +59,12 @@ export default function NINScreen() {
         <Text className="text-sm text-dark-500">Step 1 of 6</Text>
       </View>
 
-      <KeyboardAvoidingView 
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
         className="flex-1"
       >
-        <ScrollView 
-          className="flex-1 px-6" 
+        <ScrollView
+          className="flex-1 px-6"
           contentContainerStyle={{ paddingBottom: 32 }}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
@@ -77,7 +78,8 @@ export default function NINScreen() {
               Identity Verification
             </Text>
             <Text className="text-base text-dark-500 text-center mt-2">
-              Enter your National Identification Number (NIN) to verify your identity.
+              Enter your National Identification Number (NIN) to verify your
+              identity.
             </Text>
           </View>
 
@@ -91,7 +93,11 @@ export default function NINScreen() {
             // Formatted output is XXX-XXXX-XXXX => 13 chars
             maxLength={13}
             error={error}
-            hint={isValid ? '✓ Valid NIN format' : 'NIN is 11 digits (e.g., 123-4567-8901)'}
+            hint={
+              isValid
+                ? "✓ Valid NIN format"
+                : "NIN is 11 digits (e.g., 123-4567-8901)"
+            }
             icon={<CreditCard size={20} color="#64748b" />}
           />
 
@@ -104,9 +110,9 @@ export default function NINScreen() {
                   Why we need your NIN
                 </Text>
                 <Text className="text-sm text-blue-700 leading-relaxed">
-                  Your NIN helps lenders verify you're a real person. This increases 
-                  your chances of approval and protects against fraud. Your NIN is 
-                  encrypted and never shared without your consent.
+                  Your NIN helps lenders verify you're a real person. This
+                  increases your chances of approval and protects against fraud.
+                  Your NIN is encrypted and never shared without your consent.
                 </Text>
               </View>
             </View>

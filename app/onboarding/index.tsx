@@ -1,15 +1,17 @@
-import React from 'react';
-import { View, Text, ScrollView } from 'react-native';
-import { useRouter } from 'expo-router';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { 
-  Target, 
-  ShieldCheck, 
-  TrendingUp, 
+import React from "react";
+import { View, Text, ScrollView } from "react-native";
+import { useRouter } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  Target,
+  ShieldCheck,
+  TrendingUp,
   Sparkles,
-  ChevronRight 
-} from 'lucide-react-native';
-import { Button } from '../../src/components';
+  ChevronRight,
+} from "lucide-react-native";
+import { Button } from "../../src/components";
+
+// TODO: Fix warning about deprecated use of <SafeAreaView />
 
 export default function WelcomeScreen() {
   const router = useRouter();
@@ -17,34 +19,34 @@ export default function WelcomeScreen() {
   const features = [
     {
       icon: Target,
-      title: 'Discover Your Limit',
+      title: "Discover Your Limit",
       description: "Find out how much you can safely borrow without stress.",
-      color: '#3b82f6',
+      color: "#3b82f6",
     },
     {
       icon: ShieldCheck,
-      title: 'Build Credit History',
-      description: 'Every repayment improves your credit profile.',
-      color: '#22c55e',
+      title: "Build Credit History",
+      description: "Every repayment improves your credit profile.",
+      color: "#22c55e",
     },
     {
       icon: TrendingUp,
-      title: 'Access Real Financing',
-      description: 'Laptops, solar, rent, education - not predatory loans.',
-      color: '#f59e0b',
+      title: "Access Real Financing",
+      description: "Laptops, solar, rent, education - not predatory loans.",
+      color: "#f59e0b",
     },
     {
       icon: Sparkles,
-      title: 'Smart Matching',
+      title: "Smart Matching",
       description: "We'll connect you to financing you can actually afford.",
-      color: '#8b5cf6',
+      color: "#8b5cf6",
     },
   ];
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      <ScrollView 
-        className="flex-1" 
+      <ScrollView
+        className="flex-1"
         contentContainerStyle={{ paddingBottom: 32 }}
         showsVerticalScrollIndicator={false}
       >
@@ -56,27 +58,27 @@ export default function WelcomeScreen() {
             </View>
             <Text className="text-2xl font-bold text-dark-800">CreditGo</Text>
           </View>
-          
+
           <Text className="text-3xl font-bold text-dark-800 leading-tight">
-            Access Credit That{'\n'}
+            Access Credit That{"\n"}
             <Text className="text-primary-500">Builds You Up</Text>
           </Text>
-          
+
           <Text className="text-base text-dark-500 mt-4 leading-relaxed">
-            Nigeria's first credit intelligence platform. We help you discover 
-            what you can afford and connect you to productive financing - 
-            not toxic cash loans.
+            Nigeria's first credit intelligence platform. We help you discover
+            what you can afford and connect you to productive financing - not
+            toxic cash loans.
           </Text>
         </View>
 
         {/* Features Grid */}
         <View className="px-6">
           {features.map((feature, index) => (
-            <View 
+            <View
               key={index}
               className="flex-row items-start bg-gray-50 p-4 rounded-xl mb-3"
             >
-              <View 
+              <View
                 className="w-10 h-10 rounded-lg items-center justify-center mr-4"
                 style={{ backgroundColor: `${feature.color}15` }}
               >
@@ -106,7 +108,7 @@ export default function WelcomeScreen() {
       <View className="px-6 pb-6 pt-4 bg-white border-t border-gray-100">
         <Button
           title="Get Started"
-          onPress={() => router.push('/onboarding/privacy')}
+          onPress={() => router.push("/onboarding/privacy")}
           icon={<ChevronRight size={20} color="#fff" />}
           iconPosition="right"
           size="lg"

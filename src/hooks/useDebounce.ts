@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback } from "react";
 
 /**
  * Hook that returns a debounced version of a value
@@ -28,10 +28,13 @@ export function useDebounce<T>(value: T, delay: number = 300): T {
  */
 export function useDebouncedValidation<T>(
   validateFn: (value: T) => { isValid: boolean; error: string | null },
-  delay: number = 300
+  delay: number = 300,
 ) {
   const [value, setValue] = useState<T | null>(null);
-  const [result, setResult] = useState<{ isValid: boolean; error: string | null }>({
+  const [result, setResult] = useState<{
+    isValid: boolean;
+    error: string | null;
+  }>({
     isValid: false,
     error: null,
   });
@@ -55,7 +58,7 @@ export function useDebouncedValidation<T>(
         setIsValidating(false);
       }, delay);
     },
-    [validateFn, delay]
+    [validateFn, delay],
   );
 
   // Immediate validation (for submit actions)
@@ -65,13 +68,13 @@ export function useDebouncedValidation<T>(
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }
-      
+
       const validationResult = validateFn(newValue);
       setResult(validationResult);
       setIsValidating(false);
       return validationResult;
     },
-    [validateFn]
+    [validateFn],
   );
 
   // Cleanup on unmount

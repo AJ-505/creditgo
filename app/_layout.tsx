@@ -1,8 +1,8 @@
 import "../global.css";
-import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { Stack } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 export default function RootLayout() {
   return (
@@ -12,26 +12,26 @@ export default function RootLayout() {
         <Stack
           screenOptions={{
             headerShown: false,
-            contentStyle: { backgroundColor: '#f8fafc' },
-            animation: 'slide_from_right',
+            contentStyle: { backgroundColor: "#f8fafc" },
+            animation: "slide_from_right",
           }}
         >
           <Stack.Screen name="index" />
           <Stack.Screen name="onboarding" options={{ gestureEnabled: false }} />
           <Stack.Screen name="(tabs)" options={{ gestureEnabled: false }} />
-          <Stack.Screen 
-            name="asset/[id]" 
-            options={{ 
-              presentation: 'modal',
-              animation: 'slide_from_bottom',
-            }} 
+          <Stack.Screen
+            name="asset/[id]"
+            options={{
+              presentation: "modal",
+              animation: "slide_from_bottom",
+            }}
           />
-          <Stack.Screen 
-            name="application-success" 
-            options={{ 
-              presentation: 'modal',
+          <Stack.Screen
+            name="application-success"
+            options={{
+              presentation: "modal",
               gestureEnabled: false,
-            }} 
+            }}
           />
         </Stack>
       </SafeAreaProvider>

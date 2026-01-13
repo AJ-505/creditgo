@@ -1,43 +1,53 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, KeyboardAvoidingView, Platform, TouchableOpacity, Alert } from 'react-native';
-import { useRouter } from 'expo-router';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { 
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
+  TouchableOpacity,
+  Alert,
+} from "react-native";
+import { useRouter } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
+import {
   Wallet,
   Calendar,
   ArrowLeft,
   ChevronRight,
   Info,
   Smartphone,
-  CheckCircle2
-} from 'lucide-react-native';
-import { Button, Input, SimpleProgress } from '../../src/components';
-import { useAppStore } from '../../src/store';
-import { 
-  formatNaira, 
-  getDemoSMSData, 
-  parseSMSTransactions, 
+  CheckCircle2,
+} from "lucide-react-native";
+import { Button, Input, SimpleProgress } from "../../src/components";
+import { useAppStore } from "../../src/store";
+import {
+  formatNaira,
+  getDemoSMSData,
+  parseSMSTransactions,
   analyzeSMSTransactions,
-  buildFinancialProfile 
-} from '../../src/utils';
+  buildFinancialProfile,
+} from "../../src/utils";
 import {
   isSmsReadingAvailable,
   analyzeRealSms,
   requestSmsPermission,
-  hasSmsPermission
-} from '../../src/services/smsService';
+  hasSmsPermission,
+} from "../../src/services/smsService";
 
 export default function IncomeScreen() {
   const router = useRouter();
   const updateUser = useAppStore((state) => state.updateUser);
-  const updateVerificationStatus = useAppStore((state) => state.updateVerificationStatus);
+  const updateVerificationStatus = useAppStore(
+    (state) => state.updateVerificationStatus,
+  );
   const setFinancialProfile = useAppStore((state) => state.setFinancialProfile);
   const setTransactions = useAppStore((state) => state.setTransactions);
   const user = useAppStore((state) => state.user);
-  
-  const [income, setIncome] = useState('');
-  const [payDay, setPayDay] = useState('');
-  const [incomeError, setIncomeError] = useState('');
+
+  const [income, setIncome] = useState("");
+  const [payDay, setPayDay] = useState("");
+  const [incomeError, setIncomeError] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [smsAvailable, setSmsAvailable] = useState(false);
   const [smsPermissionGranted, setSmsPermissionGranted] = useState(false);
@@ -47,7 +57,7 @@ export default function IncomeScreen() {
     const checkSmsAvailability = async () => {
       const available = await isSmsReadingAvailable();
       setSmsAvailable(available);
-      
+
       if (available) {
         const hasPermission = await hasSmsPermission();
         setSmsPermissionGranted(hasPermission);
@@ -60,29 +70,32 @@ export default function IncomeScreen() {
     const granted = await requestSmsPermission();
     setSmsPermissionGranted(granted);
     if (granted) {
-      Alert.alert('Permission Granted', 'SMS access enabled. Your bank alerts will be analyzed for a more accurate credit score.');
+      Alert.alert(
+        "Permission Granted",
+        "SMS access enabled. Your bank alerts will be analyzed for a more accurate credit score.",
+      );
     }
   };
 
   const formatIncomeInput = (text: string) => {
     // Remove non-digits
-    const cleaned = text.replace(/\D/g, '');
+    const cleaned = text.replace(/\D/g, "");
     // Format with commas
     if (cleaned) {
-      return parseInt(cleaned).toLocaleString('en-NG');
+      return parseInt(cleaned).toLocaleString("en-NG");
     }
-    return '';
+    return "";
   };
 
   const parseIncomeValue = (formatted: string): number => {
-    return parseInt(formatted.replace(/\D/g, '')) || 0;
+    return parseInt(formatted.replace(/\D/g, "")) || 0;
   };
 
   const handleContinue = async () => {
     const incomeValue = parseIncomeValue(income);
-    
+
     if (incomeValue < 50000) {
-      setIncomeError('Minimum income for our services is ₦50,000/month');
+      setIncomeError("Minimum income for our services is ₦50,000/month");
       return;
     }
 
@@ -101,13 +114,14 @@ export default function IncomeScreen() {
       } else {
         // Fall back to manual if SMS reading fails
         Alert.alert(
-          'SMS Analysis',
-          result.error || 'Could not read SMS. Using your stated income for calculations.'
+          "SMS Analysis",
+          result.error ||
+            "Could not read SMS. Using your stated income for calculations.",
         );
       }
     } else {
       // No SMS available - just use stated income
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
     }
 
     // Build financial profile
@@ -116,22 +130,22 @@ export default function IncomeScreen() {
       user?.isIdentityVerified || false,
       user?.isEmploymentVerified || false,
       user?.employmentType || null,
-      smsAnalysis
+      smsAnalysis,
     );
 
     // Update state
-    updateUser({ 
+    updateUser({
       monthlyIncome: incomeValue,
       payDate: parseInt(payDay) || undefined,
     });
-    updateVerificationStatus({ 
+    updateVerificationStatus({
       income: true,
-      smsPermission: smsPermissionGranted
+      smsPermission: smsPermissionGranted,
     });
     setFinancialProfile(profile);
 
     setIsAnalyzing(false);
-    router.push('/onboarding/expenses');
+    router.push("/onboarding/expenses");
   };
 
   const incomeValue = parseIncomeValue(income);
@@ -156,12 +170,12 @@ export default function IncomeScreen() {
         <Text className="text-sm text-dark-500">Step 4 of 6</Text>
       </View>
 
-      <KeyboardAvoidingView 
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
         className="flex-1"
       >
-        <ScrollView 
-          className="flex-1 px-6" 
+        <ScrollView
+          className="flex-1 px-6"
           contentContainerStyle={{ paddingBottom: 32 }}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
@@ -183,7 +197,7 @@ export default function IncomeScreen() {
               disabled={smsPermissionGranted}
               className={`
                 flex-row items-center justify-between p-4 rounded-xl mb-6
-                ${smsPermissionGranted ? 'bg-primary-50 border-2 border-primary-200' : 'bg-accent-50 border-2 border-accent-200'}
+                ${smsPermissionGranted ? "bg-primary-50 border-2 border-primary-200" : "bg-accent-50 border-2 border-accent-200"}
               `}
               activeOpacity={0.7}
             >
@@ -194,13 +208,19 @@ export default function IncomeScreen() {
                   <Smartphone size={20} color="#3b82f6" />
                 )}
                 <View className="ml-3 flex-1">
-                  <Text className={`font-medium ${smsPermissionGranted ? 'text-primary-700' : 'text-accent-700'}`}>
-                    {smsPermissionGranted ? 'SMS Access Enabled ✓' : 'Enable SMS Analysis'}
+                  <Text
+                    className={`font-medium ${smsPermissionGranted ? "text-primary-700" : "text-accent-700"}`}
+                  >
+                    {smsPermissionGranted
+                      ? "SMS Access Enabled ✓"
+                      : "Enable SMS Analysis"}
                   </Text>
-                  <Text className={`text-xs ${smsPermissionGranted ? 'text-primary-600' : 'text-accent-600'}`}>
-                    {smsPermissionGranted 
-                      ? 'Your bank alerts will be analyzed automatically' 
-                      : 'Tap to allow reading bank SMS alerts for better accuracy'}
+                  <Text
+                    className={`text-xs ${smsPermissionGranted ? "text-primary-600" : "text-accent-600"}`}
+                  >
+                    {smsPermissionGranted
+                      ? "Your bank alerts will be analyzed automatically"
+                      : "Tap to allow reading bank SMS alerts for better accuracy"}
                   </Text>
                 </View>
               </View>
@@ -214,11 +234,15 @@ export default function IncomeScreen() {
             value={income}
             onChangeText={(text) => {
               setIncome(formatIncomeInput(text));
-              setIncomeError('');
+              setIncomeError("");
             }}
             keyboardType="numeric"
             error={incomeError}
-            hint={incomeValue > 0 ? `₦${income} per month` : 'Enter your average monthly earnings'}
+            hint={
+              incomeValue > 0
+                ? `₦${income} per month`
+                : "Enter your average monthly earnings"
+            }
             icon={<Wallet size={20} color="#64748b" />}
           />
 
@@ -228,7 +252,7 @@ export default function IncomeScreen() {
             placeholder="e.g., 25"
             value={payDay}
             onChangeText={(text) => {
-              const cleaned = text.replace(/\D/g, '');
+              const cleaned = text.replace(/\D/g, "");
               if (parseInt(cleaned) <= 31 || !cleaned) {
                 setPayDay(cleaned);
               }
@@ -248,8 +272,9 @@ export default function IncomeScreen() {
                   How we calculate your Safe Amount
                 </Text>
                 <Text className="text-sm text-blue-700 leading-relaxed">
-                  We analyze your income pattern and estimate expenses to find the 
-                  maximum amount you can repay monthly without financial stress.
+                  We analyze your income pattern and estimate expenses to find
+                  the maximum amount you can repay monthly without financial
+                  stress.
                 </Text>
               </View>
             </View>
@@ -277,12 +302,14 @@ export default function IncomeScreen() {
                 <View>
                   <Text className="text-xs text-slate-400">Safe Limit</Text>
                   <Text className="text-sm font-bold text-lime-400">
-                    {formatNaira(Math.floor(incomeValue * 0.15))}-{formatNaira(Math.floor(incomeValue * 0.18))}
+                    {formatNaira(Math.floor(incomeValue * 0.15))}-
+                    {formatNaira(Math.floor(incomeValue * 0.18))}
                   </Text>
                 </View>
               </View>
               <Text className="text-xs text-slate-400 mt-2">
-                💡 15-18% of income is the Nigerian fintech standard for safe repayment
+                💡 15-18% of income is the Nigerian fintech standard for safe
+                repayment
               </Text>
             </View>
           )}
@@ -291,7 +318,7 @@ export default function IncomeScreen() {
         {/* Bottom CTA */}
         <View className="px-6 pb-6 pt-4 bg-white border-t border-gray-100">
           <Button
-            title={isAnalyzing ? 'Analyzing...' : 'Calculate My Safe Amount'}
+            title={isAnalyzing ? "Analyzing..." : "Calculate My Safe Amount"}
             onPress={handleContinue}
             disabled={!isValid || isAnalyzing}
             loading={isAnalyzing}
