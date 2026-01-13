@@ -1,4 +1,13 @@
 // User Types
+export interface ExpenseBreakdown {
+  rent: number;
+  utilities: number;
+  internet: number;
+  transport: number;
+  food: number;
+  other: number;
+}
+
 export interface User {
   id: string;
   nin?: string;
@@ -11,6 +20,8 @@ export interface User {
   businessName?: string;
   professionalProfileLink?: string;
   monthlyIncome: number;
+  monthlyExpenses?: number;
+  expenseBreakdown?: ExpenseBreakdown;
   payDate?: number;
   isIdentityVerified: boolean;
   isEmploymentVerified: boolean;
@@ -31,6 +42,8 @@ export interface FinancialProfile {
   estimatedExpenses: number;
   disposableIncome: number;
   safeMonthlyRepayment: number;
+  maxMonthlyRepayment: number;
+  repaymentRatio: number;
   creditScore: number;
   badges: CreditBadge[];
 }

@@ -21,8 +21,7 @@ import {
   ChevronRight,
   Settings,
   Edit3,
-  X,
-  RefreshCw
+  X
 } from 'lucide-react-native';
 import { useAppStore } from '../../src/store';
 import { formatNaira } from '../../src/constants';
@@ -38,11 +37,12 @@ export default function ProfileScreen() {
   const updateUser = useAppStore((state) => state.updateUser);
   const setFinancialProfile = useAppStore((state) => state.setFinancialProfile);
   const resetState = useAppStore((state) => state.resetState);
-  const isDemoMode = useAppStore((state) => state.isDemoMode);
-  const toggleDemoMode = useAppStore((state) => state.toggleDemoMode);
 
   const [showIncomeModal, setShowIncomeModal] = useState(false);
   const [newIncome, setNewIncome] = useState('');
+  const [showNotificationsModal, setShowNotificationsModal] = useState(false);
+  const [nudgeSavings, setNudgeSavings] = useState(true);
+  const [nudgeRepayments, setNudgeRepayments] = useState(true);
 
   const creditScore = financialProfile?.creditScore || 0;
   const creditTier = getCreditTier(creditScore);
@@ -247,31 +247,6 @@ export default function ProfileScreen() {
                 </Text>
               </View>
             </View>
-
-            {/* Demo Mode Toggle */}
-            <TouchableOpacity 
-              onPress={toggleDemoMode}
-              className="flex-row items-center p-4"
-            >
-              <View className={`w-10 h-10 rounded-xl items-center justify-center ${
-                isDemoMode ? 'bg-violet-100' : 'bg-slate-100'
-              }`}>
-                <RefreshCw size={20} color={isDemoMode ? '#8b5cf6' : '#94a3b8'} />
-              </View>
-              <View className="flex-1 ml-3">
-                <Text className="text-slate-900 font-medium">Demo Mode</Text>
-                <Text className="text-slate-500 text-sm">
-                  {isDemoMode ? 'Using sample SMS data' : 'Using real SMS data'}
-                </Text>
-              </View>
-              <View className={`w-12 h-6 rounded-full p-1 ${
-                isDemoMode ? 'bg-violet-500' : 'bg-slate-300'
-              }`}>
-                <View className={`w-4 h-4 rounded-full bg-white ${
-                  isDemoMode ? 'ml-auto' : ''
-                }`} />
-              </View>
-            </TouchableOpacity>
           </View>
         </View>
 
@@ -292,7 +267,10 @@ export default function ProfileScreen() {
               <ChevronRight size={20} color="#94a3b8" />
             </TouchableOpacity>
             
-            <TouchableOpacity className="flex-row items-center p-4 border-b border-slate-100">
+            <TouchableOpacity
+              onPress={() => setShowNotificationsModal(true)}
+              className="flex-row items-center p-4 border-b border-slate-100"
+            >
               <View className="w-10 h-10 bg-slate-100 rounded-xl items-center justify-center">
                 <Bell size={20} color="#64748b" />
               </View>
@@ -353,6 +331,73 @@ export default function ProfileScreen() {
           </View>
         </View>
       </ScrollView>
+
+      {/* Notifications Modal (in-app nudges for pitch) */}
+      <Modal
+        visible={showNotificationsModal}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setShowNotificationsModal(false)}
+      >
+        <View className="flex-1 bg-black/50 justify-end">
+          <View className="bg-white rounded-t-3xl p-5">
+            <View className="flex-row items-center justify-between mb-5">
+              <Text className="text-xl font-bold text-slate-900">Notifications</Text>
+              <TouchableOpacity
+                onPress={() => setShowNotificationsModal(false)}
+                className="w-8 h-8 bg-slate-100 rounded-full items-center justify-center"
+              >
+                <X size={18} color="#64748b" />
+              </TouchableOpacity>
+            </View>
+
+            <Text className="text-slate-500 text-sm mb-4">
+              Turn on in-app nudges (pitch-friendly). Push notifications can be added later.
+            </Text>
+
+            <TouchableOpacity
+              onPress={() => setNudgeSavings((v) => !v)}
+              className="flex-row items-center justify-between p-4 bg-slate-50 rounded-2xl mb-3"
+              activeOpacity={0.8}
+            >
+              <View>
+                <Text className="text-slate-900 font-semibold">Savings nudges</Text>
+                <Text className="text-slate-500 text-xs mt-1">Reminds you to save weekly</Text>
+              </View>
+              <View className={`w-12 h-6 rounded-full p-1 ${nudgeSavings ? 'bg-slate-900' : 'bg-slate-300'}`}>
+                <View className={`w-4 h-4 rounded-full bg-white ${nudgeSavings ? 'ml-auto' : ''}`} />
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => setNudgeRepayments((v) => !v)}
+              className="flex-row items-center justify-between p-4 bg-slate-50 rounded-2xl"
+              activeOpacity={0.8}
+            >
+              <View>
+                <Text className="text-slate-900 font-semibold">Repayment reminders</Text>
+                <Text className="text-slate-500 text-xs mt-1">Nudges before your due date</Text>
+              </View>
+              <View className={`w-12 h-6 rounded-full p-1 ${nudgeRepayments ? 'bg-slate-900' : 'bg-slate-300'}`}>
+                <View className={`w-4 h-4 rounded-full bg-white ${nudgeRepayments ? 'ml-auto' : ''}`} />
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => {
+                setShowNotificationsModal(false);
+                Alert.alert('Saved', 'Your notification preferences have been saved.');
+              }}
+              className="bg-lime-400 rounded-xl py-4 items-center mt-5"
+              activeOpacity={0.85}
+            >
+              <Text className="text-slate-900 font-bold text-lg">Save</Text>
+            </TouchableOpacity>
+
+            <View className="h-8" />
+          </View>
+        </View>
+      </Modal>
 
       {/* Update Income Modal */}
       <Modal

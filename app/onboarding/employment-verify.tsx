@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, ScrollView, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -10,11 +10,13 @@ import {
   Check,
   AlertCircle,
   Building2,
-  Globe
+  Globe,
+  Info
 } from 'lucide-react-native';
 import { Button, Input, SimpleProgress } from '../../src/components';
 import { useAppStore } from '../../src/store';
-import { validateCorporateEmail, validateFreelanceLink } from '../../src/utils';
+import { validateCorporateEmail, validateFreelanceLink, validateEmailFormat } from '../../src/utils';
+import { useDebounce } from '../../src/hooks';
 
 export default function EmploymentVerifyScreen() {
   const router = useRouter();
@@ -25,9 +27,33 @@ export default function EmploymentVerifyScreen() {
   // Salaried employee fields
   const [workEmail, setWorkEmail] = useState('');
   const [emailError, setEmailError] = useState('');
+  const [isValidEmail, setIsValidEmail] = useState(false);
   const [isVerifyingEmail, setIsVerifyingEmail] = useState(false);
   const [emailVerified, setEmailVerified] = useState(false);
   const [verifiedCompany, setVerifiedCompany] = useState<string | null>(null);
+  const [domainNotVerified, setDomainNotVerified] = useState(false);
+  
+  // Debounced email for validation
+  const debouncedEmail = useDebounce(workEmail, 400);
+  
+  // Validate email format when debounced value changes
+  useEffect(() => {
+    if (!debouncedEmail) {
+      setIsValidEmail(false);
+      setEmailError('');
+      return;
+    }
+    
+    const result = validateEmailFormat(debouncedEmail);
+    setIsValidEmail(result.isValid);
+    
+    // Only show error if user has typed something and it's invalid
+    if (!result.isValid && result.error && debouncedEmail.length > 0) {
+      setEmailError(result.error);
+    } else {
+      setEmailError('');
+    }
+  }, [debouncedEmail]);
   
   // Freelancer fields
   const [businessName, setBusinessName] = useState('');
@@ -42,8 +68,16 @@ export default function EmploymentVerifyScreen() {
   const isBusiness = user?.employmentType === 'business';
 
   const handleVerifyEmail = async () => {
+    // First validate email format
+    const formatResult = validateEmailFormat(workEmail);
+    if (!formatResult.isValid) {
+      setEmailError(formatResult.error || 'Please enter a valid email address');
+      return;
+    }
+    
     setEmailError('');
     setIsVerifyingEmail(true);
+    setDomainNotVerified(false);
     
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1500));
@@ -59,7 +93,10 @@ export default function EmploymentVerifyScreen() {
       });
       updateVerificationStatus({ employment: true });
     } else {
-      setEmailError('This domain is not in our verified employer list. You can still continue.');
+      // Domain not in verified list - but this is NOT an error!
+      // User can still continue, we just note it's not a verified employer
+      setDomainNotVerified(true);
+      updateUser({ workEmail });
     }
     
     setIsVerifyingEmail(false);
@@ -101,7 +138,14 @@ export default function EmploymentVerifyScreen() {
     router.push('/onboarding/income');
   };
 
-  const canContinue = emailVerified || linkVerified || isBusiness;
+  // Key fix: Allow continuation when email format is valid OR domain is verified
+  // Salaried: valid email format is enough (domain verification is optional)
+  // Freelancer: link must be verified
+  // Business: always allowed to continue
+  const canContinue = 
+    (isSalaried && (isValidEmail || emailVerified)) || 
+    (isFreelancer && linkVerified) || 
+    isBusiness;
 
   return (
     <SafeAreaView className="flex-1 bg-white">
@@ -116,10 +160,10 @@ export default function EmploymentVerifyScreen() {
             className="p-0 mr-4"
           />
           <View className="flex-1">
-            <SimpleProgress current={3} total={5} />
+            <SimpleProgress current={3} total={6} />
           </View>
         </View>
-        <Text className="text-sm text-dark-500">Step 3 of 5</Text>
+        <Text className="text-sm text-dark-500">Step 3 of 6</Text>
       </View>
 
       <KeyboardAvoidingView 
@@ -155,13 +199,14 @@ export default function EmploymentVerifyScreen() {
                 value={workEmail}
                 onChangeText={(text) => {
                   setWorkEmail(text);
-                  setEmailError('');
                   setEmailVerified(false);
+                  setDomainNotVerified(false);
+                  // Don't clear emailError here - let debounced validation handle it
                 }}
                 keyboardType="email-address"
                 autoCapitalize="none"
                 error={emailError}
-                icon={<Mail size={20} color="#64748b" />}
+                icon={<Mail size={20} color={emailError ? "#ef4444" : isValidEmail ? "#16a34a" : "#64748b"} />}
               />
 
               {emailVerified && verifiedCompany && (
@@ -180,11 +225,27 @@ export default function EmploymentVerifyScreen() {
                 </View>
               )}
 
-              {!emailVerified && (
+              {/* Domain not in verified list - informational only */}
+              {domainNotVerified && !emailVerified && (
+                <View className="bg-blue-50 p-4 rounded-xl mb-4 flex-row items-start">
+                  <Info size={20} color="#3b82f6" style={{ marginTop: 2 }} />
+                  <View className="ml-3 flex-1">
+                    <Text className="text-blue-800 font-medium">
+                      Email saved
+                    </Text>
+                    <Text className="text-blue-700 text-sm mt-1">
+                      Your employer isn't in our verified list yet — no problem.
+                      We'll still calculate your Safe Amount from your income and spending.
+                    </Text>
+                  </View>
+                </View>
+              )}
+
+              {!emailVerified && !domainNotVerified && (
                 <Button
-                  title={isVerifyingEmail ? 'Verifying...' : 'Verify Email'}
+                  title={isVerifyingEmail ? 'Verifying...' : 'Verify Email (Optional)'}
                   onPress={handleVerifyEmail}
-                  disabled={!workEmail.includes('@') || isVerifyingEmail}
+                  disabled={!isValidEmail || isVerifyingEmail}
                   loading={isVerifyingEmail}
                   variant="outline"
                   className="mb-4"
@@ -308,14 +369,19 @@ export default function EmploymentVerifyScreen() {
           <Button
             title="Continue"
             onPress={handleContinue}
-            disabled={!canContinue && !isBusiness}
-            icon={<ChevronRight size={20} color="#fff" />}
+            disabled={!canContinue}
+            icon={<ChevronRight size={20} color={canContinue ? "#fff" : "#94a3b8"} />}
             iconPosition="right"
             size="lg"
           />
-          {!canContinue && !isBusiness && (
+          {!canContinue && isSalaried && (
             <Text className="text-center text-xs text-dark-400 mt-3">
-              Verify your employment to continue
+              Please enter a valid work email to continue
+            </Text>
+          )}
+          {!canContinue && isFreelancer && (
+            <Text className="text-center text-xs text-dark-400 mt-3">
+              Please verify your professional profile to continue
             </Text>
           )}
         </View>

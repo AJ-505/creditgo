@@ -48,9 +48,10 @@ export const calculateCreditLimit = (
 ): CreditCalculation => {
   // Use SMS-verified income if available, otherwise use stated income
   const verifiedIncome = smsAnalysis?.averageMonthlyIncome || statedMonthlyIncome;
-  
-  // Take the lower of stated and verified (conservative approach)
-  const baseIncome = Math.min(statedMonthlyIncome, verifiedIncome);
+
+  // Pitch-friendly: never punish the user for imperfect SMS parsing.
+  // Use the higher of stated vs SMS-derived income (SMS can be incomplete).
+  const baseIncome = Math.max(statedMonthlyIncome, verifiedIncome);
   
   // Base repayment ratios (Nigerian fintech standard)
   let safeRatio = 0.15; // 15% safe repayment ratio

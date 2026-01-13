@@ -88,7 +88,8 @@ export const ASSET_CATEGORIES: AssetCategoryInfo[] = [
   },
 ];
 
-// Real Nigerian Fintech Partners - These are real companies!
+// Potential partners/providers.
+// Note: Terms, eligibility, and pricing vary by provider and can change.
 export const PARTNERS: Partner[] = [
   // Devices & Tools
   {
@@ -135,6 +136,28 @@ export const PARTNERS: Partner[] = [
     minPayment: 5000,
     maxPayment: 80000,
   },
+  {
+    id: 'credpal',
+    name: 'CredPal',
+    logo: 'https://logo.clearbit.com/credpal.com',
+    category: ['devices'],
+    description: 'Buy now, pay later across partner merchants. Flexible installment payments (subject to approval).',
+    website: 'https://credpal.com',
+    rating: 4.3,
+    minPayment: 10000,
+    maxPayment: 250000,
+  },
+  {
+    id: 'payqart',
+    name: 'PayQart',
+    logo: 'https://logo.clearbit.com/payqart.com',
+    category: ['devices'],
+    description: 'Installment payments for gadgets and essentials through partner merchants (subject to eligibility).',
+    website: 'https://payqart.com',
+    rating: 4.1,
+    minPayment: 8000,
+    maxPayment: 200000,
+  },
   // Solar & Power
   {
     id: 'sunking',
@@ -146,6 +169,17 @@ export const PARTNERS: Partner[] = [
     rating: 4.5,
     minPayment: 3000,
     maxPayment: 50000,
+  },
+  {
+    id: 'lumos',
+    name: 'Lumos',
+    logo: 'https://logo.clearbit.com/lumos.com.ng',
+    category: ['solar'],
+    description: 'Solar home systems with pay-as-you-go style repayment (availability varies by location).',
+    website: 'https://lumos.com.ng',
+    rating: 4.2,
+    minPayment: 5000,
+    maxPayment: 120000,
   },
   {
     id: 'arnergy',
@@ -168,6 +202,17 @@ export const PARTNERS: Partner[] = [
     rating: 4.2,
     minPayment: 15000,
     maxPayment: 150000,
+  },
+  {
+    id: 'rubitec',
+    name: 'Rubitec Solar',
+    logo: 'https://logo.clearbit.com/rubitecsolar.com',
+    category: ['solar'],
+    description: 'Solar and inverter solutions for homes and small businesses. Financing may be available via partner plans.',
+    website: 'https://rubitecsolar.com',
+    rating: 4.1,
+    minPayment: 20000,
+    maxPayment: 250000,
   },
   // Rent & Housing
   {
@@ -236,6 +281,28 @@ export const PARTNERS: Partner[] = [
     rating: 4.3,
     minPayment: 20000,
     maxPayment: 250000,
+  },
+  {
+    id: 'altschool',
+    name: 'AltSchool Africa',
+    logo: 'https://logo.clearbit.com/altschoolafrica.com',
+    category: ['education'],
+    description: 'Affordable digital skills programs. Flexible learning paths for software, product, and data.',
+    website: 'https://altschoolafrica.com',
+    rating: 4.5,
+    minPayment: 15000,
+    maxPayment: 150000,
+  },
+  {
+    id: 'ulesson',
+    name: 'uLesson',
+    logo: 'https://logo.clearbit.com/ulesson.com',
+    category: ['education'],
+    description: 'Learning platform for students with low-cost subscription options for exam prep and core subjects.',
+    website: 'https://ulesson.com',
+    rating: 4.4,
+    minPayment: 2000,
+    maxPayment: 30000,
   },
   // Health
   {

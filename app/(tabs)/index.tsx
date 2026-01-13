@@ -15,7 +15,7 @@ import {
   Plus,
   Building2
 } from 'lucide-react-native';
-import { useAppStore } from '../../src/store';
+import { useAppStore, useSavings } from '../../src/store';
 import { formatNaira } from '../../src/constants';
 import { PARTNERS } from '../../src/constants/partners';
 import { CreditScoreGauge } from '../../src/components';
@@ -26,6 +26,7 @@ export default function HomeScreen() {
   const user = useAppStore((state) => state.user);
   const financialProfile = useAppStore((state) => state.financialProfile);
   const transactions = useAppStore((state) => state.transactions);
+  const { balance: savingsBalance } = useSavings();
   const [refreshing, setRefreshing] = React.useState(false);
 
   const safeAmount = financialProfile?.safeMonthlyRepayment || 0;
@@ -116,7 +117,7 @@ export default function HomeScreen() {
               </View>
               <View className="flex-1 items-center">
                 <Text className="text-slate-400 text-xs">Saved</Text>
-                <Text className="text-lime-400 font-bold text-lg">₦0</Text>
+                <Text className="text-lime-400 font-bold text-lg">{formatNaira(savingsBalance)}</Text>
               </View>
             </View>
           </View>

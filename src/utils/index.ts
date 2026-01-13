@@ -9,6 +9,100 @@ import {
 import { SMSTransaction, SMSAnalysisResult, FinancialProfile, CreditBadge } from '../types';
 
 /**
+ * Email validation result interface
+ */
+export interface EmailValidationResult {
+  isValid: boolean;
+  error: string | null;
+}
+
+/**
+ * Validate email format (client-side, deterministic)
+ * This is a proper email validation that:
+ * - Accepts standard formats like name@company.com, name.surname@company.co.uk
+ * - Rejects missing @, missing domain, whitespace-only inputs
+ * - Does NOT require network calls
+ * - Is deterministic and fast
+ */
+export const validateEmailFormat = (email: string): EmailValidationResult => {
+  // Trim whitespace
+  const trimmed = email.trim();
+  
+  // Check for empty or whitespace-only input
+  if (!trimmed) {
+    return { isValid: false, error: null }; // Empty is not an error, just not valid
+  }
+  
+  // Check for whitespace in the email (not allowed)
+  if (/\s/.test(trimmed)) {
+    return { isValid: false, error: 'Email address cannot contain spaces' };
+  }
+  
+  // Check for @ symbol
+  if (!trimmed.includes('@')) {
+    return { isValid: false, error: 'Please include an "@" in the email address' };
+  }
+  
+  // Split by @ and validate parts
+  const parts = trimmed.split('@');
+  if (parts.length !== 2) {
+    return { isValid: false, error: 'Email address should contain only one "@" symbol' };
+  }
+  
+  const [localPart, domain] = parts;
+  
+  // Check local part (before @)
+  if (!localPart || localPart.length === 0) {
+    return { isValid: false, error: 'Please enter text before the "@" symbol' };
+  }
+  
+  // Check domain (after @)
+  if (!domain || domain.length === 0) {
+    return { isValid: false, error: 'Please enter a domain after the "@" symbol' };
+  }
+  
+  // Check domain has at least one dot and valid TLD
+  if (!domain.includes('.')) {
+    return { isValid: false, error: 'Please enter a complete domain (e.g., company.com)' };
+  }
+  
+  // Check domain doesn't start or end with dot
+  if (domain.startsWith('.') || domain.endsWith('.')) {
+    return { isValid: false, error: 'Domain cannot start or end with a dot' };
+  }
+  
+  // Check for consecutive dots in domain
+  if (domain.includes('..')) {
+    return { isValid: false, error: 'Domain cannot contain consecutive dots' };
+  }
+  
+  // Final regex check for overall format validity
+  // This regex accepts standard email formats
+  const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*\.[a-zA-Z]{2,}$/;
+  
+  if (!emailRegex.test(trimmed)) {
+    return { isValid: false, error: 'Please enter a valid email address' };
+  }
+  
+  return { isValid: true, error: null };
+};
+
+/**
+ * Check if an email is a free/personal email provider
+ * This is informational only - we don't block free providers
+ */
+export const isFreeEmailProvider = (email: string): boolean => {
+  const freeProviders = [
+    'gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'live.com',
+    'aol.com', 'icloud.com', 'mail.com', 'protonmail.com', 'zoho.com',
+    'yandex.com', 'gmx.com', 'inbox.com'
+  ];
+  
+  const domain = email.split('@')[1]?.toLowerCase();
+  return freeProviders.includes(domain);
+};
+
+/**
  * Validate Nigerian National Identification Number (NIN)
  * NIN is exactly 11 digits
  */
@@ -136,9 +230,18 @@ export const analyzeSMSTransactions = (transactions: SMSTransaction[]): SMSAnaly
   
   const totalCredits = credits.reduce((sum, t) => sum + t.amount, 0);
   const totalDebits = debits.reduce((sum, t) => sum + t.amount, 0);
-  
-  // Calculate average monthly income (assuming 2 months of data in demo)
-  const averageMonthlyIncome = totalCredits / 2;
+
+  // Calculate average monthly income based on the observed date range.
+  // This avoids severe underestimation when we have >2 months of SMS data.
+  const timestamps = transactions
+    .map(t => (t.date instanceof Date ? t.date.getTime() : new Date(t.date as any).getTime()))
+    .filter((ts) => Number.isFinite(ts));
+
+  const minTs = timestamps.length ? Math.min(...timestamps) : Date.now();
+  const maxTs = timestamps.length ? Math.max(...timestamps) : Date.now();
+  const days = Math.max(1, Math.ceil((maxTs - minTs) / (1000 * 60 * 60 * 24)));
+  const monthsObserved = Math.max(1, Math.ceil(days / 30));
+  const averageMonthlyIncome = monthsObserved > 0 ? totalCredits / monthsObserved : totalCredits;
   
   // Check income consistency (regular salary = high consistency)
   const salaryCredits = credits.filter(t => t.source === 'Salary');
@@ -161,42 +264,70 @@ export const analyzeSMSTransactions = (transactions: SMSTransaction[]): SMSAnaly
  * Calculate the "Safe Amount" - the maximum monthly repayment a user can afford
  * This is the core algorithm of CreditGo
  * 
- * Nigerian Fintech Standard:
- * - Safe repayment = 15-20% of monthly income
- * - Example: ₦300,000 income = ₦45,000-60,000 safe repayment
+ * Nigerian Fintech Standard (based on Carbon, FairMoney, PalmCredit):
+ * - Base safe repayment = 15% of monthly income
+ * - With verification bonuses: up to 22% of monthly income
+ * - Example: ₦300,000 income = ₦45,000-66,000 safe repayment
+ * 
+ * This is more generous than banks (typically 30-40% debt-to-income)
+ * because fintech serves underbanked populations with different needs.
  */
 export const calculateSafeAmount = (
   monthlyIncome: number,
-  smsAnalysis?: SMSAnalysisResult
-): { safeAmount: number; breakdown: { income: number; expenses: number; buffer: number } } => {
+  smsAnalysis?: SMSAnalysisResult,
+  isIdentityVerified: boolean = false,
+  isEmploymentVerified: boolean = false,
+  monthlyExpenses?: number
+): { safeAmount: number; maxAmount: number; breakdown: { income: number; expenses: number; disposable: number; ratio: number } } => {
   // Use SMS analysis if available, otherwise use stated income
   const verifiedIncome = smsAnalysis?.averageMonthlyIncome || monthlyIncome;
   
-  // Take the more conservative of the two
-  const baseIncome = Math.min(monthlyIncome, verifiedIncome);
+  // Take the more conservative of the two (unless stated is much higher and verified is low)
+  const baseIncome = Math.min(monthlyIncome, Math.max(verifiedIncome, monthlyIncome * 0.8));
   
-  // Nigerian standard: Safe repayment is 15-18% of income
-  // This matches how platforms like Carbon, FairMoney, and PalmCredit operate
-  let repaymentRatio = 0.15; // Base 15%
+  // Base ratio: 15% (Nigerian fintech standard for underbanked)
+  let repaymentRatio = 0.15;
   
-  // Boost ratio if income is consistent (from SMS)
+  // Verification bonuses (up to +7%)
+  if (isIdentityVerified) repaymentRatio += 0.02; // +2% for NIN verified
+  if (isEmploymentVerified) repaymentRatio += 0.03; // +3% for employment verified
+  
+  // Income consistency bonus from SMS (up to +2%)
   const consistency = smsAnalysis?.incomeConsistency ?? 0;
-  if (consistency >= 0.8) {
-    repaymentRatio = 0.18; // 18% for consistent income
+  if (consistency >= 0.9) {
+    repaymentRatio += 0.02; // Very consistent (regular salary)
+  } else if (consistency >= 0.7) {
+    repaymentRatio += 0.01; // Moderately consistent
   }
+  
+  // Multiple income streams bonus (+1%)
+  if (smsAnalysis && smsAnalysis.detectedSources.length >= 2) {
+    repaymentRatio += 0.01;
+  }
+  
+  // Cap at 22% (reasonable maximum)
+  repaymentRatio = Math.min(repaymentRatio, 0.22);
+  
+  // Estimate or use provided expenses
+  // Nigerian urban standard: 55-65% of income on necessities
+  const estimatedExpenses = monthlyExpenses || (baseIncome * 0.60);
+  const disposableIncome = baseIncome - estimatedExpenses;
   
   // Calculate safe monthly repayment
   const safeAmount = Math.floor(baseIncome * repaymentRatio);
   
-  // Estimate expenses at 65% of income (Nigerian urban standard)
-  const estimatedExpenses = baseIncome * 0.65;
+  // Max amount is the higher of: ratio-based OR 50% of disposable income
+  const maxFromDisposable = Math.floor(disposableIncome * 0.5);
+  const maxAmount = Math.max(safeAmount, Math.min(maxFromDisposable, baseIncome * 0.25));
   
   return {
     safeAmount: Math.max(0, safeAmount),
+    maxAmount: Math.max(0, maxAmount),
     breakdown: {
       income: baseIncome,
       expenses: estimatedExpenses,
-      buffer: baseIncome * (1 - repaymentRatio - 0.65),
+      disposable: disposableIncome,
+      ratio: repaymentRatio,
     },
   };
 };
@@ -258,7 +389,7 @@ export const generateBadges = (
     badges.push({
       id: 'identity_verified',
       name: 'Identity Verified',
-      description: 'NIN verified with biometric match',
+      description: 'Identity verification completed',
       icon: 'shield-check',
       earnedAt: now,
     });
@@ -327,17 +458,26 @@ export const buildFinancialProfile = (
   isIdentityVerified: boolean,
   isEmploymentVerified: boolean,
   employmentType: string | null,
-  smsAnalysis?: SMSAnalysisResult
+  smsAnalysis?: SMSAnalysisResult,
+  monthlyExpenses?: number
 ): FinancialProfile => {
-  const { safeAmount, breakdown } = calculateSafeAmount(monthlyIncome, smsAnalysis);
+  const { safeAmount, maxAmount, breakdown } = calculateSafeAmount(
+    monthlyIncome, 
+    smsAnalysis,
+    isIdentityVerified,
+    isEmploymentVerified,
+    monthlyExpenses
+  );
   const creditScore = calculateCreditScore(isIdentityVerified, isEmploymentVerified, smsAnalysis, monthlyIncome);
   const badges = generateBadges(isIdentityVerified, isEmploymentVerified, employmentType, smsAnalysis);
   
   return {
     totalIncome: breakdown.income,
     estimatedExpenses: breakdown.expenses,
-    disposableIncome: breakdown.income - breakdown.expenses,
+    disposableIncome: breakdown.disposable,
     safeMonthlyRepayment: safeAmount,
+    maxMonthlyRepayment: maxAmount,
+    repaymentRatio: breakdown.ratio,
     creditScore,
     badges,
   };

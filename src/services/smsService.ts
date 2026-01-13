@@ -167,43 +167,50 @@ export const filterBankAlerts = (messages: SmsMessage[]): SmsMessage[] => {
     'deposit',
   ];
 
-  // Common Nigerian bank sender IDs
+  // Common Nigerian bank sender IDs (real-world patterns vary widely)
   const bankSenders = [
-    'gtbank',
-    'zenith',
-    'access',
-    'first',
-    'uba',
-    'sterling',
+    // Traditional banks
+    'gtbank', 'gtb', 'gtbalert', 'gtworld',
+    'zenith', 'zenithbank', 'zenithalert',
+    'access', 'accessbank', 'accessalert',
+    'firstbank', 'firstbankng', 'firstbankalert', 'first',
+    'uba', 'ubabank',
+    'sterling', 'sterlingbank',
     'fcmb',
-    'fidelity',
-    'union',
-    'wema',
-    'polaris',
-    'stanbic',
+    'fidelity', 'fidelitysms',
+    'union', 'unionbank',
+    'wema', 'wemabank',
+    'polaris', 'polarisbank',
+    'stanbic', 'stanbicibtc',
     'ecobank',
-    'keystone',
-    'opay',
+    'keystone', 'keystonebank',
+    'heritage', 'heritagebank',
+    'jaiz', 'jaizbank',
+    'providus', 'providusbank',
+    'suntrust', 'suntrustbank',
+    'titan', 'titantrust',
+
+    // Popular fintech / MMOs
+    'opay', 'opayng',
     'palmpay',
     'moniepoint',
     'kuda',
     'carbon',
+    'fairmoney',
   ];
 
   return messages.filter((sms) => {
     const body = sms.body.toLowerCase();
     const sender = sms.address.toLowerCase();
 
-    // Check if sender looks like a bank
-    const isFromBank = bankSenders.some(
-      (bank) => sender.includes(bank) || sender.includes('bank')
-    );
+    // Check if sender looks like a bank (sender ID or contains 'bank')
+    const isFromBank = bankSenders.some((bank) => sender.includes(bank)) || sender.includes('bank');
 
     // Check if message contains banking keywords
     const hasBankContent = bankKeywords.some((kw) => body.includes(kw));
 
     // Check if message contains an amount pattern
-    const hasAmount = /ngn|₦|naira|\d{1,3}(,\d{3})*(\.\d{2})?/i.test(body);
+    const hasAmount = /ngn|₦|\bnaira\b|\bamt\b|\bamount\b|\d{1,3}(,\d{3})*(\.\d{2})?/i.test(body);
 
     return (isFromBank || hasBankContent) && hasAmount;
   });

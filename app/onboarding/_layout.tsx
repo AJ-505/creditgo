@@ -16,6 +16,7 @@ export default function OnboardingLayout() {
       <Stack.Screen name="employment-type" />
       <Stack.Screen name="employment-verify" />
       <Stack.Screen name="income" />
+      <Stack.Screen name="expenses" />
       <Stack.Screen name="complete" />
     </Stack>
   );

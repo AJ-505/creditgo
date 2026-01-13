@@ -73,10 +73,10 @@ export default function EmploymentTypeScreen() {
             className="p-0 mr-4"
           />
           <View className="flex-1">
-            <SimpleProgress current={3} total={5} />
+            <SimpleProgress current={3} total={6} />
           </View>
         </View>
-        <Text className="text-sm text-dark-500">Step 3 of 5</Text>
+        <Text className="text-sm text-dark-500">Step 3 of 6</Text>
       </View>
 
       <ScrollView 

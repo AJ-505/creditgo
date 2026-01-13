@@ -7,10 +7,7 @@ import {
   Calendar,
   ArrowLeft,
   ChevronRight,
-  MessageSquare,
   Info,
-  ToggleLeft,
-  ToggleRight,
   Smartphone,
   CheckCircle2
 } from 'lucide-react-native';
@@ -37,8 +34,6 @@ export default function IncomeScreen() {
   const setFinancialProfile = useAppStore((state) => state.setFinancialProfile);
   const setTransactions = useAppStore((state) => state.setTransactions);
   const user = useAppStore((state) => state.user);
-  const isDemoMode = useAppStore((state) => state.isDemoMode);
-  const toggleDemoMode = useAppStore((state) => state.toggleDemoMode);
   
   const [income, setIncome] = useState('');
   const [payDay, setPayDay] = useState('');
@@ -97,7 +92,7 @@ export default function IncomeScreen() {
     let transactions: any[] = [];
 
     // Try real SMS first if available and permission granted
-    if (smsAvailable && smsPermissionGranted && !isDemoMode) {
+    if (smsAvailable && smsPermissionGranted) {
       const result = await analyzeRealSms();
       if (result.success && result.transactions.length > 0) {
         transactions = result.transactions;
@@ -110,13 +105,6 @@ export default function IncomeScreen() {
           result.error || 'Could not read SMS. Using your stated income for calculations.'
         );
       }
-    } else if (isDemoMode) {
-      // Demo mode - use simulated data
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      const demoMessages = getDemoSMSData();
-      transactions = parseSMSTransactions(demoMessages);
-      smsAnalysis = analyzeSMSTransactions(transactions);
-      setTransactions(transactions);
     } else {
       // No SMS available - just use stated income
       await new Promise(resolve => setTimeout(resolve, 1000));
@@ -138,12 +126,12 @@ export default function IncomeScreen() {
     });
     updateVerificationStatus({ 
       income: true,
-      smsPermission: smsPermissionGranted || isDemoMode 
+      smsPermission: smsPermissionGranted
     });
     setFinancialProfile(profile);
 
     setIsAnalyzing(false);
-    router.push('/onboarding/complete');
+    router.push('/onboarding/expenses');
   };
 
   const incomeValue = parseIncomeValue(income);
@@ -162,10 +150,10 @@ export default function IncomeScreen() {
             className="p-0 mr-4"
           />
           <View className="flex-1">
-            <SimpleProgress current={4} total={5} />
+            <SimpleProgress current={4} total={6} />
           </View>
         </View>
-        <Text className="text-sm text-dark-500">Step 4 of 5</Text>
+        <Text className="text-sm text-dark-500">Step 4 of 6</Text>
       </View>
 
       <KeyboardAvoidingView 
@@ -188,35 +176,8 @@ export default function IncomeScreen() {
             </Text>
           </View>
 
-          {/* Demo Mode Toggle */}
-          <TouchableOpacity
-            onPress={toggleDemoMode}
-            className={`
-              flex-row items-center justify-between p-4 rounded-xl mb-6
-              ${isDemoMode ? 'bg-primary-50 border-2 border-primary-200' : 'bg-gray-50 border-2 border-transparent'}
-            `}
-            activeOpacity={0.7}
-          >
-            <View className="flex-row items-center">
-              <MessageSquare size={20} color={isDemoMode ? '#16a34a' : '#64748b'} />
-              <View className="ml-3">
-                <Text className={`font-medium ${isDemoMode ? 'text-primary-700' : 'text-dark-700'}`}>
-                  Demo Mode
-                </Text>
-                <Text className={`text-xs ${isDemoMode ? 'text-primary-600' : 'text-dark-500'}`}>
-                  Uses sample SMS data for demo
-                </Text>
-              </View>
-            </View>
-            {isDemoMode ? (
-              <ToggleRight size={28} color="#16a34a" />
-            ) : (
-              <ToggleLeft size={28} color="#94a3b8" />
-            )}
-          </TouchableOpacity>
-
-          {/* Real SMS Permission - Only show on Android with dev build */}
-          {smsAvailable && !isDemoMode && (
+          {/* Real SMS Permission - Only available on Android builds with SMS capability */}
+          {smsAvailable && (
             <TouchableOpacity
               onPress={handleRequestSmsPermission}
               disabled={smsPermissionGranted}
@@ -289,7 +250,6 @@ export default function IncomeScreen() {
                 <Text className="text-sm text-blue-700 leading-relaxed">
                   We analyze your income pattern and estimate expenses to find the 
                   maximum amount you can repay monthly without financial stress.
-                  {isDemoMode && '\n\n📱 Demo Mode will simulate SMS transaction analysis.'}
                 </Text>
               </View>
             </View>

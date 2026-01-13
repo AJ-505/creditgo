@@ -8,7 +8,13 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
   },
   "dependencies": {
     "@expo-google-fonts/inter": "^0.4.2",
@@ -44,7 +50,12 @@
   "devDependencies": {
     "@babel/core": "^7.28.5",
     "@babel/preset-env": "^7.28.5",
+    "@types/jest": "^30.0.0",
     "@types/react": "~19.1.0",
+    "cd": "^0.3.3",
+    "creditgo": "link:/workspaces/creditgo",
+    "jest": "^30.2.0",
+    "ts-jest": "^29.4.6",
     "typescript": "~5.9.2"
   },
   "private": true

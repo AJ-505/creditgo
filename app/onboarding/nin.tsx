@@ -22,10 +22,9 @@ export default function NINScreen() {
   const handleNINChange = (text: string) => {
     // Only allow digits
     const cleaned = text.replace(/\D/g, '');
-    if (cleaned.length <= 11) {
-      setNin(cleaned);
-      setError('');
-    }
+    if (cleaned.length > 11) return;
+    setNin(cleaned);
+    setError('');
   };
 
   const handleContinue = () => {
@@ -53,10 +52,10 @@ export default function NINScreen() {
             className="p-0 mr-4"
           />
           <View className="flex-1">
-            <SimpleProgress current={1} total={5} />
+            <SimpleProgress current={1} total={6} />
           </View>
         </View>
-        <Text className="text-sm text-dark-500">Step 1 of 5</Text>
+        <Text className="text-sm text-dark-500">Step 1 of 6</Text>
       </View>
 
       <KeyboardAvoidingView 
@@ -89,7 +88,8 @@ export default function NINScreen() {
             value={formatNIN(nin)}
             onChangeText={handleNINChange}
             keyboardType="numeric"
-            maxLength={15} // Formatted with dashes
+            // Formatted output is XXX-XXXX-XXXX => 13 chars
+            maxLength={13}
             error={error}
             hint={isValid ? '✓ Valid NIN format' : 'NIN is 11 digits (e.g., 123-4567-8901)'}
             icon={<CreditCard size={20} color="#64748b" />}

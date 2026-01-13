@@ -45,6 +45,14 @@ export default function SelfieScreen() {
     }
   };
 
+  // Demo-friendly: auto-run verification after capture.
+  useEffect(() => {
+    if (!photo) return;
+    if (isVerified || isVerifying) return;
+    verifyIdentity();
+    // eslint-disable-next-line react-hooks/exhaustive_features
+  }, [photo]);
+
   const retakePicture = () => {
     setPhoto(null);
     setIsVerified(false);
@@ -134,10 +142,10 @@ export default function SelfieScreen() {
             className="p-0 mr-4"
           />
           <View className="flex-1">
-            <SimpleProgress current={2} total={5} />
+            <SimpleProgress current={2} total={6} />
           </View>
         </View>
-        <Text className="text-sm text-gray-400">Step 2 of 5</Text>
+        <Text className="text-sm text-gray-400">Step 2 of 6</Text>
       </View>
 
       {/* Camera or Photo Preview */}
@@ -156,10 +164,10 @@ export default function SelfieScreen() {
               <View className="absolute inset-0 bg-black/70 items-center justify-center">
                 <ActivityIndicator size="large" color="#22c55e" />
                 <Text className="text-white text-lg font-medium mt-4">
-                  Matching Face with NIMC Database...
+                  Verifying your selfie...
                 </Text>
                 <Text className="text-gray-400 text-sm mt-2">
-                  Verifying NIN: {user?.nin?.slice(0, 3)}****{user?.nin?.slice(-4)}
+                  This usually takes a few seconds
                 </Text>
               </View>
             )}
@@ -174,7 +182,7 @@ export default function SelfieScreen() {
                   Identity Verified!
                 </Text>
                 <Text className="text-gray-300 text-base mt-2 text-center px-8">
-                  Your face matches the NIN database record.
+                  Verified. You can continue.
                 </Text>
               </View>
             )}
@@ -231,9 +239,10 @@ export default function SelfieScreen() {
               className="flex-1"
             />
             <Button
-              title="Verify Identity"
-              onPress={verifyIdentity}
+              title={isVerifying ? 'Verifying…' : 'Verifying…'}
+              onPress={() => {}}
               loading={isVerifying}
+              disabled={true}
               icon={<ShieldCheck size={18} color="#fff" />}
               iconPosition="left"
               className="flex-1"
