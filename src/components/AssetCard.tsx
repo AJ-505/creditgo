@@ -51,14 +51,14 @@ export const AssetCard: React.FC<AssetCardProps> = ({
           {isAffordable ? (
             <>
               <Check size={14} color="#fff" />
-              <Text className="text-white text-xs font-medium ml-1">
+              <Text className="text-white text-xs font-inter-medium ml-1">
                 Affordable
               </Text>
             </>
           ) : (
             <>
               <Lock size={14} color="#fff" />
-              <Text className="text-white text-xs font-medium ml-1">
+              <Text className="text-white text-xs font-inter-medium ml-1">
                 Locked
               </Text>
             </>
@@ -70,7 +70,10 @@ export const AssetCard: React.FC<AssetCardProps> = ({
       <View className="p-4">
         <View className="flex-row items-start justify-between">
           <View className="flex-1 mr-2">
-            <Text className="text-lg font-bold text-dark-800" numberOfLines={1}>
+            <Text
+              className="text-lg font-inter-bold text-dark-800"
+              numberOfLines={1}
+            >
               {asset.name}
             </Text>
             <Text className="text-sm text-dark-500 mt-0.5">
@@ -78,7 +81,7 @@ export const AssetCard: React.FC<AssetCardProps> = ({
             </Text>
           </View>
           <View className="items-end">
-            <Text className="text-lg font-bold text-primary-600">
+            <Text className="text-lg font-inter-bold text-primary-600">
               {formatNaira(asset.monthlyPayment)}
             </Text>
             <Text className="text-xs text-dark-400">/month</Text>
@@ -102,7 +105,7 @@ export const AssetCard: React.FC<AssetCardProps> = ({
         <View className="flex-row items-center justify-between mt-4 pt-3 border-t border-gray-100">
           <View>
             <Text className="text-xs text-dark-400">Total Price</Text>
-            <Text className="text-base font-semibold text-dark-700">
+            <Text className="text-base font-inter-semibold text-dark-700">
               {formatNaira(asset.totalPrice)}
             </Text>
           </View>
@@ -113,7 +116,7 @@ export const AssetCard: React.FC<AssetCardProps> = ({
             `}
           >
             <Text
-              className={`font-medium mr-1 ${isAffordable ? "text-white" : "text-gray-500"}`}
+              className={`font-inter-medium mr-1 ${isAffordable ? "text-white" : "text-gray-500"}`}
             >
               {isAffordable ? "Apply Now" : "Locked"}
             </Text>

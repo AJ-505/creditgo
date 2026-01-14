@@ -74,7 +74,7 @@ export default function NINScreen() {
             <View className="w-20 h-20 bg-accent-100 rounded-full items-center justify-center mb-4">
               <CreditCard size={40} color="#3b82f6" />
             </View>
-            <Text className="text-2xl font-bold text-dark-800 text-center">
+            <Text className="text-2xl font-inter-bold text-dark-800 text-center">
               Identity Verification
             </Text>
             <Text className="text-base text-dark-500 text-center mt-2">
@@ -106,7 +106,7 @@ export default function NINScreen() {
             <View className="flex-row items-start">
               <Info size={20} color="#3b82f6" style={{ marginTop: 2 }} />
               <View className="ml-3 flex-1">
-                <Text className="text-sm font-medium text-blue-800 mb-1">
+                <Text className="text-sm font-inter-medium text-blue-800 mb-1">
                   Why we need your NIN
                 </Text>
                 <Text className="text-sm text-blue-700 leading-relaxed">
@@ -120,7 +120,7 @@ export default function NINScreen() {
 
           {/* Don't have NIN? */}
           <View className="mt-6 p-4 bg-gray-50 rounded-xl">
-            <Text className="text-sm font-medium text-dark-700 mb-1">
+            <Text className="text-sm font-inter-medium text-dark-700 mb-1">
               Don't have your NIN?
             </Text>
             <Text className="text-sm text-dark-500">

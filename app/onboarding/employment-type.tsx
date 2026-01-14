@@ -86,7 +86,7 @@ export default function EmploymentTypeScreen() {
       >
         {/* Hero */}
         <View className="py-6">
-          <Text className="text-2xl font-bold text-dark-800">
+          <Text className="text-2xl font-inter-bold text-dark-800">
             How do you earn income?
           </Text>
           <Text className="text-base text-dark-500 mt-2">
@@ -118,7 +118,7 @@ export default function EmploymentTypeScreen() {
               </View>
               <View className="flex-1">
                 <View className="flex-row items-center justify-between">
-                  <Text className="text-lg font-semibold text-dark-800">
+                  <Text className="text-lg font-inter-semibold text-dark-800">
                     {option.title}
                   </Text>
                   <ChevronRight size={20} color="#94a3b8" />

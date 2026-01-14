@@ -1,22 +1,18 @@
-/** @type {import('tailwindcss').Config} */
-module.exports = {
-  content: [
-    "./app/**/*.{js,jsx,ts,tsx}",
-    "./src/**/*.{js,jsx,ts,tsx}",
-    "./components/**/*.{js,jsx,ts,tsx}",
-  ],
+import { type Config } from "tailwindcss";
+
+export default {
+  content: ["./app/**/*.{js,jsx,ts,tsx}", "./src/**/*.{js,jsx,ts,tsx}"],
   presets: [require("nativewind/preset")],
   theme: {
     extend: {
       colors: {
-        // CreditGo Brand Colors - shadcn-inspired naming
         primary: {
           50: "#f0fdf4",
           100: "#dcfce7",
           200: "#bbf7d0",
           300: "#86efac",
           400: "#4ade80",
-          500: "#22c55e", // Main green
+          500: "#22c55e",
           600: "#16a34a",
           700: "#15803d",
           800: "#166534",
@@ -30,7 +26,7 @@ module.exports = {
           200: "#fef08a",
           300: "#fde047",
           400: "#facc15",
-          500: "#eab308", // Gold/Yellow accent
+          500: "#eab308",
           600: "#ca8a04",
           700: "#a16207",
           800: "#854d0e",
@@ -44,7 +40,7 @@ module.exports = {
           200: "#bfdbfe",
           300: "#93c5fd",
           400: "#60a5fa",
-          500: "#3b82f6", // Blue accent
+          500: "#3b82f6",
           600: "#2563eb",
           700: "#1d4ed8",
           800: "#1e40af",
@@ -52,13 +48,12 @@ module.exports = {
           DEFAULT: "#3b82f6",
           foreground: "#ffffff",
         },
-        // Lime accent for CTA/highlights
         lime: {
           50: "#f7fee7",
           100: "#ecfccb",
           200: "#d9f99d",
           300: "#bef264",
-          400: "#c8ff00", // Brand lime
+          400: "#c8ff00",
           500: "#84cc16",
           600: "#65a30d",
           700: "#4d7c0f",
@@ -67,28 +62,12 @@ module.exports = {
           DEFAULT: "#c8ff00",
           foreground: "#0f172a",
         },
-        // Muted backgrounds
-        muted: {
-          DEFAULT: "#f1f5f9",
-          foreground: "#64748b",
-        },
-        // Card backgrounds
-        card: {
-          DEFAULT: "#ffffff",
-          foreground: "#0f172a",
-        },
-        // Destructive/error
-        destructive: {
-          DEFAULT: "#ef4444",
-          foreground: "#ffffff",
-        },
-        // Border color
+        muted: { DEFAULT: "#f1f5f9", foreground: "#64748b" },
+        card: { DEFAULT: "#ffffff", foreground: "#0f172a" },
+        destructive: { DEFAULT: "#ef4444", foreground: "#ffffff" },
         border: "#e2e8f0",
-        // Input border
         input: "#e2e8f0",
-        // Ring color for focus
         ring: "#22c55e",
-        // Background
         background: "#ffffff",
         foreground: "#0f172a",
         dark: {
@@ -157,16 +136,6 @@ module.exports = {
           "System",
         ],
         default: ["Inter", "System"],
-        inter: ["Inter"],
-        "inter-medium": ["Inter-Medium"],
-        "inter-semibold": ["Inter-SemiBold"],
-        "inter-bold": ["Inter-Bold"],
-      },
-      fontWeight: {
-        normal: "400",
-        medium: "500",
-        semibold: "600",
-        bold: "700",
       },
       boxShadow: {
         sm: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
@@ -179,4 +148,4 @@ module.exports = {
     },
   },
   plugins: [],
-};
+} satisfies Config;

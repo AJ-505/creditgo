@@ -223,7 +223,7 @@ export default function SelfieScreen() {
           <View className="w-20 h-20 bg-yellow-100 rounded-full items-center justify-center mb-4">
             <Camera size={40} color="#f59e0b" />
           </View>
-          <Text className="text-xl font-bold text-dark-800 text-center mb-2">
+          <Text className="text-xl font-inter-bold text-dark-800 text-center mb-2">
             Camera Access Required
           </Text>
           <Text className="text-base text-dark-500 text-center mb-6">
@@ -274,7 +274,7 @@ export default function SelfieScreen() {
             {isVerifying && (
               <View style={styles.overlay}>
                 <ActivityIndicator size="large" color="#22c55e" />
-                <Text className="text-white text-lg font-medium mt-4">
+                <Text className="text-white text-lg font-inter-medium mt-4">
                   Verifying your identity...
                 </Text>
                 <Text className="text-gray-400 text-sm mt-2">
@@ -289,7 +289,7 @@ export default function SelfieScreen() {
                 <View className="w-24 h-24 bg-primary-500 rounded-full items-center justify-center mb-4">
                   <ShieldCheck size={48} color="#ffffff" />
                 </View>
-                <Text className="text-white text-2xl font-bold">
+                <Text className="text-white text-2xl font-inter-bold">
                   Identity Verified!
                 </Text>
                 <Text className="text-gray-300 text-base mt-2 text-center px-8">

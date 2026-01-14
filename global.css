@@ -9,15 +9,22 @@
   }
 
   body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-      "Helvetica Neue", Arial, "Noto Sans", sans-serif,
-      "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
-      "Noto Color Emoji";
+    font-family: "Inter", "Inter-Medium", "Inter-SemiBold", "Inter-Bold", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   }
 }
 
 @layer components {
   .text-balance {
     text-wrap: balance;
+  }
+}
+
+@layer utilities {
+  .font-sans {
+    font-family: "Inter", "Inter-Medium", "Inter-SemiBold", "Inter-Bold", -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+  
+  .font-default {
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
   }
 }

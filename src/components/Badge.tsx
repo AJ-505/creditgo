@@ -57,7 +57,7 @@ export const BadgeDisplay: React.FC<BadgeDisplayProps> = ({
         <Icon size={sizeStyles[size].icon} color="#16a34a" />
       </View>
       <Text
-        className={`text-primary-700 font-medium text-center ${sizeStyles[size].text}`}
+        className={`text-primary-700 font-inter-medium text-center ${sizeStyles[size].text}`}
       >
         {badge.name}
       </Text>

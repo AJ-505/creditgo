@@ -50,12 +50,12 @@ export default function CompleteScreen() {
       >
         <View className="px-6 pt-6 pb-4">
           <View className="flex-row items-center justify-between mb-4">
-            <Text className="text-sm text-slate-500 font-medium">
+            <Text className="text-sm text-slate-500 font-inter-medium">
               CreditGo Score
             </Text>
             <View className="flex-row items-center">
               <Text className="text-xs text-slate-400">Powered by </Text>
-              <Text className="text-xs font-semibold text-lime-600">
+              <Text className="text-xs font-inter-semibold text-lime-600">
                 CreditGo
               </Text>
             </View>
@@ -79,7 +79,7 @@ export default function CompleteScreen() {
             <View className="items-center mb-6">
               <View className="bg-white/10 rounded-2xl px-4 py-2 mb-4">
                 <Text
-                  className="text-lime-400 font-semibold text-sm uppercase tracking-wider"
+                  className="text-lime-400 font-inter-semibold text-sm uppercase tracking-wider"
                   style={{ color: "#c8ff00" }}
                 >
                   {tierInfo.name} Member
@@ -105,7 +105,10 @@ export default function CompleteScreen() {
               style={{ borderColor: tierColor, borderWidth: 1 }}
             >
               <TrendingUp size={18} color={tierColor} />
-              <Text className="ml-2 font-medium" style={{ color: tierColor }}>
+              <Text
+                className="ml-2 font-inter-medium"
+                style={{ color: tierColor }}
+              >
                 {tierInfo.benefits[0]} • {tierInfo.benefits[1]}
               </Text>
             </View>
@@ -119,10 +122,10 @@ export default function CompleteScreen() {
                 <Wallet size={24} color="#65a30d" />
               </View>
               <View className="flex-1">
-                <Text className="text-slate-500 text-xs font-medium uppercase tracking-wide">
+                <Text className="text-slate-500 text-xs font-inter-medium uppercase tracking-wide">
                   Your Safe Amount
                 </Text>
-                <Text className="text-3xl font-bold text-slate-900">
+                <Text className="text-3xl font-inter-bold text-slate-900">
                   {formatNaira(safeAmount)}
                 </Text>
                 <Text className="text-slate-400 text-sm">per month</Text>
@@ -132,19 +135,21 @@ export default function CompleteScreen() {
             <View className="flex-row items-center py-3 border-t border-slate-100">
               <View className="flex-1">
                 <Text className="text-slate-500 text-xs">Monthly Income</Text>
-                <Text className="text-slate-900 font-semibold">
+                <Text className="text-slate-900 font-inter-semibold">
                   {formatNaira(user?.monthlyIncome || 0)}
                 </Text>
               </View>
               <View className="flex-1">
                 <Text className="text-slate-500 text-xs">Repayment Ratio</Text>
-                <Text className="text-slate-900 font-semibold">15-20%</Text>
+                <Text className="text-slate-900 font-inter-semibold">
+                  15-20%
+                </Text>
               </View>
               <View className="flex-1 items-end">
                 <Text className="text-slate-500 text-xs">Status</Text>
                 <View className="flex-row items-center">
                   <CheckCircle size={14} color="#22c55e" />
-                  <Text className="text-green-600 font-semibold ml-1">
+                  <Text className="text-green-600 font-inter-semibold ml-1">
                     Approved
                   </Text>
                 </View>
@@ -155,7 +160,7 @@ export default function CompleteScreen() {
 
         {badges.length > 0 && (
           <View className="px-6 mt-6">
-            <Text className="text-lg font-bold text-slate-900 mb-3">
+            <Text className="text-lg font-inter-bold text-slate-900 mb-3">
               Your Achievements
             </Text>
             <BadgeRow badges={badges} />
@@ -169,7 +174,7 @@ export default function CompleteScreen() {
                 <TrendingUp size={16} color="#65a30d" />
               </View>
               <View className="flex-1">
-                <Text className="text-lime-800 font-semibold mb-1">
+                <Text className="text-lime-800 font-inter-semibold mb-1">
                   What's Next?
                 </Text>
                 <Text className="text-lime-700 text-sm leading-5">
@@ -188,7 +193,7 @@ export default function CompleteScreen() {
                 <ShieldCheck size={16} color="#22c55e" />
                 <Text className="text-slate-600 text-sm ml-2">Identity</Text>
               </View>
-              <Text className="text-green-600 text-sm font-medium">
+              <Text className="text-green-600 text-sm font-inter-medium">
                 Verified
               </Text>
             </View>
@@ -197,7 +202,7 @@ export default function CompleteScreen() {
                 <ShieldCheck size={16} color="#22c55e" />
                 <Text className="text-slate-600 text-sm ml-2">Employment</Text>
               </View>
-              <Text className="text-green-600 text-sm font-medium">
+              <Text className="text-green-600 text-sm font-inter-medium">
                 Verified
               </Text>
             </View>
@@ -211,7 +216,7 @@ export default function CompleteScreen() {
           className="bg-slate-900 rounded-2xl py-4 flex-row items-center justify-center"
           activeOpacity={0.9}
         >
-          <Text className="text-lime-400 font-bold text-lg mr-2">
+          <Text className="text-lime-400 font-inter-bold text-lg mr-2">
             Explore Financing
           </Text>
           <ChevronRight size={20} color="#c8ff00" />

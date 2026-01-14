@@ -54,12 +54,14 @@ export default function WelcomeScreen() {
         <View className="px-6 pt-8 pb-6">
           <View className="flex-row items-center mb-4">
             <View className="w-12 h-12 bg-primary-500 rounded-xl items-center justify-center mr-3">
-              <Text className="text-2xl font-bold text-white">C</Text>
+              <Text className="text-2xl font-inter-bold text-white">C</Text>
             </View>
-            <Text className="text-2xl font-bold text-dark-800">CreditGo</Text>
+            <Text className="text-2xl font-inter-bold text-dark-800">
+              CreditGo
+            </Text>
           </View>
 
-          <Text className="text-3xl font-bold text-dark-800 leading-tight">
+          <Text className="text-3xl font-inter-bold text-dark-800 leading-tight">
             Access Credit That{"\n"}
             <Text className="text-primary-500">Builds You Up</Text>
           </Text>
@@ -85,7 +87,7 @@ export default function WelcomeScreen() {
                 <feature.icon size={20} color={feature.color} />
               </View>
               <View className="flex-1">
-                <Text className="text-base font-semibold text-dark-800">
+                <Text className="text-base font-inter-semibold text-dark-800">
                   {feature.title}
                 </Text>
                 <Text className="text-sm text-dark-500 mt-0.5">
@@ -98,7 +100,7 @@ export default function WelcomeScreen() {
 
         {/* Stats Section */}
         <View className="mx-6 mt-6 p-4 bg-primary-50 rounded-xl">
-          <Text className="text-sm text-primary-700 font-medium text-center">
+          <Text className="text-sm text-primary-700 font-inter-medium text-center">
             🇳🇬 Trusted by professionals earning ₦300k - ₦1.5M/month
           </Text>
         </View>

@@ -75,7 +75,7 @@ export const CreditScoreGauge: React.FC<CreditScoreGaugeProps> = ({
           style={{ width: size, height: size }}
         >
           <Text
-            className={`${fontSize} font-bold ${
+            className={`${fontSize} font-inter-bold ${
               variant === "dark" ? "text-white" : "text-slate-900"
             }`}
           >

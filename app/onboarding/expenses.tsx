@@ -182,7 +182,7 @@ export default function ExpensesScreen() {
         >
           {/* Hero */}
           <View className="py-4">
-            <Text className="text-2xl font-bold text-dark-800">
+            <Text className="text-2xl font-inter-bold text-dark-800">
               Monthly Expenses
             </Text>
             <Text className="text-base text-dark-500 mt-2">
@@ -196,7 +196,7 @@ export default function ExpensesScreen() {
             <Text className="text-sm text-slate-600">
               Your stated monthly income:
             </Text>
-            <Text className="text-xl font-bold text-slate-900">
+            <Text className="text-xl font-inter-bold text-slate-900">
               {formatNaira(monthlyIncome)}
             </Text>
           </View>
@@ -217,7 +217,7 @@ export default function ExpensesScreen() {
                     >
                       <Icon size={16} color={category.color} />
                     </View>
-                    <Text className="font-medium text-slate-800 flex-1">
+                    <Text className="font-inter-medium text-slate-800 flex-1">
                       {category.label}
                     </Text>
                     {hasValue && <Check size={16} color="#16a34a" />}
@@ -242,7 +242,7 @@ export default function ExpensesScreen() {
               className={`rounded-xl p-4 mt-4 ${isExpensesTooHigh ? "bg-red-50 border-2 border-red-200" : "bg-slate-900"}`}
             >
               <Text
-                className={`text-sm font-medium mb-3 ${isExpensesTooHigh ? "text-red-800" : "text-white"}`}
+                className={`text-sm font-inter-medium mb-3 ${isExpensesTooHigh ? "text-red-800" : "text-white"}`}
               >
                 Expense Summary
               </Text>
@@ -255,7 +255,7 @@ export default function ExpensesScreen() {
                     Total Expenses
                   </Text>
                   <Text
-                    className={`text-lg font-bold ${isExpensesTooHigh ? "text-red-700" : "text-white"}`}
+                    className={`text-lg font-inter-bold ${isExpensesTooHigh ? "text-red-700" : "text-white"}`}
                   >
                     {formatNaira(totalExpenses)}
                   </Text>
@@ -267,7 +267,7 @@ export default function ExpensesScreen() {
                     % of Income
                   </Text>
                   <Text
-                    className={`text-lg font-bold ${isExpensesTooHigh ? "text-red-700" : expenseRatio > 70 ? "text-yellow-400" : "text-lime-400"}`}
+                    className={`text-lg font-inter-bold ${isExpensesTooHigh ? "text-red-700" : expenseRatio > 70 ? "text-yellow-400" : "text-lime-400"}`}
                   >
                     {expenseRatio.toFixed(0)}%
                   </Text>
@@ -279,7 +279,7 @@ export default function ExpensesScreen() {
                     Remaining
                   </Text>
                   <Text
-                    className={`text-lg font-bold ${disposableIncome < 0 ? "text-red-500" : isExpensesTooHigh ? "text-red-700" : "text-lime-400"}`}
+                    className={`text-lg font-inter-bold ${disposableIncome < 0 ? "text-red-500" : isExpensesTooHigh ? "text-red-700" : "text-lime-400"}`}
                   >
                     {formatNaira(Math.max(0, disposableIncome))}
                   </Text>
@@ -303,7 +303,7 @@ export default function ExpensesScreen() {
             <View className="flex-row items-start">
               <Info size={20} color="#3b82f6" style={{ marginTop: 2 }} />
               <View className="ml-3 flex-1">
-                <Text className="text-sm font-medium text-blue-800 mb-1">
+                <Text className="text-sm font-inter-medium text-blue-800 mb-1">
                   Why we ask about expenses
                 </Text>
                 <Text className="text-sm text-blue-700 leading-relaxed">

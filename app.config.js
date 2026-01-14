@@ -83,6 +83,14 @@ export default {
           },
         },
       ],
+      // EAS Update configuration
+      [
+        "expo-updates",
+        {
+          username: "creditgo",
+          projectId: "779517ca-a654-4a8e-9e95-c88ef8cb042b",
+        },
+      ],
     ],
     extra: {
       router: {},
@@ -95,6 +103,9 @@ export default {
     },
     updates: {
       url: "https://u.expo.dev/779517ca-a654-4a8e-9e95-c88ef8cb042b",
+      enabled: true,
+      checkAutomatically: "ON_LOAD",
+      fallbackToCacheTimeout: 0,
     },
     optimizations: {
       bundle: true,

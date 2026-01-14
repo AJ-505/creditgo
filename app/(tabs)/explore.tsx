@@ -110,7 +110,7 @@ export default function ExploreScreen() {
     <SafeAreaView className="flex-1 bg-slate-50">
       {/* Header */}
       <View className="px-5 pt-2 pb-4">
-        <Text className="text-2xl font-bold text-slate-900 mb-1">
+        <Text className="text-2xl font-inter-bold text-slate-900 mb-1">
           Explore Partners
         </Text>
         <Text className="text-sm text-slate-500 mb-4">
@@ -172,7 +172,7 @@ export default function ExploreScreen() {
                     <Icon size={20} color={category.color} />
                   </View>
                   <View className="flex-1">
-                    <Text className="text-slate-900 font-semibold text-base">
+                    <Text className="text-slate-900 font-inter-semibold text-base">
                       {category.name}
                     </Text>
                     <Text className="text-slate-500 text-xs">
@@ -245,7 +245,7 @@ const CompactPartnerCard: React.FC<CompactPartnerCardProps> = ({
       {/* Partner Info */}
       <View className="flex-1">
         <View className="flex-row items-center mb-1">
-          <Text className="text-slate-900 font-medium text-sm flex-1">
+          <Text className="text-slate-900 font-inter-medium text-sm flex-1">
             {partner.name}
           </Text>
           {partner.rating && (

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -34,19 +34,12 @@ import {
   TrendingUp as TrendingUpIcon,
   Flame,
 } from "lucide-react-native";
-import {
-  useFonts,
-  Inter_400Regular,
-  Inter_500Medium,
-  Inter_600SemiBold,
-  Inter_700Bold,
-} from "@expo-google-fonts/inter";
 import { useAppStore, useSavings } from "../../src/store";
 import { formatNaira } from "../../src/constants";
 import { getCreditTier } from "../../src/utils/creditCalculator";
 
 const SuccessAnimation: React.FC<{ visible: boolean }> = ({ visible }) => {
-  const [animation] = useState(new Animated.Value(0));
+  const [animation] = useState(() => new Animated.Value(0));
 
   React.useEffect(() => {
     if (visible) {
@@ -68,7 +61,7 @@ const SuccessAnimation: React.FC<{ visible: boolean }> = ({ visible }) => {
     } else {
       animation.setValue(0);
     }
-  }, [visible]);
+  }, [visible, animation]);
 
   const scale = animation.interpolate({
     inputRange: [0, 1, 2],
@@ -101,21 +94,6 @@ const SuccessAnimation: React.FC<{ visible: boolean }> = ({ visible }) => {
 };
 
 export default function WalletScreen() {
-  const [fontsLoaded] = useFonts({
-    Inter: Inter_400Regular,
-    "Inter-Medium": Inter_500Medium,
-    "Inter-SemiBold": Inter_600SemiBold,
-    "Inter-Bold": Inter_700Bold,
-  });
-
-  if (!fontsLoaded) {
-    return (
-      <View className="flex-1 bg-slate-50 items-center justify-center">
-        <ActivityIndicator size="large" color="#c8ff00" />
-      </View>
-    );
-  }
-
   const financialProfile = useAppStore((state) => state.financialProfile);
   const transactions = useAppStore((state) => state.transactions);
   const user = useAppStore((state) => state.user);
@@ -143,32 +121,42 @@ export default function WalletScreen() {
   const creditTier = getCreditTier(creditScore);
 
   const suggestedSaving = Math.floor(monthlyIncome * 0.1);
-  // Users should NOT save more than their safe monthly repayment amount
   const maxSavableAmount = safeAmount;
 
-  const totalCredits = transactions
-    .filter((t) => t.type === "credit")
-    .reduce((sum, t) => sum + t.amount, 0);
+  const totalCredits = useMemo(
+    () =>
+      transactions
+        .filter((t) => t.type === "credit")
+        .reduce((sum, t) => sum + t.amount, 0),
+    [transactions],
+  );
 
-  const totalDebits = transactions
-    .filter((t) => t.type === "debit")
-    .reduce((sum, t) => sum + t.amount, 0);
+  const totalDebits = useMemo(
+    () =>
+      transactions
+        .filter((t) => t.type === "debit")
+        .reduce((sum, t) => sum + t.amount, 0),
+    [transactions],
+  );
 
-  const formatAmountInput = (text: string) => {
+  const formatAmountInput = useCallback((text: string) => {
     const cleaned = text.replace(/\D/g, "");
     if (cleaned) {
       return parseInt(cleaned).toLocaleString("en-NG");
     }
     return "";
-  };
+  }, []);
 
-  const parseAmount = (formatted: string): number => {
+  const parseAmount = useCallback((formatted: string): number => {
     return parseInt(formatted.replace(/\D/g, "")) || 0;
-  };
+  }, []);
 
-  const amountToSave = useMemo(() => parseAmount(saveAmount), [saveAmount]);
+  const amountToSave = useMemo(
+    () => parseAmount(saveAmount),
+    [saveAmount, parseAmount],
+  );
 
-  const handleSave = async () => {
+  const handleSave = useCallback(async () => {
     const amount = parseAmount(saveAmount);
 
     if (amount < 1000) {
@@ -200,16 +188,13 @@ export default function WalletScreen() {
 
     setTimeout(() => {
       setShowSuccessModal(false);
-
-      // Calculate score increase: 1 point for every ₦1,000 saved (minimum 1 point)
-      const scoreIncrease = Math.max(1, Math.floor(amount / 1000));
       setShowGamificationModal(true);
     }, 1500);
-  };
+  }, [saveAmount, parseAmount, maxSavableAmount, safeAmount, addDeposit]);
 
-  const closeGamification = () => {
+  const closeGamification = useCallback(() => {
     setShowGamificationModal(false);
-  };
+  }, []);
 
   return (
     <SafeAreaView className="flex-1 bg-slate-50">
@@ -219,7 +204,9 @@ export default function WalletScreen() {
         contentContainerStyle={{ paddingBottom: 20 }}
       >
         <View className="px-5 pt-2 pb-4">
-          <Text className="text-2xl font-bold text-slate-900">Wallet</Text>
+          <Text className="text-2xl font-inter-bold text-slate-900">
+            Wallet
+          </Text>
         </View>
 
         <View className="mx-5 bg-slate-900 rounded-3xl p-5 mb-5 overflow-hidden">
@@ -229,7 +216,7 @@ export default function WalletScreen() {
             <PiggyBank size={20} color="#c8ff00" />
             <Text className="text-slate-400 text-sm ml-2">Your Savings</Text>
           </View>
-          <Text className="text-4xl font-bold text-white mb-1">
+          <Text className="text-4xl font-inter-bold text-white mb-1">
             {formatNaira(savingsBalance)}
           </Text>
           <Text className="text-slate-500 text-sm mb-4">
@@ -242,7 +229,9 @@ export default function WalletScreen() {
             activeOpacity={0.8}
           >
             <Plus size={20} color="#0f172a" />
-            <Text className="text-slate-900 font-bold ml-2">Add Money</Text>
+            <Text className="text-slate-900 font-inter-bold ml-2">
+              Add Money
+            </Text>
           </TouchableOpacity>
         </View>
 
@@ -254,7 +243,7 @@ export default function WalletScreen() {
               </View>
             </View>
             <Text className="text-slate-500 text-xs">Monthly Income</Text>
-            <Text className="text-slate-900 font-bold text-lg">
+            <Text className="text-slate-900 font-inter-bold text-lg">
               {formatNaira(monthlyIncome)}
             </Text>
             {totalCredits > 0 && (
@@ -270,7 +259,7 @@ export default function WalletScreen() {
               </View>
             </View>
             <Text className="text-slate-500 text-xs">Expenses</Text>
-            <Text className="text-slate-900 font-bold text-lg">
+            <Text className="text-slate-900 font-inter-bold text-lg">
               {formatNaira(monthlyExpenses || totalDebits)}
             </Text>
             {monthlyExpenses > 0 && totalDebits > 0 && (
@@ -288,14 +277,16 @@ export default function WalletScreen() {
                 <Target size={20} color="#8b5cf6" />
               </View>
               <View>
-                <Text className="text-slate-900 font-bold">Savings Goal</Text>
+                <Text className="text-slate-900 font-inter-bold">
+                  Savings Goal
+                </Text>
                 <Text className="text-slate-500 text-xs">
                   Save {formatNaira(suggestedSaving)}/month
                 </Text>
               </View>
             </View>
             <View className="bg-violet-100 px-3 py-1 rounded-full">
-              <Text className="text-violet-700 text-xs font-medium">
+              <Text className="text-violet-700 text-xs font-inter-medium">
                 {savingsBalance >= suggestedSaving ? "✓ Hit" : "Active"}
               </Text>
             </View>
@@ -320,7 +311,7 @@ export default function WalletScreen() {
         </View>
 
         <View className="mx-5 mb-5">
-          <Text className="text-lg font-bold text-slate-900 mb-3">
+          <Text className="text-lg font-inter-bold text-slate-900 mb-3">
             Savings History
           </Text>
 
@@ -339,7 +330,7 @@ export default function WalletScreen() {
                     <ArrowDownLeft size={18} color="#22c55e" />
                   </View>
                   <View className="flex-1">
-                    <Text className="text-slate-900 font-medium">
+                    <Text className="text-slate-900 font-inter-medium">
                       {item.type === "deposit"
                         ? "Savings Deposit"
                         : "Withdrawal"}
@@ -356,8 +347,8 @@ export default function WalletScreen() {
                   <Text
                     className={
                       item.type === "deposit"
-                        ? "text-green-600 font-bold"
-                        : "text-red-600 font-bold"
+                        ? "text-green-600 font-inter-bold"
+                        : "text-red-600 font-inter-bold"
                     }
                   >
                     {item.type === "deposit" ? "+" : "-"}
@@ -377,7 +368,7 @@ export default function WalletScreen() {
         </View>
 
         <View className="mx-5 mb-8">
-          <Text className="text-lg font-bold text-slate-900 mb-3">
+          <Text className="text-lg font-inter-bold text-slate-900 mb-3">
             SMS Transactions
           </Text>
 
@@ -405,7 +396,7 @@ export default function WalletScreen() {
                   </View>
                   <View className="flex-1">
                     <Text
-                      className="text-slate-900 font-medium"
+                      className="text-slate-900 font-inter-medium"
                       numberOfLines={1}
                     >
                       {txn.source || txn.description}
@@ -418,7 +409,7 @@ export default function WalletScreen() {
                     </Text>
                   </View>
                   <Text
-                    className={`font-bold ${
+                    className={`font-inter-bold ${
                       txn.type === "credit" ? "text-green-600" : "text-red-600"
                     }`}
                   >
@@ -445,7 +436,7 @@ export default function WalletScreen() {
               <Sparkles size={20} color="#ffffff" />
             </View>
             <View className="flex-1">
-              <Text className="text-white font-bold mb-1">
+              <Text className="text-white font-inter-bold mb-1">
                 Credit Score: {creditScore}
               </Text>
               <Text className="text-white/80 text-sm leading-5">
@@ -475,7 +466,7 @@ export default function WalletScreen() {
               onPress={() => {}}
             >
               <View className="flex-row items-center justify-between mb-6">
-                <Text className="text-xl font-bold text-slate-900">
+                <Text className="text-xl font-inter-bold text-slate-900">
                   Add Money
                 </Text>
                 <TouchableOpacity
@@ -491,11 +482,11 @@ export default function WalletScreen() {
                   Amount to save (max: {formatNaira(maxSavableAmount)})
                 </Text>
                 <View className="flex-row items-center bg-slate-100 rounded-xl px-4 py-3">
-                  <Text className="text-slate-900 text-2xl font-bold mr-2">
+                  <Text className="text-slate-900 text-2xl font-inter-bold mr-2">
                     ₦
                   </Text>
                   <TextInput
-                    className="flex-1 text-2xl font-bold text-slate-900"
+                    className="flex-1 text-2xl font-inter-bold text-slate-900"
                     placeholder="0"
                     placeholderTextColor="#94a3b8"
                     keyboardType="number-pad"
@@ -528,7 +519,7 @@ export default function WalletScreen() {
                       }`}
                     >
                       <Text
-                        className={`text-sm font-medium ${
+                        className={`text-sm font-inter-medium ${
                           isDisabled ? "text-slate-400" : "text-slate-700"
                         }`}
                       >
@@ -560,7 +551,7 @@ export default function WalletScreen() {
                     color={paymentMethod === "card" ? "#c8ff00" : "#64748b"}
                   />
                   <Text
-                    className={`${paymentMethod === "card" ? "text-white" : "text-slate-600"} font-medium ml-2`}
+                    className={`${paymentMethod === "card" ? "text-white" : "text-slate-600"} font-inter-medium ml-2`}
                   >
                     Card
                   </Text>
@@ -576,7 +567,7 @@ export default function WalletScreen() {
                     color={paymentMethod === "bank" ? "#c8ff00" : "#64748b"}
                   />
                   <Text
-                    className={`${paymentMethod === "bank" ? "text-white" : "text-slate-600"} font-medium ml-2`}
+                    className={`${paymentMethod === "bank" ? "text-white" : "text-slate-600"} font-inter-medium ml-2`}
                   >
                     Bank
                   </Text>
@@ -592,7 +583,7 @@ export default function WalletScreen() {
                     color={paymentMethod === "ussd" ? "#c8ff00" : "#64748b"}
                   />
                   <Text
-                    className={`${paymentMethod === "ussd" ? "text-white" : "text-slate-600"} font-medium ml-2`}
+                    className={`${paymentMethod === "ussd" ? "text-white" : "text-slate-600"} font-inter-medium ml-2`}
                   >
                     USSD
                   </Text>
@@ -612,12 +603,12 @@ export default function WalletScreen() {
                 {isProcessing ? (
                   <View className="flex-row items-center">
                     <ActivityIndicator size="small" color="#0f172a" />
-                    <Text className="text-slate-900 font-bold ml-2">
+                    <Text className="text-slate-900 font-inter-bold ml-2">
                       Processing...
                     </Text>
                   </View>
                 ) : (
-                  <Text className="text-slate-900 font-bold text-lg">
+                  <Text className="text-slate-900 font-inter-bold text-lg">
                     {`Pay ${amountToSave ? formatNaira(amountToSave) : "₦0"}`}
                   </Text>
                 )}
@@ -638,7 +629,7 @@ export default function WalletScreen() {
         <View className="flex-1 bg-black/50 items-center justify-center">
           <View className="items-center">
             <SuccessAnimation visible={showSuccessModal} />
-            <Text className="text-slate-900 font-bold text-xl mt-6">
+            <Text className="text-slate-900 font-inter-bold text-xl mt-6">
               Payment Successful!
             </Text>
             <Text className="text-slate-500 text-center mt-2">
@@ -660,11 +651,11 @@ export default function WalletScreen() {
               <TrendingUpIcon size={40} color="#65a30d" />
             </View>
 
-            <Text className="text-lime-600 font-bold text-sm uppercase tracking-wide mb-2">
+            <Text className="text-lime-600 font-inter-bold text-sm uppercase tracking-wide mb-2">
               Credit Score Improved!
             </Text>
 
-            <Text className="text-4xl font-bold text-slate-900">
+            <Text className="text-4xl font-inter-bold text-slate-900">
               +{Math.max(1, Math.floor(amountToSave / 1000))}
             </Text>
 
@@ -677,7 +668,7 @@ export default function WalletScreen() {
               <View className="bg-slate-900 rounded-xl p-4 w-full mb-4">
                 <View className="flex-row items-center justify-center">
                   <Flame size={18} color="#fbbf24" />
-                  <Text className="text-lime-400 font-bold text-center ml-2">
+                  <Text className="text-lime-400 font-inter-bold text-center ml-2">
                     {getTotalSessions()} savings sessions
                   </Text>
                 </View>
@@ -692,7 +683,7 @@ export default function WalletScreen() {
               className="bg-slate-900 rounded-xl py-3 px-8 w-full"
               activeOpacity={0.9}
             >
-              <Text className="text-lime-400 font-bold text-center">
+              <Text className="text-lime-400 font-inter-bold text-center">
                 Continue
               </Text>
             </TouchableOpacity>

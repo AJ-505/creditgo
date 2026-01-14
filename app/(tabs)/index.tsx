@@ -81,10 +81,10 @@ export default function HomeScreen() {
         {/* Header */}
         <View className="px-5 pt-2 pb-4 flex-row items-center justify-between">
           <View>
-            <Text className="text-slate-500 text-sm font-medium">
+            <Text className="text-slate-500 text-sm font-inter-medium">
               Welcome back 👋
             </Text>
-            <Text className="text-slate-900 text-xl font-bold">
+            <Text className="text-slate-900 text-xl font-inter-bold">
               {user?.firstName || "Champion"}
             </Text>
           </View>
@@ -105,7 +105,7 @@ export default function HomeScreen() {
                 <Text className="text-slate-400 text-sm mb-1">
                   Your Safe Amount
                 </Text>
-                <Text className="text-4xl font-bold text-white tracking-tight">
+                <Text className="text-4xl font-inter-bold text-white tracking-tight">
                   {formatNaira(safeAmount)}
                 </Text>
                 <Text className="text-slate-500 text-xs mt-1">
@@ -122,7 +122,7 @@ export default function HomeScreen() {
                   />
                 </View>
                 <Text
-                  className="text-xs font-medium mt-1"
+                  className="text-xs font-inter-medium mt-1"
                   style={{ color: creditTier.color }}
                 >
                   {creditTier.name}
@@ -134,19 +134,19 @@ export default function HomeScreen() {
             <View className="flex-row bg-slate-800 rounded-2xl p-3 mt-2">
               <View className="flex-1 items-center border-r border-slate-700">
                 <Text className="text-slate-400 text-xs">Score</Text>
-                <Text className="text-white font-bold text-lg">
+                <Text className="text-white font-inter-bold text-lg">
                   {creditScore}
                 </Text>
               </View>
               <View className="flex-1 items-center border-r border-slate-700">
                 <Text className="text-slate-400 text-xs">Income</Text>
-                <Text className="text-white font-bold text-sm">
+                <Text className="text-white font-inter-bold text-sm">
                   {formatNaira(user?.monthlyIncome || 0)}
                 </Text>
               </View>
               <View className="flex-1 items-center">
                 <Text className="text-slate-400 text-xs">Saved</Text>
-                <Text className="text-lime-400 font-bold text-lg">
+                <Text className="text-lime-400 font-inter-bold text-lg">
                   {formatNaira(savingsBalance)}
                 </Text>
               </View>
@@ -165,7 +165,7 @@ export default function HomeScreen() {
               <PiggyBank size={24} color="#c8ff00" />
             </View>
             <View className="flex-1">
-              <Text className="text-slate-900 font-bold text-base">
+              <Text className="text-slate-900 font-inter-bold text-base">
                 Start Saving Today
               </Text>
               <Text className="text-slate-700 text-sm">
@@ -181,14 +181,14 @@ export default function HomeScreen() {
         {/* Quick Categories */}
         <View className="px-5 mb-5">
           <View className="flex-row items-center justify-between mb-3">
-            <Text className="text-lg font-bold text-slate-900">
+            <Text className="text-lg font-inter-bold text-slate-900">
               Browse Categories
             </Text>
             <TouchableOpacity
               onPress={() => router.push("/(tabs)/explore")}
               className="flex-row items-center"
             >
-              <Text className="text-slate-500 text-sm font-medium">
+              <Text className="text-slate-500 text-sm font-inter-medium">
                 See all
               </Text>
               <ChevronRight size={16} color="#64748b" />
@@ -214,7 +214,7 @@ export default function HomeScreen() {
                 >
                   <cat.icon size={24} color={cat.color} />
                 </View>
-                <Text className="text-xs text-slate-600 font-medium">
+                <Text className="text-xs text-slate-600 font-inter-medium">
                   {cat.label}
                 </Text>
               </TouchableOpacity>
@@ -227,7 +227,7 @@ export default function HomeScreen() {
           <View className="flex-row items-center justify-between mb-3">
             <View className="flex-row items-center">
               <Sparkles size={18} color="#c8ff00" />
-              <Text className="text-lg font-bold text-slate-900 ml-2">
+              <Text className="text-lg font-inter-bold text-slate-900 ml-2">
                 Partners For You
               </Text>
             </View>
@@ -258,7 +258,7 @@ export default function HomeScreen() {
                     </View>
                     <View className="flex-1">
                       <Text
-                        className="text-slate-900 font-bold"
+                        className="text-slate-900 font-inter-bold"
                         numberOfLines={1}
                       >
                         {partner.name}
@@ -282,7 +282,7 @@ export default function HomeScreen() {
                     </Text>
                     {partner.rating && (
                       <View className="flex-row items-center">
-                        <Text className="text-amber-500 text-xs font-medium">
+                        <Text className="text-amber-500 text-xs font-inter-medium">
                           ★ {partner.rating}
                         </Text>
                       </View>
@@ -303,7 +303,7 @@ export default function HomeScreen() {
         {/* Recent Activity */}
         {transactions.length > 0 && (
           <View className="px-5 mb-5">
-            <Text className="text-lg font-bold text-slate-900 mb-3">
+            <Text className="text-lg font-inter-bold text-slate-900 mb-3">
               Recent Activity
             </Text>
             <View className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
@@ -329,7 +329,7 @@ export default function HomeScreen() {
                   </View>
                   <View className="flex-1">
                     <Text
-                      className="text-slate-900 font-medium"
+                      className="text-slate-900 font-inter-medium"
                       numberOfLines={1}
                     >
                       {txn.source || txn.description}
@@ -342,7 +342,7 @@ export default function HomeScreen() {
                     </Text>
                   </View>
                   <Text
-                    className={`font-bold ${txn.type === "credit" ? "text-green-600" : "text-red-600"}`}
+                    className={`font-inter-bold ${txn.type === "credit" ? "text-green-600" : "text-red-600"}`}
                   >
                     {txn.type === "credit" ? "+" : "-"}
                     {formatNaira(txn.amount)}
@@ -360,7 +360,7 @@ export default function HomeScreen() {
               <Text className="text-lg">💡</Text>
             </View>
             <View className="flex-1">
-              <Text className="text-white font-bold mb-1">Pro Tip</Text>
+              <Text className="text-white font-inter-bold mb-1">Pro Tip</Text>
               <Text className="text-slate-400 text-sm leading-5">
                 Your safe amount of {formatNaira(safeAmount)}/month means you
                 can comfortably repay financing without stress. This is 15-18%

@@ -21,7 +21,7 @@ const TabIcon = ({ Icon, label, focused }: TabIconProps) => (
       />
     </View>
     <Text
-      className={`text-[11px] font-medium leading-tight ${
+      className={`text-[11px] font-inter-medium leading-tight ${
         focused ? "text-lime-600" : "text-slate-400"
       }`}
       numberOfLines={1}

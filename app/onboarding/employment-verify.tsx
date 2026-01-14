@@ -52,7 +52,7 @@ const InstitutionBadge: React.FC<InstitutionBadgeProps> = ({ institution }) => {
           <University size={16} color="#6366f1" />
         </View>
         <View>
-          <Text className="text-indigo-700 font-semibold text-sm">
+          <Text className="text-indigo-700 font-inter-semibold text-sm">
             {institution.displayName}
           </Text>
           <Text className="text-indigo-500 text-xs">University Detected</Text>
@@ -75,7 +75,7 @@ const InstitutionBadge: React.FC<InstitutionBadgeProps> = ({ institution }) => {
       </View>
       <View>
         <Text
-          className={`font-semibold text-sm ${
+          className={`font-inter-semibold text-sm ${
             institution.isVerified ? "text-green-700" : "text-slate-700"
           }`}
         >
@@ -270,7 +270,7 @@ export default function EmploymentVerifyScreen() {
           keyboardShouldPersistTaps="handled"
         >
           <View className="py-6">
-            <Text className="text-2xl font-bold text-slate-900">
+            <Text className="text-2xl font-inter-bold text-slate-900">
               {isSalaried && "Verify Your Employment"}
               {isFreelancer && "Verify Your Freelance Profile"}
               {isBusiness && "Tell Us About Your Business"}
@@ -317,7 +317,7 @@ export default function EmploymentVerifyScreen() {
                   <View className="flex-row items-center justify-between">
                     <InstitutionBadge institution={detectedInstitution} />
                     <View className="bg-indigo-100 px-2 py-1 rounded-full">
-                      <Text className="text-indigo-700 text-xs font-medium">
+                      <Text className="text-indigo-700 text-xs font-inter-medium">
                         Detected
                       </Text>
                     </View>
@@ -336,7 +336,7 @@ export default function EmploymentVerifyScreen() {
                     <Check size={20} color="#22c55e" />
                   </View>
                   <View>
-                    <Text className="text-green-700 font-semibold">
+                    <Text className="text-green-700 font-inter-semibold">
                       Employment Verified!
                     </Text>
                     <Text className="text-green-600 text-sm">
@@ -348,32 +348,11 @@ export default function EmploymentVerifyScreen() {
                 </View>
               )}
 
-              {!emailVerified && (
-                <Button
-                  title={
-                    isVerifyingEmail
-                      ? "Verifying..."
-                      : detectedInstitution
-                        ? "Verify & Continue"
-                        : "Continue"
-                  }
-                  onPress={handleVerifyEmail}
-                  disabled={!isValidEmail || isVerifyingEmail}
-                  loading={isVerifyingEmail}
-                  icon={
-                    detectedInstitution?.isVerified ? (
-                      <Sparkles size={18} color="#fff" />
-                    ) : null
-                  }
-                  className="mb-4"
-                />
-              )}
-
               {!detectedInstitution && (
                 <View className="bg-slate-50 p-4 rounded-xl">
                   <View className="flex-row items-center mb-2">
                     <Info size={18} color="#64748b" />
-                    <Text className="text-sm font-medium text-slate-700 ml-2">
+                    <Text className="text-sm font-inter-medium text-slate-700 ml-2">
                       Smart Detection
                     </Text>
                   </View>
@@ -418,7 +397,7 @@ export default function EmploymentVerifyScreen() {
                     <Check size={20} color="#22c55e" />
                   </View>
                   <View>
-                    <Text className="text-green-700 font-semibold">
+                    <Text className="text-green-700 font-inter-semibold">
                       Freelancer Verified!
                     </Text>
                     <Text className="text-green-600 text-sm">
@@ -442,7 +421,7 @@ export default function EmploymentVerifyScreen() {
               <View className="bg-slate-50 p-4 rounded-xl">
                 <View className="flex-row items-center mb-2">
                   <Globe size={18} color="#64748b" />
-                  <Text className="text-sm font-medium text-slate-700 ml-2">
+                  <Text className="text-sm font-inter-medium text-slate-700 ml-2">
                     Accepted Platforms
                   </Text>
                 </View>
@@ -472,7 +451,7 @@ export default function EmploymentVerifyScreen() {
                     style={{ marginTop: 2 }}
                   />
                   <View className="ml-3 flex-1">
-                    <Text className="text-sm font-medium text-amber-800 mb-1">
+                    <Text className="text-sm font-inter-medium text-amber-800 mb-1">
                       Business Verification
                     </Text>
                     <Text className="text-sm text-amber-700">
@@ -488,21 +467,27 @@ export default function EmploymentVerifyScreen() {
 
         <View className="px-6 pb-6 pt-4 bg-white border-t border-slate-100">
           <Button
-            title="Continue"
+            title={detectedInstitution ? "Verify & Continue" : "Continue"}
             onPress={handleContinue}
             disabled={!canContinue}
             icon={
-              <ChevronRight
-                size={20}
-                color={canContinue ? "#fff" : "#94a3b8"}
-              />
+              detectedInstitution ? (
+                <Sparkles size={20} color="#fff" />
+              ) : (
+                <ChevronRight
+                  size={20}
+                  color={canContinue ? "#fff" : "#94a3b8"}
+                />
+              )
             }
             iconPosition="right"
             size="lg"
           />
           {!canContinue && isSalaried && (
             <Text className="text-center text-xs text-slate-400 mt-3">
-              Please enter a valid email to continue
+              {detectedInstitution
+                ? "Tap 'Verify & Continue' to confirm your membership"
+                : "Please enter a valid email to continue"}
             </Text>
           )}
           {!canContinue && isFreelancer && (
@@ -525,7 +510,7 @@ export default function EmploymentVerifyScreen() {
               <View className="w-16 h-16 bg-indigo-100 rounded-full items-center justify-center mb-3">
                 <University size={32} color="#6366f1" />
               </View>
-              <Text className="text-xl font-bold text-slate-900 text-center">
+              <Text className="text-xl font-inter-bold text-slate-900 text-center">
                 {detectedInstitution?.displayName}
               </Text>
               <Text className="text-sm text-slate-500 text-center mt-1">
@@ -544,7 +529,7 @@ export default function EmploymentVerifyScreen() {
               className="bg-indigo-600 rounded-xl py-3.5 items-center mb-3"
               activeOpacity={0.9}
             >
-              <Text className="text-white font-semibold">
+              <Text className="text-white font-inter-semibold">
                 Yes, Verify My Membership
               </Text>
             </TouchableOpacity>
@@ -554,7 +539,9 @@ export default function EmploymentVerifyScreen() {
               className="py-3.5 items-center"
               activeOpacity={0.7}
             >
-              <Text className="text-slate-500 font-medium">Skip for Now</Text>
+              <Text className="text-slate-500 font-inter-medium">
+                Skip for Now
+              </Text>
             </TouchableOpacity>
           </View>
         </View>

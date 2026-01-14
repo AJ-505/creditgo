@@ -50,7 +50,7 @@ export default function ApplicationSuccessScreen() {
           style={{ opacity: opacityAnim }}
           className="items-center"
         >
-          <Text className="text-3xl font-bold text-dark-800 text-center mb-2">
+          <Text className="text-3xl font-inter-bold text-dark-800 text-center mb-2">
             Application Sent! 🎉
           </Text>
           <Text className="text-base text-dark-500 text-center mb-8">
@@ -60,17 +60,19 @@ export default function ApplicationSuccessScreen() {
 
           {/* What Happens Next */}
           <View className="w-full bg-gray-50 rounded-xl p-5 mb-6">
-            <Text className="text-lg font-semibold text-dark-800 mb-4">
+            <Text className="text-lg font-inter-semibold text-dark-800 mb-4">
               What happens next?
             </Text>
 
             <View className="space-y-4">
               <View className="flex-row items-start">
                 <View className="w-8 h-8 bg-primary-100 rounded-full items-center justify-center mr-3">
-                  <Text className="text-primary-600 font-bold text-sm">1</Text>
+                  <Text className="text-primary-600 font-inter-bold text-sm">
+                    1
+                  </Text>
                 </View>
                 <View className="flex-1">
-                  <Text className="text-dark-700 font-medium">
+                  <Text className="text-dark-700 font-inter-medium">
                     Partner Review
                   </Text>
                   <Text className="text-dark-500 text-sm">
@@ -82,10 +84,12 @@ export default function ApplicationSuccessScreen() {
 
               <View className="flex-row items-start">
                 <View className="w-8 h-8 bg-primary-100 rounded-full items-center justify-center mr-3">
-                  <Text className="text-primary-600 font-bold text-sm">2</Text>
+                  <Text className="text-primary-600 font-inter-bold text-sm">
+                    2
+                  </Text>
                 </View>
                 <View className="flex-1">
-                  <Text className="text-dark-700 font-medium">
+                  <Text className="text-dark-700 font-inter-medium">
                     Quick Decision
                   </Text>
                   <Text className="text-dark-500 text-sm">
@@ -96,10 +100,12 @@ export default function ApplicationSuccessScreen() {
 
               <View className="flex-row items-start">
                 <View className="w-8 h-8 bg-primary-100 rounded-full items-center justify-center mr-3">
-                  <Text className="text-primary-600 font-bold text-sm">3</Text>
+                  <Text className="text-primary-600 font-inter-bold text-sm">
+                    3
+                  </Text>
                 </View>
                 <View className="flex-1">
-                  <Text className="text-dark-700 font-medium">
+                  <Text className="text-dark-700 font-inter-medium">
                     Get Your Asset
                   </Text>
                   <Text className="text-dark-500 text-sm">

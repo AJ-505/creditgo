@@ -182,7 +182,7 @@ export default function IncomeScreen() {
         >
           {/* Hero */}
           <View className="py-6">
-            <Text className="text-2xl font-bold text-dark-800">
+            <Text className="text-2xl font-inter-bold text-dark-800">
               Your Income Details
             </Text>
             <Text className="text-base text-dark-500 mt-2">
@@ -209,7 +209,7 @@ export default function IncomeScreen() {
                 )}
                 <View className="ml-3 flex-1">
                   <Text
-                    className={`font-medium ${smsPermissionGranted ? "text-primary-700" : "text-accent-700"}`}
+                    className={`font-inter-medium ${smsPermissionGranted ? "text-primary-700" : "text-accent-700"}`}
                   >
                     {smsPermissionGranted
                       ? "SMS Access Enabled ✓"
@@ -268,7 +268,7 @@ export default function IncomeScreen() {
             <View className="flex-row items-start">
               <Info size={20} color="#3b82f6" style={{ marginTop: 2 }} />
               <View className="ml-3 flex-1">
-                <Text className="text-sm font-medium text-blue-800 mb-1">
+                <Text className="text-sm font-inter-medium text-blue-800 mb-1">
                   How we calculate your Safe Amount
                 </Text>
                 <Text className="text-sm text-blue-700 leading-relaxed">
@@ -283,25 +283,25 @@ export default function IncomeScreen() {
           {/* Income Range Info */}
           {isValid && (
             <View className="bg-slate-900 rounded-xl p-4 mt-4">
-              <Text className="text-sm font-medium text-white mb-2">
+              <Text className="text-sm font-inter-medium text-white mb-2">
                 Based on {formatNaira(incomeValue)}/month:
               </Text>
               <View className="flex-row justify-between">
                 <View>
                   <Text className="text-xs text-slate-400">Est. Expenses</Text>
-                  <Text className="text-sm font-medium text-white">
+                  <Text className="text-sm font-inter-medium text-white">
                     {formatNaira(Math.floor(incomeValue * 0.65))}
                   </Text>
                 </View>
                 <View>
                   <Text className="text-xs text-slate-400">Disposable</Text>
-                  <Text className="text-sm font-medium text-white">
+                  <Text className="text-sm font-inter-medium text-white">
                     {formatNaira(Math.floor(incomeValue * 0.35))}
                   </Text>
                 </View>
                 <View>
                   <Text className="text-xs text-slate-400">Safe Limit</Text>
-                  <Text className="text-sm font-bold text-lime-400">
+                  <Text className="text-sm font-inter-bold text-lime-400">
                     {formatNaira(Math.floor(incomeValue * 0.15))}-
                     {formatNaira(Math.floor(incomeValue * 0.18))}
                   </Text>

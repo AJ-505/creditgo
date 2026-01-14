@@ -23,6 +23,7 @@ import {
   Edit3,
   X,
 } from "lucide-react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAppStore } from "../../src/store";
 import { formatNaira } from "../../src/constants";
 import { CreditScoreGauge } from "../../src/components";
@@ -99,14 +100,18 @@ export default function ProfileScreen() {
   const handleLogout = () => {
     Alert.alert(
       "Reset App",
-      "This will clear all your data and restart the onboarding. Are you sure?",
+      "This will clear ALL your data including savings, credit score, and verification. You'll need to start over. Are you sure?",
       [
         { text: "Cancel", style: "cancel" },
         {
-          text: "Reset",
+          text: "Reset Everything",
           style: "destructive",
-          onPress: () => {
+          onPress: async () => {
+            // Clear persisted storage
+            await AsyncStorage.clear();
+            // Reset app state
             resetState();
+            // Navigate to welcome
             router.replace("/");
           },
         },
@@ -123,7 +128,9 @@ export default function ProfileScreen() {
       >
         {/* Header */}
         <View className="px-5 pt-2 pb-4">
-          <Text className="text-2xl font-bold text-slate-900">Profile</Text>
+          <Text className="text-2xl font-inter-bold text-slate-900">
+            Profile
+          </Text>
         </View>
 
         {/* Profile Card */}
@@ -133,7 +140,7 @@ export default function ProfileScreen() {
               <User size={32} color="#c8ff00" />
             </View>
             <View className="ml-4 flex-1">
-              <Text className="text-xl font-bold text-slate-900">
+              <Text className="text-xl font-inter-bold text-slate-900">
                 {user?.firstName || "CreditGo User"}
               </Text>
               <Text className="text-slate-500 text-sm">
@@ -155,14 +162,14 @@ export default function ProfileScreen() {
               <Text className="text-xs text-slate-500 mt-1">Score</Text>
             </View>
             <View className="items-center flex-1">
-              <Text className="text-lg font-bold text-slate-900">
+              <Text className="text-lg font-inter-bold text-slate-900">
                 {formatNaira(financialProfile?.safeMonthlyRepayment || 0)}
               </Text>
               <Text className="text-xs text-slate-500">Safe Amount</Text>
             </View>
             <View className="items-center flex-1">
               <Text
-                className="text-lg font-bold"
+                className="text-lg font-inter-bold"
                 style={{ color: creditTier.color }}
               >
                 {creditTier.name}
@@ -174,7 +181,7 @@ export default function ProfileScreen() {
 
         {/* Income Update Section */}
         <View className="mx-5 mb-5">
-          <Text className="text-lg font-bold text-slate-900 mb-3">
+          <Text className="text-lg font-inter-bold text-slate-900 mb-3">
             Income & Verification
           </Text>
 
@@ -191,10 +198,10 @@ export default function ProfileScreen() {
                 <Wallet size={20} color="#22c55e" />
               </View>
               <View className="flex-1 ml-3">
-                <Text className="text-slate-900 font-medium">
+                <Text className="text-slate-900 font-inter-medium">
                   Monthly Income
                 </Text>
-                <Text className="text-green-600 font-bold">
+                <Text className="text-green-600 font-inter-bold">
                   {formatNaira(user?.monthlyIncome || 0)}
                 </Text>
               </View>
@@ -217,7 +224,7 @@ export default function ProfileScreen() {
                 />
               </View>
               <View className="flex-1 ml-3">
-                <Text className="text-slate-900 font-medium">
+                <Text className="text-slate-900 font-inter-medium">
                   Identity (NIN)
                 </Text>
                 <Text className="text-slate-500 text-sm">
@@ -232,7 +239,7 @@ export default function ProfileScreen() {
                 }`}
               >
                 <Text
-                  className={`text-xs font-medium ${
+                  className={`text-xs font-inter-medium ${
                     verificationStatus.identity
                       ? "text-green-700"
                       : "text-amber-700"
@@ -258,7 +265,9 @@ export default function ProfileScreen() {
                 />
               </View>
               <View className="flex-1 ml-3">
-                <Text className="text-slate-900 font-medium">Employment</Text>
+                <Text className="text-slate-900 font-inter-medium">
+                  Employment
+                </Text>
                 <Text className="text-slate-500 text-sm capitalize">
                   {user?.employmentType || "Not specified"}
                 </Text>
@@ -271,7 +280,7 @@ export default function ProfileScreen() {
                 }`}
               >
                 <Text
-                  className={`text-xs font-medium ${
+                  className={`text-xs font-inter-medium ${
                     verificationStatus.employment
                       ? "text-green-700"
                       : "text-amber-700"
@@ -286,7 +295,7 @@ export default function ProfileScreen() {
 
         {/* Settings */}
         <View className="mx-5 mb-5">
-          <Text className="text-lg font-bold text-slate-900 mb-3">
+          <Text className="text-lg font-inter-bold text-slate-900 mb-3">
             Settings
           </Text>
 
@@ -295,7 +304,7 @@ export default function ProfileScreen() {
               <View className="w-10 h-10 bg-slate-100 rounded-xl items-center justify-center">
                 <Settings size={20} color="#64748b" />
               </View>
-              <Text className="flex-1 ml-3 text-slate-900 font-medium">
+              <Text className="flex-1 ml-3 text-slate-900 font-inter-medium">
                 Account Settings
               </Text>
               <ChevronRight size={20} color="#94a3b8" />
@@ -308,7 +317,7 @@ export default function ProfileScreen() {
               <View className="w-10 h-10 bg-slate-100 rounded-xl items-center justify-center">
                 <Bell size={20} color="#64748b" />
               </View>
-              <Text className="flex-1 ml-3 text-slate-900 font-medium">
+              <Text className="flex-1 ml-3 text-slate-900 font-inter-medium">
                 Notifications
               </Text>
               <ChevronRight size={20} color="#94a3b8" />
@@ -318,7 +327,7 @@ export default function ProfileScreen() {
               <View className="w-10 h-10 bg-slate-100 rounded-xl items-center justify-center">
                 <HelpCircle size={20} color="#64748b" />
               </View>
-              <Text className="flex-1 ml-3 text-slate-900 font-medium">
+              <Text className="flex-1 ml-3 text-slate-900 font-inter-medium">
                 Help & Support
               </Text>
               <ChevronRight size={20} color="#94a3b8" />
@@ -331,7 +340,7 @@ export default function ProfileScreen() {
               <View className="w-10 h-10 bg-red-100 rounded-xl items-center justify-center">
                 <LogOut size={20} color="#ef4444" />
               </View>
-              <Text className="flex-1 ml-3 text-red-600 font-medium">
+              <Text className="flex-1 ml-3 text-red-600 font-inter-medium">
                 Reset App
               </Text>
             </TouchableOpacity>
@@ -348,7 +357,7 @@ export default function ProfileScreen() {
               <Text className="text-lg">🏆</Text>
             </View>
             <View className="flex-1">
-              <Text className="text-white font-bold">
+              <Text className="text-white font-inter-bold">
                 {creditTier.name} Tier Benefits
               </Text>
             </View>
@@ -376,7 +385,7 @@ export default function ProfileScreen() {
         <View className="flex-1 bg-black/50 justify-end">
           <View className="bg-white rounded-t-3xl p-5">
             <View className="flex-row items-center justify-between mb-5">
-              <Text className="text-xl font-bold text-slate-900">
+              <Text className="text-xl font-inter-bold text-slate-900">
                 Notifications
               </Text>
               <TouchableOpacity
@@ -398,7 +407,7 @@ export default function ProfileScreen() {
               activeOpacity={0.8}
             >
               <View>
-                <Text className="text-slate-900 font-semibold">
+                <Text className="text-slate-900 font-inter-semibold">
                   Savings nudges
                 </Text>
                 <Text className="text-slate-500 text-xs mt-1">
@@ -420,7 +429,7 @@ export default function ProfileScreen() {
               activeOpacity={0.8}
             >
               <View>
-                <Text className="text-slate-900 font-semibold">
+                <Text className="text-slate-900 font-inter-semibold">
                   Repayment reminders
                 </Text>
                 <Text className="text-slate-500 text-xs mt-1">
@@ -447,7 +456,9 @@ export default function ProfileScreen() {
               className="bg-lime-400 rounded-xl py-4 items-center mt-5"
               activeOpacity={0.85}
             >
-              <Text className="text-slate-900 font-bold text-lg">Save</Text>
+              <Text className="text-slate-900 font-inter-bold text-lg">
+                Save
+              </Text>
             </TouchableOpacity>
 
             <View className="h-8" />
@@ -465,7 +476,7 @@ export default function ProfileScreen() {
         <View className="flex-1 bg-black/50 justify-end">
           <View className="bg-white rounded-t-3xl p-5">
             <View className="flex-row items-center justify-between mb-6">
-              <Text className="text-xl font-bold text-slate-900">
+              <Text className="text-xl font-inter-bold text-slate-900">
                 Update Income
               </Text>
               <TouchableOpacity
@@ -487,11 +498,11 @@ export default function ProfileScreen() {
                 New monthly income
               </Text>
               <View className="flex-row items-center bg-slate-100 rounded-xl px-4 py-3">
-                <Text className="text-slate-900 text-2xl font-bold mr-2">
+                <Text className="text-slate-900 text-2xl font-inter-bold mr-2">
                   ₦
                 </Text>
                 <TextInput
-                  className="flex-1 text-2xl font-bold text-slate-900"
+                  className="flex-1 text-2xl font-inter-bold text-slate-900"
                   placeholder="0"
                   placeholderTextColor="#94a3b8"
                   keyboardType="number-pad"
@@ -504,13 +515,13 @@ export default function ProfileScreen() {
             {/* Preview */}
             {parseIncome(newIncome) >= 50000 && (
               <View className="bg-green-50 rounded-xl p-4 mb-6">
-                <Text className="text-green-800 font-medium mb-1">
+                <Text className="text-green-800 font-inter-medium mb-1">
                   New Safe Amount Preview
                 </Text>
                 <Text className="text-green-700 text-sm">
                   With {formatNaira(parseIncome(newIncome))}/month income, your
                   new safe repayment would be approximately{" "}
-                  <Text className="font-bold">
+                  <Text className="font-inter-bold">
                     {formatNaira(Math.floor(parseIncome(newIncome) * 0.15))}-
                     {formatNaira(Math.floor(parseIncome(newIncome) * 0.18))}
                   </Text>
@@ -525,7 +536,7 @@ export default function ProfileScreen() {
               className="bg-slate-900 rounded-xl py-4 items-center"
               activeOpacity={0.8}
             >
-              <Text className="text-white font-bold text-lg">
+              <Text className="text-white font-inter-bold text-lg">
                 Update Income
               </Text>
             </TouchableOpacity>

@@ -98,14 +98,14 @@ export default function AssetDetailScreen() {
           {isAffordable ? (
             <>
               <Check size={14} color="#16a34a" />
-              <Text className="text-primary-700 text-sm font-medium ml-1">
+              <Text className="text-primary-700 text-sm font-inter-medium ml-1">
                 Within Budget
               </Text>
             </>
           ) : (
             <>
               <Lock size={14} color="#64748b" />
-              <Text className="text-dark-500 text-sm font-medium ml-1">
+              <Text className="text-dark-500 text-sm font-inter-medium ml-1">
                 Above Budget
               </Text>
             </>
@@ -137,7 +137,7 @@ export default function AssetDetailScreen() {
         <View className="px-6 pt-6">
           {/* Title & Price */}
           <View className="mb-4">
-            <Text className="text-2xl font-bold text-dark-800">
+            <Text className="text-2xl font-inter-bold text-dark-800">
               {asset.name}
             </Text>
             <Text className="text-dark-500 mt-1">via {asset.provider}</Text>
@@ -147,13 +147,13 @@ export default function AssetDetailScreen() {
           <View className="flex-row gap-3 mb-6">
             <View className="flex-1 bg-primary-50 rounded-xl p-4">
               <Text className="text-primary-600 text-sm">Monthly</Text>
-              <Text className="text-2xl font-bold text-primary-700">
+              <Text className="text-2xl font-inter-bold text-primary-700">
                 {formatNaira(asset.monthlyPayment)}
               </Text>
             </View>
             <View className="flex-1 bg-gray-50 rounded-xl p-4">
               <Text className="text-dark-500 text-sm">Total Price</Text>
-              <Text className="text-2xl font-bold text-dark-700">
+              <Text className="text-2xl font-inter-bold text-dark-700">
                 {formatNaira(asset.totalPrice)}
               </Text>
             </View>
@@ -166,7 +166,7 @@ export default function AssetDetailScreen() {
 
           {/* Features */}
           <View className="mb-6">
-            <Text className="text-lg font-semibold text-dark-800 mb-3">
+            <Text className="text-lg font-inter-semibold text-dark-800 mb-3">
               Features
             </Text>
             <View className="flex-row flex-wrap gap-2">
@@ -186,7 +186,7 @@ export default function AssetDetailScreen() {
 
           {/* Details */}
           <View className="bg-gray-50 rounded-xl p-4 mb-6">
-            <Text className="text-lg font-semibold text-dark-800 mb-3">
+            <Text className="text-lg font-inter-semibold text-dark-800 mb-3">
               Payment Details
             </Text>
             <View className="space-y-3">
@@ -195,7 +195,7 @@ export default function AssetDetailScreen() {
                   <Clock size={16} color="#64748b" />
                   <Text className="text-dark-600 ml-2">Duration</Text>
                 </View>
-                <Text className="text-dark-800 font-medium">
+                <Text className="text-dark-800 font-inter-medium">
                   {asset.duration} months
                 </Text>
               </View>
@@ -205,7 +205,7 @@ export default function AssetDetailScreen() {
                   <Text className="text-dark-600 ml-2">Interest Rate</Text>
                 </View>
                 <Text
-                  className={`font-medium ${asset.interestRate === 0 ? "text-primary-600" : "text-dark-800"}`}
+                  className={`font-inter-medium ${asset.interestRate === 0 ? "text-primary-600" : "text-dark-800"}`}
                 >
                   {asset.interestRate === 0
                     ? "No Interest!"
@@ -217,7 +217,7 @@ export default function AssetDetailScreen() {
                   <Calendar size={16} color="#64748b" />
                   <Text className="text-dark-600 ml-2">Monthly Payment</Text>
                 </View>
-                <Text className="text-primary-600 font-bold">
+                <Text className="text-primary-600 font-inter-bold">
                   {formatNaira(asset.monthlyPayment)}
                 </Text>
               </View>
@@ -227,7 +227,7 @@ export default function AssetDetailScreen() {
           {/* Partner Info */}
           {partner && (
             <View className="bg-accent-50 rounded-xl p-4 mb-6">
-              <Text className="text-lg font-semibold text-dark-800 mb-2">
+              <Text className="text-lg font-inter-semibold text-dark-800 mb-2">
                 About {partner.name}
               </Text>
               <Text className="text-dark-600 text-sm mb-3">
@@ -235,7 +235,7 @@ export default function AssetDetailScreen() {
               </Text>
               <TouchableOpacity className="flex-row items-center">
                 <ExternalLink size={14} color="#3b82f6" />
-                <Text className="text-accent-600 text-sm font-medium ml-1">
+                <Text className="text-accent-600 text-sm font-inter-medium ml-1">
                   Visit Website
                 </Text>
               </TouchableOpacity>
@@ -245,14 +245,14 @@ export default function AssetDetailScreen() {
           {/* Your Eligibility */}
           <View className="bg-white border-2 border-gray-200 rounded-xl p-4 mb-6">
             <View className="flex-row items-center justify-between mb-3">
-              <Text className="text-lg font-semibold text-dark-800">
+              <Text className="text-lg font-inter-semibold text-dark-800">
                 Your Eligibility
               </Text>
               <View
                 className={`px-2 py-1 rounded-full ${isAffordable ? "bg-primary-100" : "bg-red-100"}`}
               >
                 <Text
-                  className={`text-xs font-medium ${isAffordable ? "text-primary-700" : "text-red-700"}`}
+                  className={`text-xs font-inter-medium ${isAffordable ? "text-primary-700" : "text-red-700"}`}
                 >
                   {isAffordable ? "Eligible" : "Not Eligible"}
                 </Text>
@@ -262,21 +262,21 @@ export default function AssetDetailScreen() {
             <View className="space-y-2">
               <View className="flex-row justify-between">
                 <Text className="text-dark-500">Your Safe Amount</Text>
-                <Text className="text-dark-800 font-medium">
+                <Text className="text-dark-800 font-inter-medium">
                   {formatNaira(safeAmount)}/mo
                 </Text>
               </View>
               <View className="flex-row justify-between">
                 <Text className="text-dark-500">Required Monthly</Text>
                 <Text
-                  className={`font-medium ${isAffordable ? "text-primary-600" : "text-red-600"}`}
+                  className={`font-inter-medium ${isAffordable ? "text-primary-600" : "text-red-600"}`}
                 >
                   {formatNaira(asset.monthlyPayment)}/mo
                 </Text>
               </View>
               <View className="flex-row justify-between">
                 <Text className="text-dark-500">Your Credit Score</Text>
-                <Text className="text-dark-800 font-medium">
+                <Text className="text-dark-800 font-inter-medium">
                   {creditScore}/100
                 </Text>
               </View>

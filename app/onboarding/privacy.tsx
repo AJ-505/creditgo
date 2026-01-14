@@ -49,7 +49,7 @@ export default function PrivacyScreen() {
           icon={<ArrowLeft size={24} color="#334155" />}
           className="p-0 mr-4"
         />
-        <Text className="text-lg font-semibold text-dark-800">
+        <Text className="text-lg font-inter-semibold text-dark-800">
           Your Privacy
         </Text>
       </View>
@@ -64,7 +64,7 @@ export default function PrivacyScreen() {
           <View className="w-20 h-20 bg-primary-100 rounded-full items-center justify-center mb-4">
             <Shield size={40} color="#22c55e" />
           </View>
-          <Text className="text-2xl font-bold text-dark-800 text-center">
+          <Text className="text-2xl font-inter-bold text-dark-800 text-center">
             We Respect Your Privacy
           </Text>
           <Text className="text-base text-dark-500 text-center mt-2">
@@ -75,7 +75,7 @@ export default function PrivacyScreen() {
 
         {/* What We Do */}
         <View className="bg-primary-50 rounded-xl p-4 mb-4">
-          <Text className="text-base font-semibold text-dark-800 mb-3">
+          <Text className="text-base font-inter-semibold text-dark-800 mb-3">
             What We Do
           </Text>
           {whatWeDo.map((item, index) => (
@@ -92,7 +92,7 @@ export default function PrivacyScreen() {
 
         {/* What We Don't Do */}
         <View className="bg-red-50 rounded-xl p-4 mb-4">
-          <Text className="text-base font-semibold text-dark-800 mb-3">
+          <Text className="text-base font-inter-semibold text-dark-800 mb-3">
             What We NEVER Do
           </Text>
           {whatWeDont.map((item, index) => (
@@ -112,7 +112,7 @@ export default function PrivacyScreen() {
         <View className="bg-gray-50 rounded-xl p-4">
           <View className="flex-row items-center mb-3">
             <Eye size={20} color="#64748b" />
-            <Text className="text-base font-semibold text-dark-800 ml-2">
+            <Text className="text-base font-inter-semibold text-dark-800 ml-2">
               SMS Permission
             </Text>
           </View>

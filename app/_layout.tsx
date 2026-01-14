@@ -10,15 +10,47 @@ import {
   Inter_600SemiBold,
   Inter_700Bold,
 } from "@expo-google-fonts/inter";
-import { ActivityIndicator, View } from "react-native";
+import { ActivityIndicator, View, Text } from "react-native";
+import { useEffect } from "react";
 
 export default function RootLayout() {
-  const [fontsLoaded] = useFonts({
+  const [fontsLoaded, fontError] = useFonts({
     Inter: Inter_400Regular,
     "Inter-Medium": Inter_500Medium,
     "Inter-SemiBold": Inter_600SemiBold,
     "Inter-Bold": Inter_700Bold,
   });
+
+  // Log font loading status for debugging
+  useEffect(() => {
+    if (fontsLoaded) {
+      console.log("✅ Inter fonts loaded successfully");
+    }
+    if (fontError) {
+      console.log("❌ Font loading error:", fontError);
+    }
+  }, [fontsLoaded, fontError]);
+
+  if (!fontsLoaded && !fontError) {
+    return null;
+  }
+
+  if (fontError) {
+    console.log("Font loading error:", fontError);
+  }
+
+  if (!fontsLoaded) {
+    return (
+      <View className="flex-1 bg-slate-50 items-center justify-center">
+        <ActivityIndicator size="large" color="#c8ff00" />
+        <Text className="mt-4 text-slate-500">Loading fonts...</Text>
+      </View>
+    );
+  }
+
+  if (fontError) {
+    console.log("Font loading error:", fontError);
+  }
 
   if (!fontsLoaded) {
     return (

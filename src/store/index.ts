@@ -165,6 +165,7 @@ export const useAppStore = create<AppState>()(
       partialize: (state) => ({
         user: state.user,
         isOnboardingComplete: state.isOnboardingComplete,
+        onboardingStep: state.onboardingStep,
         verificationStatus: state.verificationStatus,
         financialProfile: state.financialProfile,
         applications: state.applications,
@@ -196,9 +197,15 @@ export const useSavings = () => {
   const monthlyGoal = useAppStore((state) => state.savings.monthlyGoal);
   const addDeposit = useAppStore((state) => state.addSavingsDeposit);
   const setGoal = useAppStore((state) => state.setSavingsGoal);
+  const resetState = useAppStore((state) => state.resetState);
 
   const getTotalSessions = () => {
     return transactions.filter((t) => t.type === "deposit").length;
+  };
+
+  const clearAllData = async () => {
+    await AsyncStorage.clear();
+    resetState();
   };
 
   return {
@@ -208,5 +215,12 @@ export const useSavings = () => {
     addDeposit,
     setGoal,
     getTotalSessions,
+    clearAllData,
   };
+};
+
+// Export for use in profile screen
+export const clearAllUserData = async () => {
+  await AsyncStorage.clear();
+  useAppStore.getState().resetState();
 };
